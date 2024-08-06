@@ -154,6 +154,7 @@ blast_seeds <-
            minimum_length = 5,
            maximum_length = 500,
            ...) {
+    trace("top of blast_seeds")
     dots <- list(...)
     # Setup ----
     output_dir <- file.path(output_directory_path, "blast_seeds_output")
@@ -169,6 +170,7 @@ blast_seeds <-
       unlink(save_dir, recursive=TRUE)
     }
 
+    trace("creating directories")
     # create directories if they do not exist
     dir.create(output_directory_path, showWarnings = FALSE)
     dir.create(save_dir, showWarnings = FALSE)
@@ -176,6 +178,7 @@ blast_seeds <-
 
     # BLAST ----
     message('Blasting seeds.\n')
+    trace("blasting seeds")
 
     blast_seeds <- utils::read.csv(seeds_output_path)
 
@@ -188,6 +191,8 @@ blast_seeds <-
     message('\nBlasting complete.\n')
     message('Wrangling results.\n')
 
+    trace("dplyr::filter")
+
     # Wrangle ----
     # keep only hits with acceptable product length
     output_table <- dplyr::filter(output_table, dplyr::between(.data$amplicon_length, minimum_length, maximum_length))
@@ -196,12 +201,17 @@ blast_seeds <-
       stop('Nothing left after filtering amplicon_length by minimum_length and maximum_length values')
     }
 
+    trace("dplyr::distinct")
+
     # using multiple blast databases leads to duplicates so get rid of those...
     output_table <- dplyr::distinct(output_table, accession, .keep_all = TRUE)
 
+    trace("writing csv")
     # Write output_table to dir/blast_seeds_output/summary.csv
     summary_csv_path <- file.path(output_dir, "summary.csv")
     utils::write.csv(output_table, file = summary_csv_path, row.names = FALSE)
+
+    trace("writing fasta")
 
     # Write a fasta
     degapped_sequence <- gsub("-", "", output_table$sequence)
@@ -211,6 +221,8 @@ blast_seeds <-
 
     writeLines(fasta, file.path(output_dir, paste0(metabarcode_name, ".fasta")))
 
+    trace("making taxa_table")
+
     # Taxonomy file format (tidyr and dplyr)
     taxa_table <-
       output_table %>%
@@ -218,8 +230,11 @@ blast_seeds <-
       tidyr::unite(col = 'taxonomic_path', 'superkingdom':'species', sep = ";", remove = TRUE, na.rm = FALSE) %>%
       dplyr::slice(-1)
 
+    trace("writing taxa_table")
     taxa_table_path <- file.path(output_dir, paste0(metabarcode_name, "_taxonomy.txt"))
     utils::write.table(taxa_table, file = taxa_table_path, row.names = FALSE, col.names=FALSE, sep = "\t")
+
+    trace("making tax_rank_sum")
 
     # Count distinct taxonomic ranks - includes NA
     tax_rank_sum <-
@@ -228,6 +243,9 @@ blast_seeds <-
         dplyr::across(.cols = c('superkingdom','phylum','class','order','family','genus','species'),
                       .fns = dplyr::n_distinct)
       )
+
+    trace("writing tax_rank_sum")
+
     tax_rank_sum_table_path <- file.path(output_dir, paste0(metabarcode_name, "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"))
     utils::write.csv(tax_rank_sum, file = tax_rank_sum_table_path, row.names = FALSE)
 
@@ -235,24 +253,30 @@ blast_seeds <-
     # Read condensed vectors and expand them
     if (expand_vectors) {
       too_many_ns_path <- file.path(save_dir, "too_many_ns.txt")
+      trace("readLines(too_many_ns_path)")
       too_many_ns_indices <- as.numeric(readLines(too_many_ns_path))
 
       if (length(too_many_ns_indices) > 0){
+        trace("too_many_ns <- blast_seeds[too_many_ns_indices, ]")
         too_many_ns <- blast_seeds[too_many_ns_indices, ]
         too_many_ns_csv_path <- file.path(output_dir, "too_many_ns.csv")
         utils::write.csv(too_many_ns, file = too_many_ns_csv_path, row.names = FALSE)
       }
 
       blastdbcmd_failed_path <- file.path(save_dir, "blastdbcmd_failed.txt")
+      trace("readLines(blastdbcmd_failed_path)")
       blastdbcmd_failed_indices <- as.numeric(readLines(blastdbcmd_failed_path))
 
       if (length(blastdbcmd_failed_indices) > 0){
+        trace("blastdbcmd_failed <- blast_seeds[blastdbcmd_failed_indices, ]")
         blastdbcmd_failed <- blast_seeds[blastdbcmd_failed_indices, ]
         blastdbcmd_failed_csv_path <- file.path(output_dir, "blastdbcmd_failed.csv")
         utils::write.csv(blastdbcmd_failed, file = blastdbcmd_failed_csv_path, row.names = FALSE)
       }
     }
 
+
+    trace("clear directory")
     # Clear temporary directory
     unlink(save_dir, recursive=TRUE)
 
