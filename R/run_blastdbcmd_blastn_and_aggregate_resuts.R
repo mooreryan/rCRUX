@@ -52,7 +52,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
            wildcards,
            num_rounds,
            ...) {
-
+trace("run_blastdbcmd_blastn_and_aggregate_resuts")
     # Run blastdbcmd on each sample index
     # sort results into appropriate buckets
     aggregate_fasta <- NULL
@@ -107,6 +107,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     }
     else {
 
+      trace("run_blastn yo")
       # run blastn and aggregate results
       blastn_output <-
         run_blastn(fasta = aggregate_fasta,

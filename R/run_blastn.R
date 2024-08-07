@@ -68,6 +68,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
 
   message("Calling blastn. This may take a long time.")
 
+  trace("actually running the system2 command for blastn")
   blastn_output <-
     system2(command = blastn,
             args = c("-db", db,

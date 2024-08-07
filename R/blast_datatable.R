@@ -109,6 +109,8 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
          "Please revise the path provided:\n", accession_taxa_sql_path)
   }
 
+  trace("top of blast_datatable")
+
   # Default values for tracker variables
   num_rounds <- 1
   too_many_ns <- NULL
@@ -327,6 +329,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
         message('tmp - length(sample_indices) == length(unsampled_indices)\n')
 
+        trace("(A) run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices")
         run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices,
                                                    save_dir = save_dir,
                                                    blast_seeds_m = blast_seeds_m,
@@ -339,6 +342,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
                                                    wildcards = wildcards,
                                                    num_rounds = num_rounds,
                                                    ...)
+        trace("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
         unsampled_indices <- unsampled_indices[!(unsampled_indices)]
         blast_seeds_m$blast_status[-unsampled_indices] <- "done"
@@ -348,7 +352,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
       } else if (length(sample_indices) <= max_to_blast) {
 
         message('tmp - length(sample_indices) <= max_to_blast\n')
-
+        trace("(B) run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices")
         run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = sample_indices,
                                                    save_dir = save_dir,
                                                    blast_seeds_m = blast_seeds_m,
@@ -361,6 +365,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
                                                    wildcards = wildcards,
                                                    num_rounds = num_rounds,
                                                    ...)
+        trace("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
         sample_indices <- sample_indices[!(sample_indices)]
         blast_seeds_m$blast_status[-sample_indices] <- "done"
@@ -374,7 +379,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
         # take chunks of the sample indices that are equivalent to max_to_blast
         subset <- utils::head(sample_indices, max_to_blast)
-
+        trace("(C) run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices")
         run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = subset,
                                                    save_dir = save_dir,
                                                    blast_seeds_m = blast_seeds_m,
@@ -387,6 +392,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
                                                    wildcards = wildcards,
                                                    num_rounds = num_rounds,
                                                    ...)
+        trace("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
         # update sample indices
         sample_indices <- sample_indices[!(sample_indices %in% subset)]
