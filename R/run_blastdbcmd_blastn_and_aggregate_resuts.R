@@ -61,6 +61,7 @@ trace("run_blastdbcmd_blastn_and_aggregate_resuts")
 
     for (index in sample_indices) {
 
+      trace("run_blastdbcmd(query_row = blast_seeds_m[index, ],")
       fasta <-
         run_blastdbcmd(query_row = blast_seeds_m[index, ],
                        db = db,
@@ -92,6 +93,7 @@ trace("run_blastdbcmd_blastn_and_aggregate_resuts")
       pb$tick()
     }
 
+    trace("save_state(save_dir = save_dir")
     save_state(save_dir = save_dir,
                output_table = output_table,
                unsampled_indices = unsampled_indices,
