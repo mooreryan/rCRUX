@@ -5,6 +5,10 @@
 #' BLAST DB start with the name of the the DB e.g `myDB.ndb`, `myDB.ntf` ...
 #'  
 #' @param path path to BLAST DB
+#' @param ncbi_bin is the path to blast+ tools if not in the user's path.
+#'        Specify only if blastn and blastdbcmd  are not in your path.
+#'        The default is ncbi_bin = NULL - if not specified in path do the
+#'        following: ncbi_bin = "/my/local/ncbi-blast-2.10.1+/bin/".
 #' 
 #' @return Nothing or an error
 check_blast_db <- function(path, ncbi_bin = NULL){
