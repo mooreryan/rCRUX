@@ -1,6 +1,4 @@
-check_forbidden_args <- function(additional_args) {
-  forbidden_args <- c("blast_db_path", "return_table")
-
+check_forbidden_args <- function(additional_args, forbidden_args) {
   forbidden_present <-
     forbidden_args[forbidden_args %in% names(additional_args)]
 
@@ -16,7 +14,10 @@ get_seeds_local_multi_db <- function(
     blast_db_paths,
     output_directory_path,
     ...) {
-  check_forbidden_args(additional_args = list(...))
+  check_forbidden_args(
+    additional_args = list(...),
+    forbidden_args = c("blast_db_path", "return_table")
+  )
 
   tables <- lapply(seq_along(blast_db_paths), function(n) {
     blast_db_path <- blast_db_paths[[n]]
