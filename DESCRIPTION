@@ -1,28 +1,28 @@
 Package: rCRUX
 Title: Generate CRUX Metabarcoding Reference Libraries in R
 Version: 0.1.0.000
-Authors@R:
+Authors@R: c(
     person(given = "Luna",
            family = "Gal",
-           role = c("aut"))
+           role = c("aut")),
     person(given = "Zack",
            family = "Gold",
            role = c("aut"),
-           comment = c(ORCID = "0000-0003-0490-7630"))
+           comment = c(ORCID = "0000-0003-0490-7630")),
     person(given = "Shaun",
            family = "Nielsen",
-           role = c("aut"))
+           role = c("aut")),
     person(given = "Ramon",
            family = "Gallego",
-           role = c("aut"))
+           role = c("aut")),
     person(given = "Shaun",
            family = "Nielsen",
-           role = c("aut"))
+           role = c("aut")),
     person(given = "Emily",
            family = "Curd",
            role = c("aut", "cre"),
            email = "eecurd@g.ucla.edu",
-           comment = c(ORCID = "0000-0003-0336-6852"))
+           comment = c(ORCID = "0000-0003-0336-6852")))
 Description: rCRUX is a Suite of Tools for Building environmental DNA (eDNA) Metabarcode Reference Libraries by Querying NCBI Databases and Filtering and Formatting the Resulting Data.
 License: GPL-3
 biocViews:
