@@ -113,16 +113,13 @@ blast_seeds_multi_db <- function(
     readr::write_csv(final_outfiles$summary)
 
   # Read all the taxonomy files and dereplicate them.
-  lapply(outfiles, function(filenames) {
+  purrr::map_dfr(outfiles, function(filenames) {
     readr::read_tsv(filenames$taxonomy)
   }) %>%
-    Reduce(f = dplyr::bind_rows, x = .) %>%
     dplyr::distinct() %>%
     readr::write_tsv(
       final_outfiles$taxonomy
     )
-
-  # TODO: replace the above with purrr::map_dfr
 
   # Read all the fasta files and dereplicate them.
   fastas <- sapply(outfiles, function(l) l$recovered_seqs)
