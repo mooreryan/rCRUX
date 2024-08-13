@@ -82,6 +82,9 @@ run_primer_blastn <-
       cores <- num_threads
     }
 
+    check_blast_plus_installation(ncbi_bin)
+    check_blast_db(db, ncbi_bin = ncbi_bin)
+    
     # Prepare call to blastn
     if (!is.null(ncbi_bin)){
       blastn <- file.path(ncbi_bin, 'blastn')
