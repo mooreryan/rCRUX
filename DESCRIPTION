@@ -1,5 +1,5 @@
 Package: rCRUX
-Title: Generate CRUX metabarcoding reference libraries in R
+Title: Generate CRUX Metabarcoding Reference Libraries in R
 Version: 0.1.0.000
 Authors@R:
     person(given = "Luna",
