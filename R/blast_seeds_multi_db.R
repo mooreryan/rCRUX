@@ -63,6 +63,22 @@ collate_tax_rank_counts <- function(
     readr::write_csv(tax_rank_counts_outfile)
 }
 
+make_outfile_names <- function(dir, metabarcode_name) {
+  list(
+    summary = file.path(dir, "summary.csv"),
+    recovered_seqs = file.path(dir, paste0(metabarcode_name, ".fasta")),
+    taxonomy = file.path(dir, paste0(metabarcode_name, "_taxonomy.txt")),
+    failed = file.path(dir, "blastdbcmd_failed.csv"),
+    unique_tax_rank_counts = file.path(
+      dir,
+      paste0(
+        metabarcode_name,
+        "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"
+      )
+    )
+  )
+}
+
 blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,
@@ -100,28 +116,9 @@ blast_seeds_multi_db <- function(
 
     blast_seeds_outdir <- file.path(out_path, "blast_seeds_output")
 
-    outfiles <- list(
-      summary = file.path(
-        blast_seeds_outdir, "summary.csv"
-      ),
-      recovered_seqs = file.path(
-        blast_seeds_outdir,
-        paste0(metabarcode_name, ".fasta")
-      ),
-      taxonomy = file.path(
-        blast_seeds_outdir,
-        paste0(metabarcode_name, "_taxonomy.txt")
-      ),
-      failed = file.path(
-        blast_seeds_outdir, "blastdbcmd_failed.csv"
-      ),
-      unique_tax_rank_counts = file.path(
-        blast_seeds_outdir,
-        paste0(
-          metabarcode_name,
-          "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"
-        )
-      )
+    outfiles <- make_outfile_names(
+      dir = blast_seeds_outdir,
+      metabarcode_name = metabarcode_name
     )
 
     all_outfiles_exist <- lapply(outfiles, file.exists)
@@ -133,28 +130,9 @@ blast_seeds_multi_db <- function(
     outfiles
   })
 
-  collated_outfiles <- list(
-    summary = file.path(
-      combined_out_path, "summary.csv"
-    ),
-    recovered_seqs = file.path(
-      combined_out_path,
-      paste0(metabarcode_name, ".fasta")
-    ),
-    taxonomy = file.path(
-      combined_out_path,
-      paste0(metabarcode_name, "_taxonomy.txt")
-    ),
-    failed = file.path(
-      combined_out_path, "blastdbcmd_failed.csv"
-    ),
-    unique_tax_rank_counts = file.path(
-      combined_out_path,
-      paste0(
-        metabarcode_name,
-        "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"
-      )
-    )
+  collated_outfiles <- make_outfile_names(
+    dir = combined_out_path,
+    metabarcode_name = metabarcode_name
   )
 
   collate_summaries(
