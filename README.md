@@ -7,7 +7,7 @@
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7349493.svg)](https://doi.org/10.5281/zenodo.7349493)
 ![GitHub R package version](https://img.shields.io/github/r-package/v/LunaGal/rCRUX)
-[![check-standard](https://github.com/LunaGal/rCRUX/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/LunaGal/rCRUX/actions/workflows/check-standard.yaml)
+[![check-standard](https://github.com/CalCOFI/rCRUX/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/CalCOFI/rCRUX/actions/workflows/check-standard.yaml)
 <!-- badges: end -->
 
 
@@ -64,7 +64,7 @@ wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.10.1/ncbi-blast-2.10.
 
 ```
 
-This [link](https://community.rstudio.com/t/adding-to-the-path-variable/12066) may help if you are using RStudio and having trouble adding blast+ to your path.
+This [link](https://forum.posit.co/t/adding-to-the-path-variable/12066) may help if you are using RStudio and having trouble adding blast+ to your path.
 
 
 ### Blast-formatted database
