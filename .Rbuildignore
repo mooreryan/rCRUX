@@ -20,3 +20,5 @@ inst/mock-db/taxonomizr-ncbi-db-raw.sql
 ^inst/mock-db/sequence\.fasta\.xml$
 ^doc$
 ^Meta$
+
+_*
