@@ -81,7 +81,7 @@ blast_seeds_multi_db <- function(
     recursive = TRUE, mode = "0750", showWarnings = FALSE
   )
 
-  outfiles <- lapply(seq_along(blast_db_paths), function(n) {
+  blast_seeds_outfiles <- lapply(seq_along(blast_db_paths), function(n) {
     blast_db_path <- blast_db_paths[[n]]
 
     message("working on blast_db_path: ", blast_db_path)
@@ -133,7 +133,7 @@ blast_seeds_multi_db <- function(
     outfiles
   })
 
-  final_outfiles <- list(
+  collated_outfiles <- list(
     summary = file.path(
       combined_out_path, "summary.csv"
     ),
@@ -158,28 +158,29 @@ blast_seeds_multi_db <- function(
   )
 
   collate_summaries(
-    blast_seeds_outfiles = outfiles, summary_outfile = final_outfiles$summary
+    blast_seeds_outfiles = blast_seeds_outfiles,
+    summary_outfile = collated_outfiles$summary
   )
 
   collate_taxonomies(
-    blast_seeds_outfiles = outfiles,
-    taxonomy_outfile = final_outfiles$taxonomy
+    blast_seeds_outfiles = blast_seeds_outfiles,
+    taxonomy_outfile = collated_outfiles$taxonomy
   )
 
   collate_fastas(
-    blast_seeds_outfiles = outfiles,
-    fasta_outfile = final_outfiles$recovered_seqs
+    blast_seeds_outfiles = blast_seeds_outfiles,
+    fasta_outfile = collated_outfiles$recovered_seqs
   )
 
   collate_failures(
-    blast_seeds_outfiles = outfiles,
-    failures_outfile = final_outfiles$failed
+    blast_seeds_outfiles = blast_seeds_outfiles,
+    failures_outfile = collated_outfiles$failed
   )
 
   collate_tax_rank_counts(
-    blast_seeds_outfiles = outfiles,
-    tax_rank_counts_outfile = final_outfiles$unique_tax_rank_counts
+    blast_seeds_outfiles = blast_seeds_outfiles,
+    tax_rank_counts_outfile = collated_outfiles$unique_tax_rank_counts
   )
 
-  final_outfiles
+  collated_outfiles
 }
