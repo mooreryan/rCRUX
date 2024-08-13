@@ -10,6 +10,59 @@ check_forbidden_args <- function(additional_args, forbidden_args) {
   }
 }
 
+# Read all the summaries and dereplicate them.
+collate_summaries <- function(blast_seeds_outfiles, summary_outfile) {
+  purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
+    readr::read_csv(filenames$summary)
+  }) %>%
+    dplyr::distinct() %>%
+    readr::write_csv(summary_outfile)
+}
+
+# Read all the taxonomy files and dereplicate them.
+collate_taxonomies <- function(blast_seeds_outfiles, taxonomy_outfile) {
+  purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
+    readr::read_tsv(filenames$taxonomy)
+  }) %>%
+    dplyr::distinct() %>%
+    readr::write_tsv(taxonomy_outfile)
+}
+
+# Read all the fasta files and dereplicate them.
+collate_fastas <- function(blast_seeds_outfiles, fasta_outfile) {
+  fastas <- sapply(blast_seeds_outfiles, function(l) l$recovered_seqs)
+  args <- c("rmdup", "-o", fasta_outfile, fastas)
+
+  # TODO: take location of seqkit command as an arg.
+  system2(command = "seqkit", args = args)
+}
+
+collate_failures <- function(blast_seeds_outfiles, failures_outfile) {
+  purrr::map_dfr(seq_along(blast_seeds_outfiles), function(i) {
+    filenames <- blast_seeds_outfiles[[i]]
+
+    readr::read_csv(filenames$failed) |>
+      # We add a column here because the "failures" only make sense in the
+      # context of the database in which they were searched against.
+      dplyr::mutate(i = i)
+  }) %>%
+    readr::write_csv(failures_outfile)
+}
+
+collate_tax_rank_counts <- function(
+    blast_seeds_outfiles,
+    tax_rank_counts_outfile) {
+  purrr::map_dfr(seq_along(blast_seeds_outfiles), function(i) {
+    filenames <- blast_seeds_outfiles[[i]]
+
+    readr::read_csv(filenames$unique_tax_rank_counts) |>
+      # Not sure if this is the best way to handle this.  Probably we will need
+      # to redo the counts on the collated output files.
+      dplyr::mutate(i = i)
+  }) %>%
+    readr::write_csv(tax_rank_counts_outfile)
+}
+
 blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,
@@ -104,55 +157,29 @@ blast_seeds_multi_db <- function(
     )
   )
 
-
-  # Read all the summaries and dereplicate them.
-  purrr::map_dfr(outfiles, function(filenames) {
-    readr::read_csv(filenames$summary)
-  }) %>%
-    dplyr::distinct() %>%
-    readr::write_csv(final_outfiles$summary)
-
-  # Read all the taxonomy files and dereplicate them.
-  purrr::map_dfr(outfiles, function(filenames) {
-    readr::read_tsv(filenames$taxonomy)
-  }) %>%
-    dplyr::distinct() %>%
-    readr::write_tsv(
-      final_outfiles$taxonomy
-    )
-
-  # Read all the fasta files and dereplicate them.
-  fastas <- sapply(outfiles, function(l) l$recovered_seqs)
-  args <- c(
-    "rmdup",
-    "-o",
-    final_outfiles$recovered_seqs,
-    fastas
+  collate_summaries(
+    blast_seeds_outfiles = outfiles, summary_outfile = final_outfiles$summary
   )
 
-  # TODO: take location of seqkit command as an arg.
-  system2(command = "seqkit", args = args)
+  collate_taxonomies(
+    blast_seeds_outfiles = outfiles,
+    taxonomy_outfile = final_outfiles$taxonomy
+  )
 
-  purrr::map_dfr(seq_along(outfiles), function(i) {
-    filenames <- outfiles[[i]]
+  collate_fastas(
+    blast_seeds_outfiles = outfiles,
+    fasta_outfile = final_outfiles$recovered_seqs
+  )
 
-    print(filenames)
+  collate_failures(
+    blast_seeds_outfiles = outfiles,
+    failures_outfile = final_outfiles$failed
+  )
 
-    readr::read_csv(filenames$failed) |>
-      # We add a column here because the "failures" only make sense in the
-      # context of the database in which they were searched against.
-      dplyr::mutate(i = i)
-  }) %>%
-    readr::write_csv(final_outfiles$failed)
-
-
-  purrr::map_dfr(seq_along(outfiles), function(i) {
-    filenames <- outfiles[[i]]
-
-    readr::read_csv(filenames$unique_tax_rank_counts) |>
-      dplyr::mutate(i = i)
-  }) %>%
-    readr::write_csv(final_outfiles$unique_tax_rank_counts)
+  collate_tax_rank_counts(
+    blast_seeds_outfiles = outfiles,
+    tax_rank_counts_outfile = final_outfiles$unique_tax_rank_counts
+  )
 
   final_outfiles
 }
