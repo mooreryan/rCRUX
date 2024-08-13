@@ -21,3 +21,5 @@ inst/mock-db/taxonomizr-ncbi-db-raw.sql
 ^doc$
 ^Meta$
 ^_.*$
+^Dockerfile$
+^crux_hex.png$
