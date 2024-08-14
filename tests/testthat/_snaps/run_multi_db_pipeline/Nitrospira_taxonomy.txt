@@ -1,0 +1,12 @@
+AY750575.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio harveyi	HQ686084.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira marina	X98336.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas antarctica
+CP011801.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira moscoviensis	NA	NA	NA	NA
+X82144.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas luteoviolacea	NA	NA	NA	NA
+AJ440005.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio coralliilyticus	NA	NA	NA	NA
+NA	NA	X56576.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio alginolyticus	NA	NA
+NA	NA	X82135.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas aurantia	NA	NA
+NA	NA	EU559167.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira defluvii	NA	NA
+NA	NA	AF172987.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas ulvae	NA	NA
+NA	NA	NA	NA	AF388386.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio parahaemolyticus
+NA	NA	NA	NA	AY769918.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas spongiae
+NA	NA	NA	NA	DQ059545.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira defluvii
+NA	NA	NA	NA	AB818959.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira japonica
