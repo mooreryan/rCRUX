@@ -10,6 +10,19 @@ check_forbidden_args <- function(additional_args, forbidden_args) {
   }
 }
 
+check_files_exist <- function(files) {
+  all_files_exist <- files %>%
+    lapply(file.exists) %>%
+    unlist() %>%
+    all()
+
+  if (all_files_exist) {
+    files
+  } else {
+    stop("Not all output files were generated successfully.")
+  }
+}
+
 # Read all the summaries and dereplicate them.
 collate_summaries <- function(blast_seeds_outfiles, summary_outfile) {
   purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
@@ -116,18 +129,11 @@ blast_seeds_multi_db <- function(
 
     blast_seeds_outdir <- file.path(out_path, "blast_seeds_output")
 
-    outfiles <- make_outfile_names(
+    make_outfile_names(
       dir = blast_seeds_outdir,
       metabarcode_name = metabarcode_name
-    )
-
-    all_outfiles_exist <- lapply(outfiles, file.exists)
-
-    if (!all(unlist(all_outfiles_exist))) {
-      stop("Not all output files were generated successfully.")
-    }
-
-    outfiles
+    ) %>%
+      check_files_exist()
   })
 
   collated_outfiles <- make_outfile_names(
