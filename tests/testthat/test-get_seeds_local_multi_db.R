@@ -36,7 +36,6 @@ test_that("get_seeds_local_multi_db gives the same output as manually running ge
     accession_taxa_sql_path = accession_taxa_sql_path,
     minimum_length = 5,
     maximum_length = 900,
-    # return_table = FALSE,
     num_threads = 1
   )
 

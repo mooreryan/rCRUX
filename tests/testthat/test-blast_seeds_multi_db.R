@@ -1,5 +1,6 @@
 test_that("blast_seeds_multi_db", {
-  # This is data taken from the above test.  TODO: get a better way to do this.
+  # This is data taken from the get_seeds_local_multi_db test.
+  # TODO: read this from a file instead.
   seeds_output_data <- readr::read_csv("qseqid.x,gi,accession,mismatch_forward,forward_start,forward_stop,staxids,distinct_entries.x,qseqid.y,mismatch_reverse,reverse_start,reverse_stop,distinct_entries.y,product_length,taxid,species,superkingdom,kingdom,phylum,subphylum,superclass,class,subclass,order,family,subfamily,genus,infraorder,subcohort,superorder,superfamily,tribe,subspecies,subgenus,species.group,parvorder,varietas
 forward_row_1,0,CP011801.1,0,651,668,42253,2,reverse_row_1,0,1497,1482,2,846,42253,Nitrospira moscoviensis,Bacteria,NA,Nitrospirae,NA,NA,Nitrospira,NA,Nitrospirales,Nitrospiraceae,NA,Nitrospira,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
 forward_row_1,0,HM485589.1,0,651,668,876851,2,reverse_row_1,0,1499,1484,2,848,876851,Nitrospira calida,Bacteria,NA,Nitrospirae,NA,NA,Nitrospira,NA,Nitrospirales,Nitrospiraceae,NA,Nitrospira,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
