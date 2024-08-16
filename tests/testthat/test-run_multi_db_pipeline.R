@@ -52,14 +52,24 @@ test_that("run_multi_db_pipeline works", {
     )
   )
 
-  files_for_snapshot <- list.files(
+  files_to_snapshot <- list.files(
     path = collated_output_dir,
     full.names = TRUE,
     recursive = TRUE,
     include.dirs = FALSE,
     all.files = FALSE
   )
-  lapply(files_for_snapshot, expect_snapshot_file)
+  lapply(files_to_snapshot, expect_snapshot_file)
+
+  expect_snapshot({
+    files_to_snapshot %>%
+      purrr::map_vec(function(filename) {
+        stringr::str_replace(
+          string = filename, pattern = "^/.*/16S", replacement = "./16S"
+        )
+      }) %>%
+      print()
+  })
 
   # Clean up the output directory
   if (dir.exists(output_directory_path_top)) {
