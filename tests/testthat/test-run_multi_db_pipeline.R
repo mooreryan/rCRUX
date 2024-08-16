@@ -1,5 +1,11 @@
 test_that("run_multi_db_pipeline works", {
-  output_directory_path_top <- tempdir()
+  output_directory_path_top <- tempfile()
+  dir.create(
+    output_directory_path_top,
+    recursive = TRUE, mode = "0750"
+  )
+
+
   output_directory_path <- file.path(
     output_directory_path_top,
     "16S"
@@ -26,7 +32,7 @@ test_that("run_multi_db_pipeline works", {
 
   metabarcode_name <- "Nitrospira"
 
-  output_file_names <- run_multi_db_pipeline(
+  run_multi_db_pipeline(
     forward_primer_seq = forward_primer_seq,
     reverse_primer_seq = reverse_primer_seq,
     metabarcode_name = metabarcode_name,
@@ -46,5 +52,17 @@ test_that("run_multi_db_pipeline works", {
     )
   )
 
-  lapply(output_file_names, expect_snapshot_file)
+  files_for_snapshot <- list.files(
+    path = file.path(output_directory_path, "db_all"),
+    full.names = TRUE,
+    recursive = TRUE,
+    include.dirs = FALSE,
+    all.files = FALSE
+  )
+  lapply(files_for_snapshot, expect_snapshot_file)
+
+  # Clean up the output directory
+  if (dir.exists(output_directory_path_top)) {
+    unlink(output_directory_path_top, recursive = TRUE)
+  }
 })
