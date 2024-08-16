@@ -36,7 +36,7 @@ run_multi_db_pipeline <- function(
   readr::write_csv(x = seeds_tbl, file = seeds_tbl_path)
 
   # BLAST seeds
-  collated_blast_seeds_output <- do.call(
+  collated_output_dir <- do.call(
     what = blast_seeds_multi_db,
     args = merge_lists(
       args_blast_seeds_multi_db,
@@ -50,15 +50,14 @@ run_multi_db_pipeline <- function(
     )
   )
 
-  # TODO: get the collated outdir from blast_seeds
   derep_and_clean_db(
-    output_directory_path = collated_blast_seeds_output$dir,
+    output_directory_path = collated_output_dir,
     summary_path = file.path(
-      collated_blast_seeds_output$dir, "summary.csv"
+      collated_output_dir, "blast_seeds_output", "summary.csv"
     ),
     metabarcode_name = metabarcode_name
   )
 
   # Return the collated directory path.
-  collated_blast_seeds_output$dir
+  collated_output_dir
 }

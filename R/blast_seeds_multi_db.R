@@ -81,6 +81,8 @@ make_outfile_names <- function(dir, metabarcode_name) {
   )
 }
 
+
+# Returns the collated output directory path. TODO: this behavior is a bit awkward.
 blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,
@@ -91,9 +93,14 @@ blast_seeds_multi_db <- function(
     forbidden_args = c("blast_db_path")
   )
 
-  collated_blast_seeds_output_path <- file.path(
-    output_directory_path, "db_all", "blast_seeds_output"
+  collated_output_path <- file.path(
+    output_directory_path, "db_collated"
   )
+
+  collated_blast_seeds_output_path <- file.path(
+    collated_output_path, "blast_seeds_output"
+  )
+
   dir.create(
     collated_blast_seeds_output_path,
     recursive = TRUE, mode = "0750", showWarnings = FALSE
@@ -152,5 +159,5 @@ blast_seeds_multi_db <- function(
     tax_rank_counts_outfile = collated_outfiles$unique_tax_rank_counts
   )
 
-  collated_outfiles
+  collated_output_path
 }
