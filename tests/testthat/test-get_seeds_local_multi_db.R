@@ -1,5 +1,9 @@
 test_that("get_seeds_local_multi_db gives the same output as manually running get_seeds_local", {
-  output_directory_path_top <- tempdir()
+  output_directory_path_top <- tempfile()
+  dir.create(
+    output_directory_path_top,
+    recursive = TRUE, mode = "0750"
+  )
 
   blast_db_path <- system.file(
     package = "rCRUX", "mock-db/mock-db-sequences-split"
