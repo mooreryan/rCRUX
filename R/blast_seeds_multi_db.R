@@ -82,7 +82,7 @@ make_outfile_names <- function(dir, metabarcode_name) {
 }
 
 
-# Returns the collated output directory path. TODO: this behavior is a bit awkward.
+# Returns the collated output directory path.
 blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,

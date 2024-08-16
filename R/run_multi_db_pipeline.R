@@ -50,6 +50,8 @@ run_multi_db_pipeline <- function(
     )
   )
 
+  # The derep and clean step outputs directly into the collated directory
+  # created in the previous step.
   derep_and_clean_db(
     output_directory_path = collated_output_dir,
     summary_path = file.path(
