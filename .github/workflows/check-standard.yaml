@@ -31,6 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install SeqKit
+        run: |
+          \curl -L https://github.com/shenwei356/seqkit/releases/download/v2.8.2/seqkit_linux_amd64.tar.gz \
+          | tar xz
+          mv seqkit /usr/local/bin
+
       - uses: shaunson26/setup-ncbi-blast@v1.1
         with:
           blast-version: latest
