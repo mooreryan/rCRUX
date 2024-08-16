@@ -66,6 +66,7 @@ collate_tax_rank_counts <- function(
 
 make_outfile_names <- function(dir, metabarcode_name) {
   list(
+    dir = dir,
     summary = file.path(dir, "summary.csv"),
     recovered_seqs = file.path(dir, paste0(metabarcode_name, ".fasta")),
     taxonomy = file.path(dir, paste0(metabarcode_name, "_taxonomy.txt")),
@@ -90,11 +91,11 @@ blast_seeds_multi_db <- function(
     forbidden_args = c("blast_db_path")
   )
 
-  combined_out_path <- file.path(
+  collated_blast_seeds_output_path <- file.path(
     output_directory_path, "db_all", "blast_seeds_output"
   )
   dir.create(
-    combined_out_path,
+    collated_blast_seeds_output_path,
     recursive = TRUE, mode = "0750", showWarnings = FALSE
   )
 
@@ -122,7 +123,7 @@ blast_seeds_multi_db <- function(
   })
 
   collated_outfiles <- make_outfile_names(
-    dir = combined_out_path,
+    dir = collated_blast_seeds_output_path,
     metabarcode_name = metabarcode_name
   )
 

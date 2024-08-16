@@ -32,7 +32,7 @@ test_that("run_multi_db_pipeline works", {
 
   metabarcode_name <- "Nitrospira"
 
-  run_multi_db_pipeline(
+  collated_output_dir <- run_multi_db_pipeline(
     forward_primer_seq = forward_primer_seq,
     reverse_primer_seq = reverse_primer_seq,
     metabarcode_name = metabarcode_name,
@@ -53,7 +53,7 @@ test_that("run_multi_db_pipeline works", {
   )
 
   files_for_snapshot <- list.files(
-    path = file.path(output_directory_path, "db_all"),
+    path = collated_output_dir,
     full.names = TRUE,
     recursive = TRUE,
     include.dirs = FALSE,
