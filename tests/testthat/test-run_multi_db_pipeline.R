@@ -32,6 +32,8 @@ test_that("run_multi_db_pipeline works", {
 
   metabarcode_name <- "Nitrospira"
 
+  parallel_jobs <- 2
+
   collated_output_dir <- run_multi_db_pipeline(
     forward_primer_seq = forward_primer_seq,
     reverse_primer_seq = reverse_primer_seq,
@@ -39,6 +41,7 @@ test_that("run_multi_db_pipeline works", {
     output_directory_path = output_directory_path,
     accession_taxa_sql_path = accession_taxa_sql_path,
     blast_db_paths = blast_db_paths,
+    parallel_jobs = parallel_jobs,
     args_get_seeds_local_multi_db = list(
       minimum_length = 5,
       maximum_length = 900,

@@ -11,6 +11,7 @@ run_multi_db_pipeline <- function(
     output_directory_path,
     accession_taxa_sql_path,
     blast_db_paths,
+    parallel_jobs,
     # A list of arguments that is passed only to get_seeds_local_multi_db
     args_get_seeds_local_multi_db,
     # A list of arguments that is passed only to blast_seeds_multi_db
@@ -26,7 +27,8 @@ run_multi_db_pipeline <- function(
         metabarcode_name = metabarcode_name,
         output_directory_path = output_directory_path,
         accession_taxa_sql_path = accession_taxa_sql_path,
-        blast_db_paths = blast_db_paths
+        blast_db_paths = blast_db_paths,
+        parallel_jobs = parallel_jobs
       )
     )
   )

@@ -38,6 +38,7 @@ test_that("get_seeds_local_multi_db gives the same output as manually running ge
     ),
     metabarcode_name = metabarcode_name,
     accession_taxa_sql_path = accession_taxa_sql_path,
+    parallel_jobs = 2,
     minimum_length = 5,
     maximum_length = 900,
     num_threads = 1
@@ -85,6 +86,7 @@ test_that("get_seeds_local_multi_db throws if return_table is given", {
     get_seeds_local_multi_db(
       blast_db_paths = "",
       output_directory_path = "",
+      parallel_jobs = 2,
       return_table = TRUE
     ),
     "arguments.*not allowed.*return_table"
@@ -96,6 +98,7 @@ test_that("get_seeds_local_multi_db throws if blast_db_path is given", {
     get_seeds_local_multi_db(
       blast_db_paths = "",
       output_directory_path = "",
+      parallel_jobs = 2,
       blast_db_path = ""
     ),
     "arguments.*not allowed.*blast_db_path"
