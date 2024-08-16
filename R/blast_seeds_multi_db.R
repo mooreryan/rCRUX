@@ -87,6 +87,7 @@ blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,
     metabarcode_name,
+    parallel_jobs,
     ...) {
   check_forbidden_args(
     additional_args = list(...),
@@ -106,28 +107,34 @@ blast_seeds_multi_db <- function(
     recursive = TRUE, mode = "0750", showWarnings = FALSE
   )
 
-  blast_seeds_outfiles <- lapply(seq_along(blast_db_paths), function(n) {
-    blast_db_path <- blast_db_paths[[n]]
+  blast_seeds_outfiles <- parallel::mclapply(
+    X = seq_along(blast_db_paths),
+    FUN = function(n) {
+      blast_db_path <- blast_db_paths[[n]]
 
-    message("working on blast_db_path: ", blast_db_path)
+      message("working on blast_db_path: ", blast_db_path)
 
-    out_path <- create_sub_output_directory(output_directory_path, n)
+      out_path <- create_sub_output_directory(output_directory_path, n)
 
-    blast_seeds(
-      blast_db_path = blast_db_path,
-      output_directory_path = out_path,
-      metabarcode_name = metabarcode_name,
-      ...
-    )
+      blast_seeds(
+        blast_db_path = blast_db_path,
+        output_directory_path = out_path,
+        metabarcode_name = metabarcode_name,
+        ...
+      )
 
-    blast_seeds_outdir <- file.path(out_path, "blast_seeds_output")
+      blast_seeds_outdir <- file.path(out_path, "blast_seeds_output")
 
-    make_outfile_names(
-      dir = blast_seeds_outdir,
-      metabarcode_name = metabarcode_name
-    ) %>%
-      check_files_exist()
-  })
+      make_outfile_names(
+        dir = blast_seeds_outdir,
+        metabarcode_name = metabarcode_name
+      ) %>%
+        check_files_exist()
+    },
+    mc.preschedule = FALSE,
+    mc.cores = parallel_jobs,
+    mc.allow.recursive = FALSE
+  )
 
   collated_outfiles <- make_outfile_names(
     dir = collated_blast_seeds_output_path,

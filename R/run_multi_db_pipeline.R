@@ -47,7 +47,8 @@ run_multi_db_pipeline <- function(
         metabarcode_name = metabarcode_name,
         output_directory_path = output_directory_path,
         accession_taxa_sql_path = accession_taxa_sql_path,
-        blast_db_paths = blast_db_paths
+        blast_db_paths = blast_db_paths,
+        parallel_jobs = parallel_jobs
       )
     )
   )
