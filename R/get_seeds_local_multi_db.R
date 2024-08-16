@@ -12,8 +12,7 @@ get_seeds_local_multi_db <- function(
 
     message("working on blast_db_path: ", blast_db_path)
 
-    out_path <- file.path(output_directory_path, paste0("db_", n))
-    dir.create(out_path, recursive = TRUE, mode = "0750", showWarnings = FALSE)
+    out_path <- create_sub_output_directory(output_directory_path, n)
 
     get_seeds_local(
       blast_db_path = blast_db_path,

@@ -103,11 +103,8 @@ blast_seeds_multi_db <- function(
 
     message("working on blast_db_path: ", blast_db_path)
 
-    # TODO: pull this into a function with the one from the other function.
-    out_path <- file.path(output_directory_path, paste0("db_", n))
-    dir.create(out_path, recursive = TRUE, mode = "0750", showWarnings = FALSE)
+    out_path <- create_sub_output_directory(output_directory_path, n)
 
-    # TODO: does blast_seeds have a table output?
     blast_seeds(
       blast_db_path = blast_db_path,
       output_directory_path = out_path,
