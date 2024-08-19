@@ -1,0 +1,2 @@
+"superkingdom"	"phylum"	"class"	"order"	"family"	"genus"	"species"
+1	2	2	3	3	3	5

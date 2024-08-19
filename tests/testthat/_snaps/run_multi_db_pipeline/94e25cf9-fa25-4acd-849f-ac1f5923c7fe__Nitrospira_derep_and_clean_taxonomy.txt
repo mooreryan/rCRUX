@@ -1,0 +1,5 @@
+"CP011801.1"	"Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira moscoviensis"
+"HM485589.1"	"Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira calida"
+"X82144.1"	"Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas luteoviolacea"
+"AY750575.1"	"Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio harveyi"
+"AJ440005.1"	"Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio coralliilyticus"

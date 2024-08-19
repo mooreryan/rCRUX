@@ -1,0 +1,4 @@
+AY750575.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio harveyi
+CP011801.1	Bacteria;Nitrospirae;Nitrospira;Nitrospirales;Nitrospiraceae;Nitrospira;Nitrospira moscoviensis
+X82144.1	Bacteria;Proteobacteria;Gammaproteobacteria;Alteromonadales;Pseudoalteromonadaceae;Pseudoalteromonas;Pseudoalteromonas luteoviolacea
+AJ440005.1	Bacteria;Proteobacteria;Gammaproteobacteria;Vibrionales;Vibrionaceae;Vibrio;Vibrio coralliilyticus
