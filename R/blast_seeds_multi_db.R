@@ -38,46 +38,12 @@ collate_fastas <- function(blast_seeds_outfiles, fasta_outfile) {
   system2(command = "seqkit", args = args)
 }
 
-collate_failures <- function(blast_seeds_outfiles, failures_outfile) {
-  purrr::map_dfr(seq_along(blast_seeds_outfiles), function(i) {
-    filenames <- blast_seeds_outfiles[[i]]
-
-    readr::read_csv(filenames$failed) |>
-      # We add a column here because the "failures" only make sense in the
-      # context of the database in which they were searched against.
-      dplyr::mutate(i = i)
-  }) %>%
-    readr::write_csv(failures_outfile)
-}
-
-collate_tax_rank_counts <- function(
-    blast_seeds_outfiles,
-    tax_rank_counts_outfile) {
-  purrr::map_dfr(seq_along(blast_seeds_outfiles), function(i) {
-    filenames <- blast_seeds_outfiles[[i]]
-
-    readr::read_csv(filenames$unique_tax_rank_counts) |>
-      # Not sure if this is the best way to handle this.  Probably we will need
-      # to redo the counts on the collated output files.
-      dplyr::mutate(i = i)
-  }) %>%
-    readr::write_csv(tax_rank_counts_outfile)
-}
-
 make_outfile_names <- function(dir, metabarcode_name) {
   list(
     dir = dir,
     summary = file.path(dir, "summary.csv"),
     recovered_seqs = file.path(dir, paste0(metabarcode_name, ".fasta")),
-    taxonomy = file.path(dir, paste0(metabarcode_name, "_taxonomy.txt")),
-    failed = file.path(dir, "blastdbcmd_failed.csv"),
-    unique_tax_rank_counts = file.path(
-      dir,
-      paste0(
-        metabarcode_name,
-        "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"
-      )
-    )
+    taxonomy = file.path(dir, paste0(metabarcode_name, "_taxonomy.txt"))
   )
 }
 
@@ -154,16 +120,6 @@ blast_seeds_multi_db <- function(
   collate_fastas(
     blast_seeds_outfiles = blast_seeds_outfiles,
     fasta_outfile = collated_outfiles$recovered_seqs
-  )
-
-  collate_failures(
-    blast_seeds_outfiles = blast_seeds_outfiles,
-    failures_outfile = collated_outfiles$failed
-  )
-
-  collate_tax_rank_counts(
-    blast_seeds_outfiles = blast_seeds_outfiles,
-    tax_rank_counts_outfile = collated_outfiles$unique_tax_rank_counts
   )
 
   collated_output_path
