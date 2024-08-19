@@ -16,6 +16,11 @@ run_multi_db_pipeline <- function(
     args_get_seeds_local_multi_db,
     # A list of arguments that is passed only to blast_seeds_multi_db
     args_blast_seeds_multi_db) {
+  # Fail fast if there is only a single blast db path given.
+  if (length(blast_db_paths) <= 1) {
+    stop("run_multi_db_pipeline should only be used with two or more BLAST DBs")
+  }
+
   # Get seeds
   result <- do.call(
     what = get_seeds_local_multi_db,
