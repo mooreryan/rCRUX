@@ -48,7 +48,8 @@ Imports:
     ggVennDiagram,
     psadd,
     phyloseq,
-    ggplot2
+    ggplot2,
+    lgr
 Remotes:
     cpauvert/psadd
 Encoding: UTF-8

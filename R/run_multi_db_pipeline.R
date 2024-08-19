@@ -21,6 +21,8 @@ run_multi_db_pipeline <- function(
     stop("run_multi_db_pipeline should only be used with two or more BLAST DBs")
   }
 
+  lg$info("Running get_seeds_local_multi_db")
+
   # Get seeds
   result <- do.call(
     what = get_seeds_local_multi_db,
@@ -45,9 +47,13 @@ run_multi_db_pipeline <- function(
     stop("When searching for seeds, none of the BLAST DBs had any hits.")
   }
 
+  lg$info("Writing seeds_tbl")
+
   # Write the seeds_tbl CSV to a temporary file.
   seeds_tbl_path <- tempfile()
   readr::write_csv(x = seeds_tbl, file = seeds_tbl_path)
+
+  lg$info("Running blast_seeds_multi_db")
 
   # BLAST seeds
   collated_output_dir <- do.call(
@@ -64,6 +70,8 @@ run_multi_db_pipeline <- function(
       )
     )
   )
+
+  lg$info("Running derep_and_clean_db")
 
   # The derep and clean step outputs directly into the collated directory
   # created in the previous step.

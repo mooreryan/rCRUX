@@ -14,7 +14,12 @@ check_files_exist <- function(files) {
 # Read all the summaries and dereplicate them.
 collate_summaries <- function(blast_seeds_outfiles, summary_outfile) {
   purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
-    readr::read_csv(filenames$summary)
+    if (!is.list(filenames)) {
+      warning("SOMETHING WEIRD HAPPENED AND THIS IS NOT A LIST")
+      print(str(filenames))
+      lg$error(filenames, what = "filenames should have been a list")
+    }
+    readr::read_csv(filenames[["summary"]])
   }) %>%
     dplyr::distinct() %>%
     readr::write_csv(summary_outfile)
@@ -23,7 +28,7 @@ collate_summaries <- function(blast_seeds_outfiles, summary_outfile) {
 # Read all the taxonomy files and dereplicate them.
 collate_taxonomies <- function(blast_seeds_outfiles, taxonomy_outfile) {
   purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
-    readr::read_tsv(filenames$taxonomy)
+    readr::read_tsv(filenames[["taxonomy"]])
   }) %>%
     dplyr::distinct() %>%
     readr::write_tsv(taxonomy_outfile)
@@ -31,7 +36,7 @@ collate_taxonomies <- function(blast_seeds_outfiles, taxonomy_outfile) {
 
 # Read all the fasta files and dereplicate them.
 collate_fastas <- function(blast_seeds_outfiles, fasta_outfile) {
-  fastas <- sapply(blast_seeds_outfiles, function(l) l$recovered_seqs)
+  fastas <- sapply(blast_seeds_outfiles, function(l) l[["recovered_seqs"]])
   args <- c("rmdup", "-o", fasta_outfile, fastas)
 
   # TODO: take location of seqkit command as an arg.
@@ -77,6 +82,8 @@ blast_seeds_multi_db <- function(
     X = seq_along(blast_db_paths),
     FUN = function(n) {
       blast_db_path <- blast_db_paths[[n]]
+
+      lg$trace("blast_db_path from blast_seeds_multi_db", what = blast_db_path)
 
       message("working on blast_db_path: ", blast_db_path)
 

@@ -14,6 +14,8 @@ get_seeds_local_multi_db <- function(
     FUN = function(n) {
       blast_db_path <- blast_db_paths[[n]]
 
+      lg$trace("blast_db_path from get_seeds_local_multi_db", what = blast_db_path)
+
       message("working on blast_db_path: ", blast_db_path)
 
       out_path <- create_sub_output_directory(output_directory_path, n)
