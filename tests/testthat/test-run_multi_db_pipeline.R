@@ -17,7 +17,7 @@ test_that("run_multi_db_pipeline works", {
 
   blast_db_paths <- paste0(
     file.path(blast_db_path, "mock-db-sequences.part_00"),
-    1:3
+    1:4
   )
 
   accession_taxa_sql_path <- system.file(

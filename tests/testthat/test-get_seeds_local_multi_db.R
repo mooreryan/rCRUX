@@ -26,7 +26,7 @@ test_that("get_seeds_local_multi_db gives the same output as manually running ge
 
   metabarcode_name <- "Nitrospira"
 
-  tbl <- get_seeds_local_multi_db(
+  result <- get_seeds_local_multi_db(
     # Note that this argument is plural wheras the `get_seeds_local` is
     # singular.
     blast_db_paths = blast_db_paths,
@@ -74,7 +74,8 @@ test_that("get_seeds_local_multi_db gives the same output as manually running ge
   ) %>%
     dplyr::distinct()
 
-  expect_equal(tbl, tbl_oracle)
+  expect_equal(result$collated_table, tbl_oracle)
+  expect_length(result$blast_db_paths_with_hits, 3)
 })
 
 # The following are valid args to the `get_seeds_local` function, so it is

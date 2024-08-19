@@ -17,7 +17,7 @@ run_multi_db_pipeline <- function(
     # A list of arguments that is passed only to blast_seeds_multi_db
     args_blast_seeds_multi_db) {
   # Get seeds
-  seeds_tbl <- do.call(
+  result <- do.call(
     what = get_seeds_local_multi_db,
     args = merge_lists(
       args_get_seeds_local_multi_db,
@@ -32,6 +32,8 @@ run_multi_db_pipeline <- function(
       )
     )
   )
+  seeds_tbl <- result$collated_table
+  blast_db_paths <- result$blast_db_paths_with_hits
 
   # Write the seeds_tbl CSV to a temporary file.
   seeds_tbl_path <- tempfile()
