@@ -1,4 +1,4 @@
-# run_multi_db_pipeline works
+# run_multi_db_pipeline works even when some DBs have no hits
 
     Code
       files_to_snapshot %>% purrr::map_vec(function(filename) {

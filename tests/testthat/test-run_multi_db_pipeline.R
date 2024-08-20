@@ -9,6 +9,11 @@ expect_snapshot_file_factory <- function(id) {
   }
 }
 
+# WARNING: Many of the test directories created in the tests are removed upon
+# test completion.  Do NOT change these to a named directory that you don't
+# want to lose.
+
+
 # MARK: Basic test
 
 test_that("run_multi_db_pipeline works even when some DBs have no hits", {
