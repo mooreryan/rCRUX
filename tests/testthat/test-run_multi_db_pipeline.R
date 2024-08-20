@@ -9,7 +9,9 @@ expect_snapshot_file_factory <- function(id) {
   }
 }
 
-test_that("run_multi_db_pipeline works", {
+# MARK: Basic test
+
+test_that("run_multi_db_pipeline works even when some DBs have no hits", {
   output_directory_path_top <- tempfile()
   dir.create(
     output_directory_path_top,
@@ -93,6 +95,8 @@ test_that("run_multi_db_pipeline works", {
     unlink(output_directory_path_top, recursive = TRUE)
   }
 })
+
+# MARK: Single BLAST DB
 
 test_that("run_multi_db_pipeline with a single blast DB gives an early error", {
   output_directory_path_top <- tempfile()
@@ -183,7 +187,9 @@ test_that("run_multi_db_pipeline with a single blast DB gives an early error", {
   }
 })
 
-test_that("run_multi_db_pipeline with no hits to any DB fails", {
+# MARK: No hits
+
+test_that("run_multi_db_pipeline fails if there are no hits to any DB", {
   output_directory_path_top <- tempfile()
   dir.create(
     output_directory_path_top,
@@ -248,6 +254,7 @@ test_that("run_multi_db_pipeline with no hits to any DB fails", {
   }
 })
 
+# MARK: One DB w/hits
 
 test_that("run_multi_db_pipeline works with hits to only a single DB works", {
   output_directory_path_top <- tempfile()
