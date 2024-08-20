@@ -82,6 +82,9 @@ blast_seeds_multi_db <- function(
 
       out_path <- create_sub_output_directory(output_directory_path, n)
 
+      # Note if there are no blast hits to a given DB, this function will fail
+      # and an error will be present in the output of the mclapply.  It must be
+      # handled.
       blast_seeds(
         blast_db_path = blast_db_path,
         output_directory_path = out_path,
@@ -101,6 +104,12 @@ blast_seeds_multi_db <- function(
     mc.cores = parallel_jobs,
     mc.allow.recursive = FALSE
   )
+
+  # We need to filter out any errors.
+  blast_seeds_outfiles <- blast_seeds_outfiles %>%
+    purrr::discard(function(x) {
+      rlang::inherits_any(x, c("error", "try-error"))
+    })
 
   collated_outfiles <- make_outfile_names(
     dir = collated_blast_seeds_output_path,
