@@ -38,7 +38,6 @@ run_multi_db_pipeline <- function(
     )
   )
   seeds_tbl <- result$collated_table
-  blast_db_paths <- result$blast_db_paths_with_hits
 
   # If none of the BLAST DBs found any seeds, then fail.
   if (length(blast_db_paths) == 0) {
