@@ -129,7 +129,7 @@ prepareDatabase(accession_taxa_sql_path)
 
 **Note:** For poor bandwidth connections, please see the [taxononmizr readme for manual installation](https://cran.r-project.org/web/packages/taxonomizr/readme/README.html) of the accessionTaxa.sql database. If built manually, make sure to delete any files other than the accessionTaxa.sql database (e.g. keeping nucl_gb.accession2taxid.gz leads to a warning message).
 
-# Example pipeline
+## Example pipeline
 
 The following example shows a simple rCRUX pipeline from start to finish. Note that this example will require internet access and considerable database storage (~**314 GB**, see section above), run time (mainly for blastn), and system resources to execute.
 
@@ -137,7 +137,7 @@ The following example shows a simple rCRUX pipeline from start to finish. Note t
 
 There are two options to generate seeds for the database generating blast step blast_seeds_local() or blast_seeds_remote(). The local option is slower, however it is not subject to the memory limitations of using the NCBI primer_blast API. The local option is recommended if the user is building a large database, wants to include any [taxid](https://www.ncbi.nlm.nih.gov/taxonomy) in the search, wants to use multiple forward or reverse primers, and / or has many degenerate sites in their primer set. It also cached run data so if a run is interrupted the user can pick it up from the last successful round of blast by resubmitting the original command.
 
-## [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
+### [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
 
 This example uses default parameters, with the exception of evalue to minimize run time.
 
@@ -190,7 +190,7 @@ get_seeds_local(forward_primer_seq,
 ```
 
 
-## [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
+### [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
 
 This example uses default parameters to minimize run time.
 
@@ -232,7 +232,7 @@ Sequence availability in NCBI for a given taxid is a limiting factor, as are deg
 
 Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
-## [blast_seeds](https://limey-bean.github.io/blast_seeds)
+### [blast_seeds](https://limey-bean.github.io/blast_seeds)
 
 
 Iterative searches are based on a stratified random sampling unique taxonomic groups for a given rank from the get_seeds_local or get_seeds_remote output table. For example, the default is to randomly sample one read from each genus.  The user can select any taxonomic rank present in the get_seeds_local output table. The number of seeds selected may cause blastn to exceed the users available RAM, and for that reason the user can choose the maximum number of reads to blast at one time (max_to_blast, default = 1000). blast_seeds will subsample each set of seeds based on max_to_blast and process all seeds before starting a new search for seeds to blast. It saves the output from each round of blastn.  
@@ -284,7 +284,7 @@ Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
 **Note:** There will be variability between runs due to primer blast return parameters and random sampling of the blast seeds table that occurs during blast_seeds. However, variability can be decreased by changing parameters (e.g. randomly sampling species rather than genus will decrease run to run variability).
 
-## [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
+### [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
 
 
 This function takes the output of blast_seeds and de-replicates identical sequences and collapses ambiguous taxonomy to generate a clean reference database.
@@ -312,21 +312,21 @@ Sequences_with_single_taxonomic_path.csv files. These files allow for the traceb
 Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
 
-# Detailed Explanation For The Major Functions
+## Detailed Explanation For The Major Functions
 
-## [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
+### [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
 
 <img src="/flowcharts/get_seeds_local-flowchart.png" width = 10000 />
 
-### Overview
+#### Overview
 [get_seeds_local](https://limey-bean.github.io/get_seeds_local) takes a set of forward and reverse primer sequences (single or multiple forward and single or multiple reverse primers) and generates .csv summaries of data returned from a locally run adaptation of [NCBI's primer blast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/). This function performs like *in silicon* to find possible full length barcode sequences containing forward and reverse primer matches. It also generates a count of unique instances of taxonomic ranks (Phylum, Class, Order, Family, Genus, and Species) found in the output.
 
 This script is a local interpretation of [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) that avoids querying NCBI's [primer BLAST](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) tool. Although it is slower than remotely generating blast seeds, it is not subject to the arbitrary throttling of jobs that require significant memory.
 
-### Expected Output
+#### Expected Output
 It creates a `get_seeds_local` directory at `output_directory_path` if one doesn't yet exist, then creates a subdirectory inside `output_directory_path` named after `metabarcode_name`. It creates three files inside that directory. One represents the unfiltered output and another represents the output after filtering with user modifiable parameters and with appended taxonomy. Also generated is a summary of unique taxonomic ranks after filtering and a fasta file of the primers used for blast.
 
-### Detailed Steps
+#### Detailed Steps
 get_seeds_local passes the forward and reverse primer sequence for a given PCR product to [run_primer_blastn](https://limey-bean.github.io/run_primer_blastn). In the case of a non degenerate primer set only two primers will be passed to run_primer_blast.  In the case of a degenerate primer set, get_seeds_local will get all possible versions of the degenerate primer(s) (using primerTree's enumerate_primers() function), randomly sample a user defined number of forward and reverse primers, and generate a fasta file. The selected primers are subset and passed to run_primer_blastn which queries each primer against a blast formatted database using the task "blastn_short". This process continues until all of the selected primers are blasted. The result is an output table with the following columns of data: qseqid (query subject id), sgi (subject gi), saccver (subject accession version), mismatch (number of mismatches between the subject a query), sstart (subject start), send (subject end), staxids (subject taxids).
 
 Temporary output is cached after each sucessful run of run_primer_blastn, so if a run is interrupted the user can resubmit the command and pick up where they left off.  The user can modify parameters for the run with the exception of num_fprimers_to_blast and num_rprimers_to_blast. Temporary files are deleted at the end of the run.
@@ -340,7 +340,7 @@ Taxonomy is appended to these filtered hits using [get_taxonomizr_from_accession
 **Note:**
 Information about the blastn parameters can be found in run_primer_blast, and by accessing blastn -help in your terminal.  Default parameters were optimized to provide results similar to those generated through remote blast via primer-blast as implemented in [iterative_primer_search](https://limey-bean.github.io/iterative_primer_search) and modifiedPrimerTree_Functions.
 
-### Parameters
+#### Parameters
 **forward_primer_seq**
 + which which turns degenerate primers into into a list of all possible non degenerate
         primers and converts the primer(s) into to a fasta file to be past to run_primer_blastn.
@@ -431,7 +431,7 @@ Information about the blastn parameters can be found in run_primer_blast, and by
         your path.
 +       The default is ncbi_bin = NULL - if not specified in path do the following: ncbi_bin = "/my/local/ncbi-blast-2.10.1+/bin/".
 
-### Examples
+#### Examples
 
 ```
  # Non degenerate primer example: 12S_V5F1 (Riaz et al. 2011)
@@ -504,11 +504,11 @@ Information about the blastn parameters can be found in run_primer_blast, and by
 ```
 
 
-## [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
+### [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
 
 <img src="/flowcharts/get_seed_remote-flowchart.png" width = 10000 />
 
-### Overview
+#### Overview
 
 [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) takes a set of forward and reverse primer sequences and generates .csv summaries of [NCBI's primer blast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) data returns. Only full length barcode sequences containing primer matches are captured. It also generates a count of unique instances of taxonomic ranks (Phylum, Class, Order, Family, Genus, and Species) captured in the seed library.
 
@@ -516,11 +516,11 @@ This script uses [iterative_primer_search](https://limey-bean.github.io/iterativ
 
 It downgrades errors from primer_search and parse_primer_hits into warnings. This is useful when searching for a large number of different combinations, allowing the function to output successful results.
 
-### Expected Output
+#### Expected Output
 It creates a directory `get_seeds_remote` in the `output_directory_path`. It creates three files inside that directory. One represents the unfiltered output and another represents the output after filtering with user modifiable parameters and with appended taxonomy. Also generated is a summary of unique taxonomic ranks after filtering.
 
 
-### Detailed Steps
+#### Detailed Steps
 
 get_seeds_remote passes the forward and reverse primer sequence for a given
 PCR product to [iterative_primer_search](https://limey-bean.github.io/iterative_primer_search) along with the taxid(s) of
@@ -547,7 +547,7 @@ primer BLAST defaults to homo sapiens, so it is important that you supply a spec
 
 Often NCBI API will throttle higher taxonomic ranks (Domain, Phylum, etc.). One work around is to supply multiple lower level taxonomic ranks (Class, Family level, etc.) or use get_seeds_local.
 
-### Parameters
+#### Parameters
 
 **forward_primer_seq**
 + passed to primer_search, which turns it into a list of
@@ -659,7 +659,7 @@ You can check [primerblast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) fo
 You can find the description and suggested values for this search option. HITSIZE ='1000000' is added to the search below along with several options that increase the number of entries returned from primer_search.
 
 
-### Example
+#### Example
 ```
 forward_primer_seq = "TAGAACAGGCTCCTCTAG"
 reverse_primer_seq =  "TTAGATACCCCACTATGC"
@@ -685,11 +685,11 @@ get_seeds_remote(forward_primer_seq,
 ```
 
 
-## [blast_seeds](https://limey-bean.github.io/blast_seeds)
+### [blast_seeds](https://limey-bean.github.io/blast_seeds)
 
 <img src="/flowcharts/blast_seeds-flowchart.png" width = 10000 />
 
-### Overview
+#### Overview
 
 [blast_seeds](https://limey-bean.github.io/blast_seeds) takes the output from [get_seeds_local](https://limey-bean.github.io/get_seeds_local) or [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) and iteratively blasts seed sequences using a stratified random sampling of a taxonomic rank (default is genus).  The blast hits are de-duplicated, filtered, and returnedc as .csv files, a fasta file and a taxonomy file.
 
@@ -697,7 +697,7 @@ The intermediate results and metadata associated with a search in progress are s
 error or experiencing other interruptions. To resume a partially completed blast, supply the same seeds and working directory. See the documentation
 of [blast_datatable](https://limey-bean.github.io/blast_datatable) for more information.
 
-### Expected Output
+#### Expected Output
 
 During the blast_seeds the following data are cached as files in a temporary directory `blast_seeds_save` in the `output_directory_path`. These files are passed to and updated by [blast_datatable](https://limey-bean.github.io/blast_datatable): output_table.txt (most recent updates from the
 blast run), blast_seeds_passed_filter.txt (seed table that tracks the blast
@@ -716,7 +716,7 @@ following: summary.csv (blast output with appended taxonomy),
 {metabarcode_name}_blast_seeds_summary_unique_taxonomic_rank_counts.txt,
 too_many_ns.txt, blastdbcmd_failed.txt.
 
-### Detailed Steps
+#### Detailed Steps
 
 [blast_seeds](https://limey-bean.github.io/blast_seeds) passes a datatable returned by [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) or [get_seeds_local](https://limey-bean.github.io/get_seeds_local) to [blast_datatable](https://limey-bean.github.io/blast_datatable), which uses a random stratified sample based on taxonomic rank to iteratively blast and process the seeds in the datatable. The user can specify how many sequences can be blasted simultaneously using max_to_blast. The randomly sampled seeds (or subsets of seeds) are sent to [run_blastdbcmd_blastn_and_aggregate_resuts](https://limey-bean.github.io/run_blastdbcmd_blastn_and_aggregate_resuts), which uses [run_blastdbcmd](https://limey-bean.github.io/run_blastdbcmd) to find a seed sequence that corresponds to the accession number and forward and reverse stops recorded in the seeds table. [run_blastdbcmd](https://limey-bean.github.io/run_blastdbcmd) outputs sequences as .fasta-formatted strings, which
 [run_blastdbcmd_blastn_and_aggregate_resuts](https://limey-bean.github.io/run_blastdbcmd_blastn_and_aggregate_resuts) concatenates into a multi-line fasta, then passes to [run_blastn](https://limey-bean.github.io/run_blastn) as an argument. The output of
@@ -760,7 +760,7 @@ submit to [run_blastn](https://limey-bean.github.io/run_blastn) it will need to 
 `max_to_blast` controls the frequency with which it calls blastn, so it can
 be used to make [blast_datatable](https://limey-bean.github.io/blast_datatable) save more frequently.
 
-### Parameters
+#### Parameters
 **seeds_output_path**
 + a path to an output csv from get_seeds_local or get_seeds_remote
 +         e.g. seeds_output_path <- '/my/rCRUX_output_directory/12S_V5F1_filtered_get_seeds_remote_output_with_taxonomy.csv'
@@ -840,7 +840,7 @@ be used to make [blast_datatable](https://limey-bean.github.io/blast_datatable) 
 
 
 
-### Example
+#### Example
 ```
 seeds_output_path <- "/my/directory/12S_V5F1_remote_111122_modified_params/blast_seeds_output/summary.csv""
 output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
@@ -863,18 +863,18 @@ blast_seeds(seeds_output_path,
 ```
 
 
-## [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
+#### [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
 
 <img src="/flowcharts/derep_and_clean_db-flowchart.png" width = 10000 />
 
-### Overview
+#### Overview
 derep_and_clean_db takes the output from [blast_seeds](https://limey-bean.github.io/blast_seeds) and de-replicates the dataset to identify representative sequences.
 
-### Expected Outputs
+#### Expected Outputs
 It generates an output directory called `derep_and_clean_db` at `output_directory_path` to store the output .csv files and the fasta and taxonomy file generated by the function.
 
 
-### Detailed Steps
+#### Detailed Steps
 Before de-replicating the data set, all sequences with NA taxonomy for phylum,
 class, order, family, and genus are removed from the dataset because they
 typically represent environmental samples with low value for taxonomic classification. These sequences are stored in a
@@ -900,7 +900,7 @@ generate a fasta file and taxonomy file of representative NCBI accessions for
 each sequence.  The number of accessions identical to the representative
 accession is given.
 
-### Parameters
+#### Parameters
 **output_directory_path**
 + the path to the output directory
 +        e.g. "/path/to/output/12S_V5F1_remote_111122"
@@ -912,7 +912,7 @@ accession is given.
 + used to name the subdirectory and the files.
 +        e.g. metabarcode_name <- "12S_V5F1"
 
-### Example
+#### Example
 ```
 output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
 summary_path <- "/my/directory/12S_V5F1_remote_111122_modified_params/blast_seeds_output/summary.csv"
