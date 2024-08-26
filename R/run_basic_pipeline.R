@@ -3,7 +3,7 @@ merge_lists <- function(...) {
   Reduce(modifyList, list(...))
 }
 
-run_single_db_pipeline <- function(
+run_basic_pipeline <- function(
     # General arguments
     forward_primer_seq,
     reverse_primer_seq,

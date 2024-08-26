@@ -1,4 +1,4 @@
-test_that("rCRUX_single_db.R CLI program works", {
+test_that("rCRUX.R CLI program works", {
   output_directory_path_top <- tempfile()
   dir.create(
     output_directory_path_top,
@@ -49,7 +49,7 @@ test_that("rCRUX_single_db.R CLI program works", {
   cli_script_file_path <- system.file(
     package = "rCRUX",
     "cli",
-    "rCRUX_single_db.R"
+    "rCRUX.R"
   )
 
   rcrux_package_path <- system.file(package = "rCRUX", "..")

@@ -1,4 +1,4 @@
-# rCRUX_single_db.R CLI program works
+# rCRUX.R CLI program works
 
     Code
       files_to_snapshot %>% purrr::map_vec(function(filename) {

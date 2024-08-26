@@ -4,7 +4,7 @@ num_args <- length(cli_args)
 
 if (!(num_args %in% c(1, 2))) {
   message("\n\n")
-  message("usage: Rscript --vanilla rCRUX_single_db.R </path/to/config.yml> [path/to/rCRUX]")
+  message("usage: Rscript --vanilla rCRUX.R </path/to/config.yml> [path/to/rCRUX]")
   message("  - The 1st argument is the path to a YAML file containing the parameters.")
   message("  - The 2nd argument is an optional path to a local rCRUX repository.")
   message("    Use this if you want to run a local (development) version of rCRUX.")
@@ -22,7 +22,7 @@ config <- yaml::read_yaml(cli_args[[1]])
 
 print(str(config))
 
-do.call(what = run_single_db_pipeline, args = config)
+do.call(what = run_basic_pipeline, args = config)
 
 message("\n\nAll done!!")
 message(stringr::str_glue("Output directory: {config$output_directory_path}"))

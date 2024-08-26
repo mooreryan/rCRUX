@@ -1,4 +1,4 @@
-# run_single_db_pipeline works
+# run_basic_pipeline works
 
     Code
       files_to_snapshot %>% purrr::map_vec(function(filename) {

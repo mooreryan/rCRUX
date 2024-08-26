@@ -315,7 +315,7 @@ Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
 The rCRUX package provides R scripts to run the most common steps of the rCRUX pipeline directly from the command line using configuration (config) files.
 
-Two scripts are provided, one for running the standard pipeline (`rCRUX_single_db.R`), and one to provide a "multi DB" pipeline in which each of the specified BLAST databases are run serially or in parallel (`rCRUX_multi_db.R`).  The second pipeline may be of interest in resource constrained systems as the amount of memory (RAM) used in the BLAST steps can be markedly reduced by splitting up a large BLAST DB into smaller slices.  (Note that this will have an effect on BLAST expect values (E-value).)
+Two scripts are provided, one for running the standard pipeline (`rCRUX.R`), and one to provide a "multi DB" pipeline in which each of the specified BLAST databases are run serially or in parallel (`rCRUX_multi_db.R`).  The second pipeline may be of interest in resource constrained systems as the amount of memory (RAM) used in the BLAST steps can be markedly reduced by splitting up a large BLAST DB into smaller slices.  (Note that this will have an effect on BLAST expect values (E-value).)
 
 ### `rCRUX.R`
 

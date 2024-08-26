@@ -21,7 +21,7 @@ expect_snapshot_file_factory <- function(id) {
 # test here is "just" a simple wrapper of the local seeds single BLAST DB
 # pipeline and we are not adding any logic to that pipeline other than argument
 # handling to be used in the CLI script.
-test_that("run_single_db_pipeline works", {
+test_that("run_basic_pipeline works", {
   output_directory_path_top <- tempfile()
   dir.create(
     output_directory_path_top,
@@ -54,7 +54,7 @@ test_that("run_single_db_pipeline works", {
 
   metabarcode_name <- "Nitrospira"
 
-  run_single_db_pipeline(
+  run_basic_pipeline(
     forward_primer_seq = forward_primer_seq,
     reverse_primer_seq = reverse_primer_seq,
     metabarcode_name = metabarcode_name,
