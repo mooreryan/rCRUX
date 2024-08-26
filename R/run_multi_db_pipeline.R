@@ -3,6 +3,9 @@ merge_lists <- function(...) {
   Reduce(modifyList, list(...))
 }
 
+#' Run the rCRUX multi-database pipeline.
+#'
+#' @export
 run_multi_db_pipeline <- function(
     # General arguments
     forward_primer_seq,

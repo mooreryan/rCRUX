@@ -3,6 +3,9 @@ merge_lists <- function(...) {
   Reduce(modifyList, list(...))
 }
 
+#' Run the standard rCRUX pipeline.
+#'
+#' @export
 run_basic_pipeline <- function(
     # General arguments
     forward_primer_seq,

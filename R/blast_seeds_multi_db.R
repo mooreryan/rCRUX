@@ -47,8 +47,9 @@ make_outfile_names <- function(dir, metabarcode_name) {
   )
 }
 
-
-# Returns the collated output directory path.
+#' Run `blast_seeds` on each individual BLAST DB, potentially in-parallel.
+#'
+#' @export
 blast_seeds_multi_db <- function(
     blast_db_paths,
     output_directory_path,
@@ -131,5 +132,6 @@ blast_seeds_multi_db <- function(
     fasta_outfile = collated_outfiles$recovered_seqs
   )
 
+  # Returns the collated output directory path.
   collated_output_path
 }

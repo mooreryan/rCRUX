@@ -1,3 +1,6 @@
+#' Run `get_seeds_local` on each individual BLAST DB, potentially in-parallel.
+#'
+#' @export
 get_seeds_local_multi_db <- function(
     blast_db_paths,
     output_directory_path,
