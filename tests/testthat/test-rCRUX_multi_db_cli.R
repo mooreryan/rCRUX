@@ -19,7 +19,7 @@ test_that("rCRUX_multi_db.R CLI program works", {
       package = "rCRUX",
       file.path("mock-db", "taxonomizr-ncbi-db-small.sql")
     ),
-    parallel_jobs = 4,
+    parallel_jobs = 2,
     blast_db_paths = sapply(1:4, function(n) {
       file.path(
         system.file(
@@ -66,6 +66,16 @@ test_that("rCRUX_multi_db.R CLI program works", {
       cli_script_file_path,
       params_yml_path,
       rcrux_package_path
+    )
+  )
+
+  system2(
+    command = "ls",
+    args = c(
+      file.path(
+        output_directory_path,
+        "*"
+      )
     )
   )
 
