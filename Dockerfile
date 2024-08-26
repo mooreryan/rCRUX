@@ -1,36 +1,54 @@
-FROM r-base:4.2.1
-LABEL Maintainer="Sean Jungbluth, jungbluth.sean@gmail.com" Version=1.0
+FROM rocker/r-ver:4.4.1
 
-# build
-# docker build --platform=linux/amd64 -t rcrux:latest .
+ARG BUILD_DATE
+ARG GIT_REVISION
 
-# run
-# docker run --platform=linux/amd64 -it rcrux:latest /bin/bash
+# See Open Containers Image Spec for info on the annotations.
+LABEL org.opencontainers.image.authors="The rCRUX Programmers"
+LABEL org.opencontainers.image.base.name="docker.io/rocker/r-ver:4.4.1"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.description="Generate CRUX metabarcoding reference libraries in R"
+LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
+LABEL org.opencontainers.image.ref.name="ubuntu"
+LABEL org.opencontainers.image.revision="${GIT_REVISION}"
+LABEL org.opencontainers.image.source="https://github.com/CalCOFI/rCRUX"
+LABEL org.opencontainers.image.title="rCRUX"
+LABEL org.opencontainers.image.vendor="The rCRUX Project"
+# This is the version as written in the rCRUX/DESCRIPTION file.
+LABEL org.opencontainers.image.version="0.1.0.000"
 
-RUN apt-get -y -m update && apt-get install -y git libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libgit2-dev libpng-dev libtiff5-dev libjpeg-dev libmagick++-dev subversion pandoc
+# Install system dependencies needed by R packages.
+RUN <<EOF
+apt-get -y update 
+apt-get -y install \
+  curl \
+  libcurl4-openssl-dev \
+  libglpk-dev \
+  libicu-dev \
+  libxml2-dev \
+  make \
+  zlib1g \
+  zlib1g-dev
+rm -rf /var/lib/apt/lists/*
+EOF
 
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda
+# Install the R packages.
+RUN <<EOF
+R -q -e 'install.packages("devtools", dependencies=TRUE)'
+R -q -e 'if(!requireNamespace("BiocManager")){ install.packages("BiocManager") }; BiocManager::install("phyloseq")'
+R -q -e 'devtools::install_github("cpauvert/psadd", dependencies=TRUE)'
+R -q -e 'devtools::install_github("mooreryan/rCRUX@split-db-pipeline", dependencies=TRUE)'
+EOF
 
-ENV PATH=$CONDA_DIR/bin:$PATH
+# Install runtime dependencies.
+RUN <<EOF
+# Install NCBI BLAST.
+curl https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.16.0/ncbi-blast-2.16.0+-x64-linux.tar.gz | tar xz
+mv ncbi-blast-2.16.0+/bin/blastn /usr/local/bin 
+mv ncbi-blast-2.16.0+/bin/blastdbcmd /usr/local/bin 
+rm -r ncbi-blast-2.16.0+
 
-RUN echo "install.packages(\"devtools\", dependencies=TRUE, repos=\"https://cran.rstudio.com\")" | R --no-save
-
-RUN echo "BiocManager::install(\"phyloseq\")" | R --no-save
-
-RUN apt-get update && apt-get install -y libudunits2-dev libgdal-dev
-
-RUN echo "install.packages(\"plotrix\", dependencies=TRUE, repos=\"https://cran.rstudio.com\")" | R --no-save
-
-RUN echo "remotes::install_github(\"cpauvert/psadd\")" | R --no-save
-
-RUN echo "devtools::install_github(\"CalCOFI/rCRUX\", build_vignettes = TRUE)" | R --no-save
-
-RUN wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.14.1+-x64-linux.tar.gz && \
-    tar -xvzf ncbi-blast-2.14.1+-x64-linux.tar.gz && \
-    rm ncbi-blast-2.14.1+-x64-linux.tar.gz
-
-ENV PATH=/ncbi-blast-2.14.1+/bin:$PATH
-
-WORKDIR "/mnt"
+# Install SeqKit.
+curl -L https://github.com/shenwei356/seqkit/releases/download/v2.8.2/seqkit_linux_amd64.tar.gz | tar xz
+mv seqkit /usr/local/bin
+EOF
