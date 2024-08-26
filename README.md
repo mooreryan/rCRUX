@@ -311,6 +311,91 @@ Sequences_with_single_taxonomic_path.csv files. These files allow for the traceb
 
 Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
+## Command Line Interface (CLI) Wrappers
+
+The rCRUX package provides R scripts to run the most common steps of the rCRUX pipeline directly from the command line using configuration (config) files.
+
+Two scripts are provided, one for running the standard pipeline (`rCRUX_single_db.R`), and one to provide a "multi DB" pipeline in which each of the specified BLAST databases are run serially or in parallel (`rCRUX_multi_db.R`).  The second pipeline may be of interest in resource constrained systems as the amount of memory (RAM) used in the BLAST steps can be markedly reduced by splitting up a large BLAST DB into smaller slices.  (Note that this will have an effect on BLAST expect values (E-value).)
+
+### `rCRUX.R`
+
+This script provides a convenient interface for running the standard rCRUX pipeline with local seed DB searching from the command line.
+
+The steps are:
+
+- `get_seeds_local`
+- `blast_seeds`
+- `derep_and_clean_db`
+
+Rather than specify arguments as command line flags, a config file is used.  Config files are specified using [YAML](https://yaml.org/).  Here is an example:
+
+```yaml
+# General arguments shared by multiple steps of the pipeline.
+forward_primer_seq: AGAGGAGCGCGGAATTCC
+reverse_primer_seq: TACCTTGTTACGACTT
+metabarcode_name: Nitrospira
+output_directory_path: /path/to/output_directory
+accession_taxa_sql_path: /path/to/accessionTaxa.sql
+blast_db_path: /path/to/blastdb
+
+# Additional arguments passed directly to the `get_seeds_local` function.
+args_get_seeds_local:
+  minimum_length: 5
+  maximum_length: 900
+  num_threads: 1
+
+# Additional arguments passed directly to the `blast_seeds` function.
+args_blast_seeds:
+  expand_vectors: true
+  minimum_length: 5
+  maximum_length: 900
+  num_threads: 1
+```
+
+The argument names are *exactly* those as would be specified to the functions in an R session.
+
+### `rCRUX_multi_db.R`
+
+This script provides a command line interface (CLI) for running the "mutli DB" rCRUX pipeline.
+
+The steps are:
+
+- `get_seeds_local_multi_db`
+- `blast_seeds_multi_db`
+- `derep_and_clean_db`
+
+Rather than specify arguments as command line flags, a config file is used.  Config files are specified using [YAML](https://yaml.org/).  Here is an example:
+
+```yaml
+# General arguments shared by multiple steps of the pipeline.
+forward_primer_seq: AGAGGAGCGCGGAATTCC
+reverse_primer_seq: TACCTTGTTACGACTT
+metabarcode_name: Nitrospira
+output_directory_path: /path/to/output_directory
+accession_taxa_sql_path: /path/to/accessionTaxa.sql
+parallel_jobs: 4
+
+blast_db_paths:
+  - /path/to/blastdb.part_001
+  - /path/to/blastdb.part_002
+  - /path/to/blastdb.part_003
+  - /path/to/blastdb.part_004
+
+# Additional arguments passed directly to the `get_seeds_local_multi_db` function.
+args_get_seeds_local_multi_db:
+  minimum_length: 5
+  maximum_length: 900
+  num_threads: 1
+
+# Additional arguments passed directly to the `blast_seeds_multi_db` function.
+args_blast_seeds_multi_db:
+  expand_vectors: true
+  minimum_length: 5
+  maximum_length: 900
+  num_threads: 1
+```
+
+The argument names are *exactly* those as would be specified to the functions in an R session.
 
 ## Detailed Explanation For The Major Functions
 
