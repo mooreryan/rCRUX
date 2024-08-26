@@ -14,8 +14,10 @@ LABEL org.opencontainers.image.revision="${GIT_REVISION}"
 LABEL org.opencontainers.image.source="https://github.com/CalCOFI/rCRUX"
 LABEL org.opencontainers.image.title="rCRUX"
 LABEL org.opencontainers.image.vendor="The rCRUX Project"
-# This is the version as written in the rCRUX/DESCRIPTION file.
-LABEL org.opencontainers.image.version="0.1.0.000"
+# This is the short commit hash of the "version" of rCRUX built in to the docker
+# image, with an additional build number. This commit should match the one
+# below.
+LABEL org.opencontainers.image.version="1d371a9-1"
 
 # Install system dependencies needed by R packages.
 RUN <<EOF
@@ -36,8 +38,8 @@ EOF
 RUN <<EOF
 R -q -e 'install.packages("devtools", dependencies=TRUE)'
 R -q -e 'if(!requireNamespace("BiocManager")){ install.packages("BiocManager") }; BiocManager::install("phyloseq")'
-R -q -e 'devtools::install_github("cpauvert/psadd", dependencies=TRUE)'
-R -q -e 'devtools::install_github("mooreryan/rCRUX@split-db-pipeline", dependencies=TRUE)'
+R -q -e 'devtools::install_github("cpauvert/psadd@6407bd88c1436101640e103a927515ada8c7f520", dependencies=TRUE)'
+R -q -e 'devtools::install_github("mooreryan/rCRUX@1d371a9c592e0e0ce66e4de9dce5728c7333ec86", dependencies=TRUE)'
 EOF
 
 # Install runtime dependencies.
