@@ -20,8 +20,3 @@ storing output files.  If the output directory already exists, no action is
 taken, and the name of the directory is still returned.  (I.e., it is safe to
 call on a directory that already exists.)
 }
-\examples{
-create_sub_output_directory("/home/user/rCRUX_output", 1)
-create_sub_output_directory("/home/user/rCRUX_output", 2)
-create_sub_output_directory("/home/user/rCRUX_output", 3)
-}

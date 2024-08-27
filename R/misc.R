@@ -21,11 +21,6 @@ check_forbidden_args <- function(additional_args, forbidden_args) {
 #' @param n The index of the DB split
 #'
 #' @return The path of the (possibly) created subdirectory
-#'
-#' @examples
-#' create_sub_output_directory("/home/user/rCRUX_output", 1)
-#' create_sub_output_directory("/home/user/rCRUX_output", 2)
-#' create_sub_output_directory("/home/user/rCRUX_output", 3)
 create_sub_output_directory <- function(path, n) {
   out_path <- file.path(path, paste0("db_", n))
   dir.create(out_path, recursive = TRUE, mode = "0750", showWarnings = FALSE)
