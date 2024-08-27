@@ -69,16 +69,6 @@ test_that("rCRUX_multi_db.R CLI program works", {
     )
   )
 
-  system2(
-    command = "ls",
-    args = c(
-      file.path(
-        output_directory_path,
-        "*"
-      )
-    )
-  )
-
   # Then snapshot the files.
   files_to_snapshot <- list.files(
     path = output_directory_path,
