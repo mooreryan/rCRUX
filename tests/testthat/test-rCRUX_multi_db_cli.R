@@ -60,7 +60,7 @@ test_that("rCRUX_multi_db.R CLI program works", {
 
   # Actually run the CLI program.
   system2(
-    command = "Rscript",
+    command = file.path(R.home("bin"), "Rscript"),
     args = c(
       "--vanilla",
       cli_script_file_path,
