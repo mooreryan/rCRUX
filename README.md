@@ -129,6 +129,10 @@ prepareDatabase(accession_taxa_sql_path)
 
 **Note:** For poor bandwidth connections, please see the [taxononmizr readme for manual installation](https://cran.r-project.org/web/packages/taxonomizr/readme/README.html) of the accessionTaxa.sql database. If built manually, make sure to delete any files other than the accessionTaxa.sql database (e.g. keeping nucl_gb.accession2taxid.gz leads to a warning message).
 
+### SeqKit
+
+The rCRUX multi DB pipeline (`rCRUX_multi_db.R`) additionally requires that the [SeqKit](https://bioinf.shenwei.me/seqkit/) program be installed and on your PATH.
+
 ## Example pipeline
 
 The following example shows a simple rCRUX pipeline from start to finish. Note that this example will require internet access and considerable database storage (~**314 GB**, see section above), run time (mainly for blastn), and system resources to execute.
@@ -396,6 +400,8 @@ args_blast_seeds_multi_db:
 ```
 
 The argument names are *exactly* those as would be specified to the functions in an R session.
+
+Note that this pipeline also requires that the [SeqKit](https://bioinf.shenwei.me/seqkit/) program be installed and on your PATH.
 
 ## Detailed Explanation For The Major Functions
 
