@@ -29,11 +29,61 @@ This work benefited from the amazing input of many including Lenore Pipes, Sarah
 <br/>
 eDNA metabarcoding is increasingly used to survey biological communities using common universal and novel genetic loci. There is a need for an easy to implement computational tool that can generate metabarcoding reference libraries for any locus, and are specific and comprehensive. We have reimagined [CRUX](https://github.com/limey-bean/CRUX_Creating-Reference-libraries-Using-eXisting-tools) ([Curd et al. 2019](https://doi.org/10.1111/2041-210X.13214)) and developed the rCRUX package R system for statistical computing [R Core Team 2021](https://www.r-project.org/) to fit this need by generating taxonomy and fasta files for any user defined locus.  The typical workflow involves using get_seeds_local() or get_seeds_remote() to simulate *in silico* PCR (e.g. [Ye et al. 2012](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-13-134)) to acquire a set of sequences analogous to PCR products containing metabarcode primer sequences.  The sequences or "seeds" recovered from the *in silico* PCR step are used to search databases for complementary sequence that lack one or both primers. This search step, blast_seeds() is used to iteratively align seed sequences against a local NCBI database for matches using a taxonomic rank based stratified random sampling approach.  This step results in a comprehensive database of primer specific reference barcode sequences from NCBI. Using derep_and_clean_db(), the database is de-replicated by DNA sequence where identical sequences are collapsed into a representative read. If there are multiple possible taxonomic paths for a read, the taxonomic path is collapsed to the lowest taxonomic agreement.
 
+## Contents
 
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Typical Workflow](#typical-workflow)
+- [Installation](#installation)
+- [Dependencies](#dependencies)
+   * [BLAST+](#blast)
+   * [Blast-formatted database](#blast-formatted-database)
+   * [Taxonomizr](#taxonomizr)
+   * [SeqKit](#seqkit)
+- [Example pipeline](#example-pipeline)
+   * [get_seeds_local](#get_seeds_local)
+   * [get_seeds_remote](#get_seeds_remote)
+   * [blast_seeds](#blast_seeds)
+   * [derep_and_clean_db](#derep_and_clean_db)
+- [Command Line Interface (CLI) Wrappers](#command-line-interface-cli-wrappers)
+   * [`rCRUX.R`](#rcruxr)
+   * [`rCRUX_multi_db.R`](#rcrux_multi_dbr)
+- [Detailed Explanation For The Major Functions](#detailed-explanation-for-the-major-functions)
+   * [get_seeds_local](#get_seeds_local-1)
+      + [Overview](#overview)
+      + [Expected Output](#expected-output)
+      + [Detailed Steps](#detailed-steps)
+      + [Parameters](#parameters)
+      + [Examples](#examples)
+   * [get_seeds_remote](#get_seeds_remote-1)
+      + [Overview](#overview-1)
+      + [Expected Output](#expected-output-1)
+      + [Detailed Steps](#detailed-steps-1)
+      + [Parameters](#parameters-1)
+      + [Example](#example)
+   * [blast_seeds](#blast_seeds-1)
+      + [Overview](#overview-2)
+      + [Expected Output](#expected-output-2)
+      + [Detailed Steps](#detailed-steps-2)
+      + [Parameters](#parameters-2)
+      + [Example](#example-1)
+   * [derep_and_clean_db](#derep_and_clean_db-1)
+      + [Overview](#overview-3)
+      + [Expected Outputs](#expected-outputs)
+      + [Detailed Steps](#detailed-steps-3)
+      + [Parameters](#parameters-3)
+      + [Example](#example-2)
+- [Pre-Made Version Controlled Reference Databases](#pre-made-version-controlled-reference-databases)
+- [References](#references)
+
+<!-- TOC end -->
+
+<!-- TOC --><a name="typical-workflow"></a>
 ## Typical Workflow
 <img src="/flowcharts/rCRUX_overview_flowchart.png" width = 10000 />
 
 
+<!-- TOC --><a name="installation"></a>
 ## Installation
 
 Install from GitHub:
@@ -47,10 +97,12 @@ devtools::install_github("CalCOFI/rCRUX", build_vignettes = TRUE)
 library(rCRUX)
 ```
 
+<!-- TOC --><a name="dependencies"></a>
 ## Dependencies
 
 **NOTE:** These only need to be downloaded once or as NCBI updates databases. rCRUX can access and successfully build metabarcode references using databases stored on external drives. </br>
 
+<!-- TOC --><a name="blast"></a>
 ### BLAST+
 
 NCBI's [BLAST+](ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/) suite must be locally installed and accessible in the user's path. NCBI provides installation instructions for [Windows](https://www.ncbi.nlm.nih.gov/books/NBK52637/), [Linux](https://www.ncbi.nlm.nih.gov/books/NBK52640/), and [Mac OS](https://www.ncbi.nlm.nih.gov/books/NBK569861/). Version 2.10.1+ through 2.13.0 are verified compatible with rCRUX.
@@ -67,6 +119,7 @@ wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.10.1/ncbi-blast-2.10.
 This [link](https://forum.posit.co/t/adding-to-the-path-variable/12066) may help if you are using RStudio and having trouble adding blast+ to your path.
 
 
+<!-- TOC --><a name="blast-formatted-database"></a>
 ### Blast-formatted database
 
 rCRUX requires a local blast-formatted nucleotide database. These can be user generated or download a pre-formatted database from [NCBI](https://ftp.ncbi.nlm.nih.gov/blast/db/).  NCBI provides a tool (perl script) for downloading databases as part of the blast+ package. A brief help page can be found [here](https://www.ncbi.nlm.nih.gov/books/NBK569850/).
@@ -111,6 +164,7 @@ The nt database is **~242 GB** (as of 8/31/22) and can take several hours (overn
 **Note:**
 Several blast formatted databases can be searched simultaneously. See documentation for details.
 
+<!-- TOC --><a name="taxonomizr"></a>
 ### Taxonomizr
 
 rCRUX uses the [taxonomizr](https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html) package for taxonomic assignment based on NCBI [Taxonomy id's \(taxids\)](https://www.ncbi.nlm.nih.gov/taxonomy). Many rCRUX functions require a path to a local taxonomizr readable sqlite database. This database can be built using taxonomizr's [prepareDatabase](https://www.rdocumentation.org/packages/taxonomizr/versions/0.8.0/topics/prepareDatabase) function.
@@ -129,10 +183,12 @@ prepareDatabase(accession_taxa_sql_path)
 
 **Note:** For poor bandwidth connections, please see the [taxononmizr readme for manual installation](https://cran.r-project.org/web/packages/taxonomizr/readme/README.html) of the accessionTaxa.sql database. If built manually, make sure to delete any files other than the accessionTaxa.sql database (e.g. keeping nucl_gb.accession2taxid.gz leads to a warning message).
 
+<!-- TOC --><a name="seqkit"></a>
 ### SeqKit
 
 The rCRUX multi DB pipeline (`rCRUX_multi_db.R`) additionally requires that the [SeqKit](https://bioinf.shenwei.me/seqkit/) program be installed and on your PATH.
 
+<!-- TOC --><a name="example-pipeline"></a>
 ## Example pipeline
 
 The following example shows a simple rCRUX pipeline from start to finish. Note that this example will require internet access and considerable database storage (~**314 GB**, see section above), run time (mainly for blastn), and system resources to execute.
@@ -141,6 +197,7 @@ The following example shows a simple rCRUX pipeline from start to finish. Note t
 
 There are two options to generate seeds for the database generating blast step blast_seeds_local() or blast_seeds_remote(). The local option is slower, however it is not subject to the memory limitations of using the NCBI primer_blast API. The local option is recommended if the user is building a large database, wants to include any [taxid](https://www.ncbi.nlm.nih.gov/taxonomy) in the search, wants to use multiple forward or reverse primers, and / or has many degenerate sites in their primer set. It also cached run data so if a run is interrupted the user can pick it up from the last successful round of blast by resubmitting the original command.
 
+<!-- TOC --><a name="get_seeds_local"></a>
 ### [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
 
 This example uses default parameters, with the exception of evalue to minimize run time.
@@ -194,6 +251,7 @@ get_seeds_local(forward_primer_seq,
 ```
 
 
+<!-- TOC --><a name="get_seeds_remote"></a>
 ### [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
 
 This example uses default parameters to minimize run time.
@@ -236,6 +294,7 @@ Sequence availability in NCBI for a given taxid is a limiting factor, as are deg
 
 Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
+<!-- TOC --><a name="blast_seeds"></a>
 ### [blast_seeds](https://limey-bean.github.io/blast_seeds)
 
 
@@ -288,6 +347,7 @@ Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
 **Note:** There will be variability between runs due to primer blast return parameters and random sampling of the blast seeds table that occurs during blast_seeds. However, variability can be decreased by changing parameters (e.g. randomly sampling species rather than genus will decrease run to run variability).
 
+<!-- TOC --><a name="derep_and_clean_db"></a>
 ### [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
 
 
@@ -315,12 +375,14 @@ Sequences_with_single_taxonomic_path.csv files. These files allow for the traceb
 
 Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 
+<!-- TOC --><a name="command-line-interface-cli-wrappers"></a>
 ## Command Line Interface (CLI) Wrappers
 
 The rCRUX package provides R scripts to run the most common steps of the rCRUX pipeline directly from the command line using configuration (config) files.
 
 Two scripts are provided, one for running the standard pipeline (`rCRUX.R`), and one to provide a "multi DB" pipeline in which each of the specified BLAST databases are run serially or in parallel (`rCRUX_multi_db.R`).  The second pipeline may be of interest in resource constrained systems as the amount of memory (RAM) used in the BLAST steps can be markedly reduced by splitting up a large BLAST DB into smaller slices.  (Note that this will have an effect on BLAST expect values (E-value).)
 
+<!-- TOC --><a name="rcruxr"></a>
 ### `rCRUX.R`
 
 This script provides a convenient interface for running the standard rCRUX pipeline with local seed DB searching from the command line.
@@ -358,6 +420,7 @@ args_blast_seeds:
 
 The argument names are *exactly* those as would be specified to the functions in an R session.
 
+<!-- TOC --><a name="rcrux_multi_dbr"></a>
 ### `rCRUX_multi_db.R`
 
 This script provides a command line interface (CLI) for running the "mutli DB" rCRUX pipeline.
@@ -403,20 +466,25 @@ The argument names are *exactly* those as would be specified to the functions in
 
 Note that this pipeline also requires that the [SeqKit](https://bioinf.shenwei.me/seqkit/) program be installed and on your PATH.
 
+<!-- TOC --><a name="detailed-explanation-for-the-major-functions"></a>
 ## Detailed Explanation For The Major Functions
 
+<!-- TOC --><a name="get_seeds_local-1"></a>
 ### [get_seeds_local](https://limey-bean.github.io/get_seeds_local)
 
 <img src="/flowcharts/get_seeds_local-flowchart.png" width = 10000 />
 
+<!-- TOC --><a name="overview"></a>
 #### Overview
 [get_seeds_local](https://limey-bean.github.io/get_seeds_local) takes a set of forward and reverse primer sequences (single or multiple forward and single or multiple reverse primers) and generates .csv summaries of data returned from a locally run adaptation of [NCBI's primer blast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/). This function performs like *in silicon* to find possible full length barcode sequences containing forward and reverse primer matches. It also generates a count of unique instances of taxonomic ranks (Phylum, Class, Order, Family, Genus, and Species) found in the output.
 
 This script is a local interpretation of [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) that avoids querying NCBI's [primer BLAST](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) tool. Although it is slower than remotely generating blast seeds, it is not subject to the arbitrary throttling of jobs that require significant memory.
 
+<!-- TOC --><a name="expected-output"></a>
 #### Expected Output
 It creates a `get_seeds_local` directory at `output_directory_path` if one doesn't yet exist, then creates a subdirectory inside `output_directory_path` named after `metabarcode_name`. It creates three files inside that directory. One represents the unfiltered output and another represents the output after filtering with user modifiable parameters and with appended taxonomy. Also generated is a summary of unique taxonomic ranks after filtering and a fasta file of the primers used for blast.
 
+<!-- TOC --><a name="detailed-steps"></a>
 #### Detailed Steps
 get_seeds_local passes the forward and reverse primer sequence for a given PCR product to [run_primer_blastn](https://limey-bean.github.io/run_primer_blastn). In the case of a non degenerate primer set only two primers will be passed to run_primer_blast.  In the case of a degenerate primer set, get_seeds_local will get all possible versions of the degenerate primer(s) (using primerTree's enumerate_primers() function), randomly sample a user defined number of forward and reverse primers, and generate a fasta file. The selected primers are subset and passed to run_primer_blastn which queries each primer against a blast formatted database using the task "blastn_short". This process continues until all of the selected primers are blasted. The result is an output table with the following columns of data: qseqid (query subject id), sgi (subject gi), saccver (subject accession version), mismatch (number of mismatches between the subject a query), sstart (subject start), send (subject end), staxids (subject taxids).
 
@@ -431,6 +499,7 @@ Taxonomy is appended to these filtered hits using [get_taxonomizr_from_accession
 **Note:**
 Information about the blastn parameters can be found in run_primer_blast, and by accessing blastn -help in your terminal.  Default parameters were optimized to provide results similar to those generated through remote blast via primer-blast as implemented in [iterative_primer_search](https://limey-bean.github.io/iterative_primer_search) and modifiedPrimerTree_Functions.
 
+<!-- TOC --><a name="parameters"></a>
 #### Parameters
 **forward_primer_seq**
 + which which turns degenerate primers into into a list of all possible non degenerate
@@ -522,6 +591,7 @@ Information about the blastn parameters can be found in run_primer_blast, and by
         your path.
 +       The default is ncbi_bin = NULL - if not specified in path do the following: ncbi_bin = "/my/local/ncbi-blast-2.10.1+/bin/".
 
+<!-- TOC --><a name="examples"></a>
 #### Examples
 
 ```
@@ -595,10 +665,12 @@ Information about the blastn parameters can be found in run_primer_blast, and by
 ```
 
 
+<!-- TOC --><a name="get_seeds_remote-1"></a>
 ### [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote)
 
 <img src="/flowcharts/get_seed_remote-flowchart.png" width = 10000 />
 
+<!-- TOC --><a name="overview-1"></a>
 #### Overview
 
 [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) takes a set of forward and reverse primer sequences and generates .csv summaries of [NCBI's primer blast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) data returns. Only full length barcode sequences containing primer matches are captured. It also generates a count of unique instances of taxonomic ranks (Phylum, Class, Order, Family, Genus, and Species) captured in the seed library.
@@ -607,10 +679,12 @@ This script uses [iterative_primer_search](https://limey-bean.github.io/iterativ
 
 It downgrades errors from primer_search and parse_primer_hits into warnings. This is useful when searching for a large number of different combinations, allowing the function to output successful results.
 
+<!-- TOC --><a name="expected-output-1"></a>
 #### Expected Output
 It creates a directory `get_seeds_remote` in the `output_directory_path`. It creates three files inside that directory. One represents the unfiltered output and another represents the output after filtering with user modifiable parameters and with appended taxonomy. Also generated is a summary of unique taxonomic ranks after filtering.
 
 
+<!-- TOC --><a name="detailed-steps-1"></a>
 #### Detailed Steps
 
 get_seeds_remote passes the forward and reverse primer sequence for a given
@@ -638,6 +712,7 @@ primer BLAST defaults to homo sapiens, so it is important that you supply a spec
 
 Often NCBI API will throttle higher taxonomic ranks (Domain, Phylum, etc.). One work around is to supply multiple lower level taxonomic ranks (Class, Family level, etc.) or use get_seeds_local.
 
+<!-- TOC --><a name="parameters-1"></a>
 #### Parameters
 
 **forward_primer_seq**
@@ -750,6 +825,7 @@ You can check [primerblast](https://www.ncbi.nlm.nih.gov/tools/primer-blast/) fo
 You can find the description and suggested values for this search option. HITSIZE ='1000000' is added to the search below along with several options that increase the number of entries returned from primer_search.
 
 
+<!-- TOC --><a name="example"></a>
 #### Example
 ```
 forward_primer_seq = "TAGAACAGGCTCCTCTAG"
@@ -776,10 +852,12 @@ get_seeds_remote(forward_primer_seq,
 ```
 
 
+<!-- TOC --><a name="blast_seeds-1"></a>
 ### [blast_seeds](https://limey-bean.github.io/blast_seeds)
 
 <img src="/flowcharts/blast_seeds-flowchart.png" width = 10000 />
 
+<!-- TOC --><a name="overview-2"></a>
 #### Overview
 
 [blast_seeds](https://limey-bean.github.io/blast_seeds) takes the output from [get_seeds_local](https://limey-bean.github.io/get_seeds_local) or [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) and iteratively blasts seed sequences using a stratified random sampling of a taxonomic rank (default is genus).  The blast hits are de-duplicated, filtered, and returnedc as .csv files, a fasta file and a taxonomy file.
@@ -788,6 +866,7 @@ The intermediate results and metadata associated with a search in progress are s
 error or experiencing other interruptions. To resume a partially completed blast, supply the same seeds and working directory. See the documentation
 of [blast_datatable](https://limey-bean.github.io/blast_datatable) for more information.
 
+<!-- TOC --><a name="expected-output-2"></a>
 #### Expected Output
 
 During the blast_seeds the following data are cached as files in a temporary directory `blast_seeds_save` in the `output_directory_path`. These files are passed to and updated by [blast_datatable](https://limey-bean.github.io/blast_datatable): output_table.txt (most recent updates from the
@@ -807,6 +886,7 @@ following: summary.csv (blast output with appended taxonomy),
 {metabarcode_name}_blast_seeds_summary_unique_taxonomic_rank_counts.txt,
 too_many_ns.txt, blastdbcmd_failed.txt.
 
+<!-- TOC --><a name="detailed-steps-2"></a>
 #### Detailed Steps
 
 [blast_seeds](https://limey-bean.github.io/blast_seeds) passes a datatable returned by [get_seeds_remote](https://limey-bean.github.io/get_seeds_remote) or [get_seeds_local](https://limey-bean.github.io/get_seeds_local) to [blast_datatable](https://limey-bean.github.io/blast_datatable), which uses a random stratified sample based on taxonomic rank to iteratively blast and process the seeds in the datatable. The user can specify how many sequences can be blasted simultaneously using max_to_blast. The randomly sampled seeds (or subsets of seeds) are sent to [run_blastdbcmd_blastn_and_aggregate_resuts](https://limey-bean.github.io/run_blastdbcmd_blastn_and_aggregate_resuts), which uses [run_blastdbcmd](https://limey-bean.github.io/run_blastdbcmd) to find a seed sequence that corresponds to the accession number and forward and reverse stops recorded in the seeds table. [run_blastdbcmd](https://limey-bean.github.io/run_blastdbcmd) outputs sequences as .fasta-formatted strings, which
@@ -851,6 +931,7 @@ submit to [run_blastn](https://limey-bean.github.io/run_blastn) it will need to 
 `max_to_blast` controls the frequency with which it calls blastn, so it can
 be used to make [blast_datatable](https://limey-bean.github.io/blast_datatable) save more frequently.
 
+<!-- TOC --><a name="parameters-2"></a>
 #### Parameters
 **seeds_output_path**
 + a path to an output csv from get_seeds_local or get_seeds_remote
@@ -931,6 +1012,7 @@ be used to make [blast_datatable](https://limey-bean.github.io/blast_datatable) 
 
 
 
+<!-- TOC --><a name="example-1"></a>
 #### Example
 ```
 seeds_output_path <- "/my/directory/12S_V5F1_remote_111122_modified_params/blast_seeds_output/summary.csv""
@@ -954,17 +1036,21 @@ blast_seeds(seeds_output_path,
 ```
 
 
-#### [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
+<!-- TOC --><a name="derep_and_clean_db-1"></a>
+### [derep_and_clean_db](https://limey-bean.github.io/derep_and_clean_db)
 
 <img src="/flowcharts/derep_and_clean_db-flowchart.png" width = 10000 />
 
+<!-- TOC --><a name="overview-3"></a>
 #### Overview
 derep_and_clean_db takes the output from [blast_seeds](https://limey-bean.github.io/blast_seeds) and de-replicates the dataset to identify representative sequences.
 
+<!-- TOC --><a name="expected-outputs"></a>
 #### Expected Outputs
 It generates an output directory called `derep_and_clean_db` at `output_directory_path` to store the output .csv files and the fasta and taxonomy file generated by the function.
 
 
+<!-- TOC --><a name="detailed-steps-3"></a>
 #### Detailed Steps
 Before de-replicating the data set, all sequences with NA taxonomy for phylum,
 class, order, family, and genus are removed from the dataset because they
@@ -991,6 +1077,7 @@ generate a fasta file and taxonomy file of representative NCBI accessions for
 each sequence.  The number of accessions identical to the representative
 accession is given.
 
+<!-- TOC --><a name="parameters-3"></a>
 #### Parameters
 **output_directory_path**
 + the path to the output directory
@@ -1003,6 +1090,7 @@ accession is given.
 + used to name the subdirectory and the files.
 +        e.g. metabarcode_name <- "12S_V5F1"
 
+<!-- TOC --><a name="example-2"></a>
 #### Example
 ```
 output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
@@ -1014,6 +1102,7 @@ derep_and_clean_db(output_directory_path, summary_path, metabarcode_name)
 
 ```
 
+<!-- TOC --><a name="pre-made-version-controlled-reference-databases"></a>
 ## Pre-Made Version Controlled Reference Databases
 
 | Primer Name	| Gene  | Length of Target | get_seeds_local() length minimum | get_seeds_local() length maximum | blast_seeds() length minimum | blast_seeds() length maximum | blast_seeds() max_to_blast | Forward Sequence (5'-3') | Reverse Sequence (5'-3') | Reference | Zenodo Link |
@@ -1044,6 +1133,7 @@ derep_and_clean_db(output_directory_path, summary_path, metabarcode_name)
 |[16S V4](https://doi.org/10.5281/zenodo.8407899)|	16S| 250	|	100|	500|	100|	350|	100|	GTGYCAGCMGCCGCGGTAA	|CCGYCAATTYMTTTRAGTTT	|Parada, A. E., Needham, D. M. & Fuhrman, J. A. Every base matters: Assessing small subunit rRNA primers for marine microbiomes with mock communities, time series and global field samples. Environ. Microbiol. 18 (2016).|	https://doi.org/10.5281/zenodo.8407899 |
 |[MiFish Universal Expanded + FishCARD](https://doi.org/10.5281/zenodo.8409238)	|12S|	163–185|	170|	250|	140|	250|	1000|	GTGTCGGTAAAACTCGTGCCAGC|	CATAGTGGGGTATCTAATCCCAGTTTG	|Miya, M., Sato, Y., Fukunaga, T., Sado, T., Poulsen, J. Y., Sato, K., ... & Kondoh, M. (2015). MiFish, a set of universal PCR primers for metabarcoding environmental DNA from fishes: detection of more than 230 subtropical marine species. Royal Society open science, 2(7), 150088.	|https://doi.org/10.5281/zenodo.8409238		|
 
+<!-- TOC --><a name="references"></a>
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
