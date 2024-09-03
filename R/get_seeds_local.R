@@ -471,8 +471,7 @@ final_table <-
       remove <- nrow(vdf)-nrow(vec)
       vdf <- dplyr::slice_tail(vdf, n=remove)
 
-      sub <- dplyr::inner_join(sorted, vec)
-
+      sub <- dplyr::inner_join(sorted, vec, by = "saccver")
 
       F_only <-
         sub %>%
