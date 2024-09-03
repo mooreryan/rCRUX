@@ -38,6 +38,8 @@
 
 run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
                        evalue = 1e-6, align = 50000, coverage = 50, perID = 70, num_threads = 1) {
+  rcrux_logger$debug("run_blastn starting")
+
 
   if (!is.null(ncbi_bin)){
     blastn <- file.path(ncbi_bin, 'blastn')
@@ -66,11 +68,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
 
   writeLines(fasta, con = temp_fasta_path)
 
-  message("Calling blastn. This may take a long time.")
-
-  blastn_output <-
-    system2(command = blastn,
-            args = c("-db", db,
+  args <- c("-db", db,
                      "-query", temp_fasta_path,
                      "-outfmt", paste("\"6", "saccver", "length",
                                       "pident", "qacc", "slen", "sstart",
@@ -80,7 +78,14 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
                      "-qcov_hsp_perc", coverage,
                      "-perc_identity", perID,
                      "-num_threads ", cores
-                     ),
+                     )
+
+  rcrux_logger$info("Calling blastn. This may take a long time.")
+  rcrux_logger$debug("Running blastn", blastn = blastn, args = args)
+
+  blastn_output <-
+    system2(command = blastn,
+            args = args,
             wait = TRUE,
             stdout = TRUE)
 
@@ -100,6 +105,8 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
       "sequence",
       "evalue",
       "BLAST_db_taxids")
+
+  rcrux_logger$debug("run_blastn done")
 
   # blastn_output is a tab-delimited string, we need split it into columns
   # as_tibble creates a one-column tibble with "value" as its col name
