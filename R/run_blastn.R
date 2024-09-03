@@ -68,17 +68,18 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
 
   writeLines(fasta, con = temp_fasta_path)
 
-  args <- c("-db", db,
-                     "-query", temp_fasta_path,
-                     "-outfmt", paste("\"6", "saccver", "length",
-                                      "pident", "qacc", "slen", "sstart",
-                                      "send", "sseq", "evalue", "staxids\""),
-                     "-evalue", evalue,
-                     "-num_alignments", align,
-                     "-qcov_hsp_perc", coverage,
-                     "-perc_identity", perID,
-                     "-num_threads ", cores
-                     )
+  args <- c(
+    "-db", db,
+    "-query", temp_fasta_path,
+    "-outfmt", paste("\"6", "saccver", "length",
+                     "pident", "qacc", "slen", "sstart",
+                     "send", "sseq", "evalue", "staxids\""),
+    "-evalue", evalue,
+    "-num_alignments", align,
+    "-qcov_hsp_perc", coverage,
+    "-perc_identity", perID,
+    "-num_threads ", cores
+  )
 
   rcrux_logger$info("Calling blastn. This may take a long time.")
   rcrux_logger$debug("Running blastn", blastn = blastn, args = args)
