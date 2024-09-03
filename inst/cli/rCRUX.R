@@ -20,10 +20,9 @@ if (!(num_args %in% c(1, 2))) {
 }
 
 if (num_args == 2) {
-  message("Using a local rCRUX installation.")
-  devtools::load_all(cli_args[[2]])
+  devtools::load_all(cli_args[[2]], quiet = TRUE)
 } else {
-  library(rCRUX)
+  library(rCRUX, quietly = TRUE)
 }
 
 config <- yaml::read_yaml(cli_args[[1]])
@@ -51,6 +50,12 @@ if (logfile != "") {
 }
 
 rcrux_logger$set_threshold("all")
+
+# This check is repeated here because we want the note about local rCRUX to be
+# included in the specified logfile.
+if (num_args == 2) {
+  rcrux_logger$info("Using a local rCRUX installation.", path = cli_args[[2]])
+}
 
 rcrux_logger$info("Starting rCRUX pipeline")
 
