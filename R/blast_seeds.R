@@ -154,11 +154,16 @@ blast_seeds <-
            minimum_length = 5,
            maximum_length = 500,
            ...) {
+    rcrux_logger$debug("blast_seeds starting")
+
     dots <- list(...)
     # Setup ----
     output_dir <- file.path(output_directory_path, "blast_seeds_output")
 
-    message('Output directory: ', output_dir, '\n')
+    rcrux_logger$debug(
+      "blast_seeds output directory",
+      output_directory = output_dir
+    )
 
     save_dir <- file.path(output_directory_path, "blast_seeds_save")
 
@@ -175,7 +180,7 @@ blast_seeds <-
     dir.create(output_dir, showWarnings = FALSE)
 
     # BLAST ----
-    message('Blasting seeds.\n')
+    rcrux_logger$info("Blasting seeds")
 
     blast_seeds <- utils::read.csv(seeds_output_path)
 
@@ -185,15 +190,15 @@ blast_seeds <-
                       blast_db_path = blast_db_path,
                       accession_taxa_sql_path = accession_taxa_sql_path, ...)
 
-    message('\nBlasting complete.\n')
-    message('Wrangling results.\n')
+    rcrux_logger$info("Blasting complete.  Wrangling results.")
 
     # Wrangle ----
     # keep only hits with acceptable product length
     output_table <- dplyr::filter(output_table, dplyr::between(.data$amplicon_length, minimum_length, maximum_length))
 
     if (nrow(output_table) == 0){
-      stop('Nothing left after filtering amplicon_length by minimum_length and maximum_length values')
+      msg <- rcrux_logger$fatal('Nothing left after filtering amplicon_length by minimum_length and maximum_length values.')
+      stop(msg)
     }
 
     # using multiple blast databases leads to duplicates so get rid of those...
@@ -256,7 +261,7 @@ blast_seeds <-
     # Clear temporary directory
     unlink(save_dir, recursive=TRUE)
 
-    message('Done.')
+    rcrux_logger$info('blast_seeds done')
 
     # return nothing
     invisible(NULL)
