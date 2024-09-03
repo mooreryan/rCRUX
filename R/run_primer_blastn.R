@@ -1,3 +1,7 @@
+build_blastn_args <- function() {
+  
+}
+
 #' Run blastn with a fasta file
 #'
 #' @details
@@ -73,7 +77,7 @@ run_primer_blastn <-
            reward = 2,
            num_threads = 1,
            ncbi_bin = NULL) {
-
+    rcrux_logger$debug("run_primer_blastn starting")
    
     # Not sure this is the best default
     if (num_threads == 'max') {
@@ -105,8 +109,8 @@ run_primer_blastn <-
         "-word_size", word_size,
         "-num_threads", cores)
 
-    message("Calling blastn for primers. This may take a long time.\n")
-    message(paste(blastn, paste(args, collapse = ' ')))
+    rcrux_logger$info("Calling blastn for primers. This may take a long time.")
+    rcrux_logger$debug("Running blastn", blastn = blastn, args = args)
 
     # Catch stdout to character vector (a tab-delimited table)
     blastn_output <-
@@ -127,6 +131,7 @@ run_primer_blastn <-
         "send",
         "staxids")
 
+    rcrux_logger$debug("run_primer_blastn done")
 
     blastn_output %>%
       tibble::as_tibble() %>%
