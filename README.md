@@ -46,6 +46,7 @@ eDNA metabarcoding is increasingly used to survey biological communities using c
    * [blast_seeds](#blast_seeds)
    * [derep_and_clean_db](#derep_and_clean_db)
 - [Command Line Interface (CLI) Wrappers](#command-line-interface-cli-wrappers)
+   * [Logging](#logging)
    * [`rCRUX.R`](#rcruxr)
    * [`rCRUX_multi_db.R`](#rcrux_multi_dbr)
 - [Detailed Explanation For The Major Functions](#detailed-explanation-for-the-major-functions)
@@ -381,6 +382,19 @@ Example output can be found [here](/examples/12S_V5F1_generated_11-11-22).
 The rCRUX package provides R scripts to run the most common steps of the rCRUX pipeline directly from the command line using configuration (config) files.
 
 Two scripts are provided, one for running the standard pipeline (`rCRUX.R`), and one to provide a "multi DB" pipeline in which each of the specified BLAST databases are run serially or in parallel (`rCRUX_multi_db.R`).  The second pipeline may be of interest in resource constrained systems as the amount of memory (RAM) used in the BLAST steps can be markedly reduced by splitting up a large BLAST DB into smaller slices.  (Note that this will have an effect on BLAST expect values (E-value).)
+
+<!-- TOC --><a name="logging"></a>
+### Logging
+
+Structured log files can be written if the environment variable `RCRUX_LOG` is set.  Here is an example.
+
+```bash
+$ RCRUX_LOG=rCRUX_log.jsonl Rscript --vanilla rCRUX.R /path/to/config.yaml
+```
+
+You can replace `rCRUX_log.jsonl` with whatever file name you want, or provide a absolute or relative path.  E.g., `RCRUX_LOG=./logs/my_log.txt`.
+
+The output format is [JSON Lines](https://jsonlines.org/) as used by the R [lgr](https://cran.r-project.org/web/packages/lgr/vignettes/lgr.html#logging-to-json-files) package.
 
 <!-- TOC --><a name="rcruxr"></a>
 ### `rCRUX.R`

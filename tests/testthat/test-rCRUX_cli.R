@@ -1,4 +1,4 @@
-test_that("rCRUX.R CLI program works", {
+set_up <- function() {
   output_directory_path_top <- tempfile()
   dir.create(
     output_directory_path_top,
@@ -41,9 +41,23 @@ test_that("rCRUX.R CLI program works", {
     )
   )
 
-  # Write the params.
   params_yml_path <- tempfile()
-  yaml::write_yaml(params, params_yml_path)
+
+  rcrux_package_path <- system.file(package = "rCRUX", "..")
+
+  list(
+    output_directory_path = output_directory_path,
+    params = params,
+    params_yml_path = params_yml_path,
+    rcrux_package_path = rcrux_package_path
+  )
+}
+
+test_that("rCRUX.R CLI program works", {
+  conf <- set_up()
+
+  # Write the params.
+  yaml::write_yaml(conf$params, conf$params_yml_path)
 
   # This is the CLI script.
   cli_script_file_path <- system.file(
@@ -52,22 +66,20 @@ test_that("rCRUX.R CLI program works", {
     "rCRUX.R"
   )
 
-  rcrux_package_path <- system.file(package = "rCRUX", "..")
-
   # Actually run the CLI program.
   system2(
     command = file.path(R.home("bin"), "Rscript"),
     args = c(
       "--vanilla",
       cli_script_file_path,
-      params_yml_path,
-      rcrux_package_path
+      conf$params_yml_path,
+      conf$rcrux_package_path
     )
   )
 
   # Then snapshot the files.
   files_to_snapshot <- list.files(
-    path = output_directory_path,
+    path = conf$output_directory_path,
     full.names = TRUE,
     recursive = TRUE,
     include.dirs = FALSE,
@@ -82,4 +94,40 @@ test_that("rCRUX.R CLI program works", {
       }) %>%
       print()
   })
+})
+
+
+test_that("rCRUX.R CLI program writes a JSONL log file if the env var is set", {
+  conf <- set_up()
+
+  # Write the params.
+  yaml::write_yaml(conf$params, conf$params_yml_path)
+
+  # This is the CLI script.
+  cli_script_file_path <- system.file(
+    package = "rCRUX",
+    "cli",
+    "rCRUX.R"
+  )
+
+  # JSON log file
+  json_logfile <- file.path(conf$output_directory_path, "LOG.jsonl")
+
+  # The log file doesn't exist before the program is run.
+  testthat::expect_false(file.exists(json_logfile))
+
+  # Actually run the CLI program.
+  system2(
+    command = file.path(R.home("bin"), "Rscript"),
+    args = c(
+      "--vanilla",
+      cli_script_file_path,
+      conf$params_yml_path,
+      conf$rcrux_package_path
+    ),
+    env = c(stringr::str_glue("RCRUX_LOG={json_logfile}"))
+  )
+
+  # The log file exists after the program  is run.
+  testthat::expect_true(file.exists(json_logfile))
 })
