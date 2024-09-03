@@ -52,14 +52,15 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
            wildcards,
            num_rounds,
            ...) {
+    rcrux_logger$debug("run_blastdbcmd_blastn_and_aggregate_resuts starting")
 
     # Run blastdbcmd on each sample index
     # sort results into appropriate buckets
     aggregate_fasta <- NULL
-    message(paste("Running blastdbcmd on", length(sample_indices), "samples.\n"))
-    pb <- progress::progress_bar$new(total = length(sample_indices))
+    rcrux_logger$info("Running blastdbcmd on %d samples.", length(sample_indices))
 
     for (index in sample_indices) {
+      rcrux_logger$debug("Working on index %d of %d.", index, length(sample_indices))
 
       fasta <-
         run_blastdbcmd(query_row = blast_seeds_m[index, ],
@@ -89,7 +90,6 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
       else {
         aggregate_fasta <- append(aggregate_fasta, fasta)
       }
-      pb$tick()
     }
 
     save_state(save_dir = save_dir,
@@ -101,8 +101,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
                blast_seeds_m = blast_seeds_m)
 
     if (!is.character(aggregate_fasta)) {
-      #message("aggregate_fasta has value ", aggregate_fasta)
-      message("No useable accession numbers. Proceeding to next round.")
+      rcrux_logger$debug("No useable accession numbers. Proceeding to next round.")
 
     }
     else {
@@ -115,21 +114,15 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
                    ...)
 
       if (nrow(blastn_output) == 0 && length(unsampled_indices) > 0) {
-
-        stop(
-          nrow(blastn_output), " blast hits returned.\n",
-          "\nEither\n\n",
-          "1. blastn is having trouble blasting the number of seeds selected\n",
-          "   with the given set of parameters\n\n",
-          "or\n\n",
-          "2. There were no hits returned for your blastn search because there were no valid matches in the database\n",
-          "  "
+        msg <- rcrux_logger$fatal(
+          "%d blast hits returned.  Either 1) blastn is having trouble blasting the number of seeds selected with the given set of parameters, or 2)  There were no hits returned for your blastn search because there were no valid matches in the database."
         )
+        stop(msg)
 
       }
       else {
 
-        message('  ', nrow(blastn_output), " blast hits returned.")
+        rcrux_logger$debug("%d blast hits returned.", nrow(blastn_output))
 
       }
 
@@ -172,10 +165,12 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     }
 
     # report number of total unique blast hits
-    message('  ', nrow(output_table), " unique blast hits after this round.\n")
+    rcrux_logger$debug("%d unique blast hits after this round.", nrow(output_table))
 
     # add new blast round
     num_rounds <- num_rounds + 1
+
+    rcrux_logger$debug("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
     # update files
     save_state(save_dir = save_dir,
