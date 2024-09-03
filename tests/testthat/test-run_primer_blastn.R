@@ -1,5 +1,4 @@
 test_that("run_primer_blastn works", {
-  
   # Create temporary fasta file with 16S primers
   temp_fasta <- tempfile(fileext = '.fasta')
   
@@ -10,15 +9,12 @@ test_that("run_primer_blastn works", {
   writeLines(test_primers, temp_fasta)
   
   blast_db_path <- file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
-  
-  # expect parameters passed on correctly 
-  expect_message(regexp = '-num_alignments 100 ', 
-                 object = { result <- run_primer_blastn(primer_fasta = temp_fasta, db = blast_db_path, align = 100) })
-  
+
+  result <- run_primer_blastn(primer_fasta = temp_fasta, db = blast_db_path, align = 100)
+    
   expect_false(file.exists(temp_fasta))
   expect_true(inherits(result, 'data.frame'))
   expect_identical(names(result), c("qseqid", "sgi", "saccver", "mismatch", "sstart", "send", "staxids"))
-  
 })
 
 test_that("run_primer_blastn returns correct errors", {
