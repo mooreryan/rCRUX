@@ -101,12 +101,16 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
                             ncbi_bin = NULL, force_db = FALSE,
                             sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = 'genus', max_to_blast = 1000, random_seed = NULL, ...) {
 
+  rcrux_logger$debug("blast_datatable starting")
+
   check_blast_plus_installation(ncbi_bin = if('ncbi_bin' %in% names(list(...))) ncbi_bin else NULL)
   check_blast_db(blast_db_path)
   if (!file.exists(accession_taxa_sql_path)) {
-    stop("accession_taxa_sql_path does not exist.\n",
-         "The path to the taxonomizr SQL file cannot be found. ",
-         "Please revise the path provided:\n", accession_taxa_sql_path)
+    msg <- rcrux_logger$fatal(
+      "The taxonomizr SQL file does not exist.  Please revise the provided path.",
+      accession_taxa_sql_path = accession_taxa_sql_path
+    )
+    stop(msg)
   }
 
   # Default values for tracker variables
@@ -126,11 +130,11 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
   }
 
   if (nrow(blast_seeds_m) < max_to_blast){
-    message(
-      sprintf('max_to_blast = %s', max_to_blast),
-      ' and is greater than the ',
-      sprintf('number of blast seeds = %s. ', nrow(blast_seeds_m)),
-      sprintf('Reducing max_to_blast to %s.\n', nrow(blast_seeds_m))
+    rcrux_logger$debug(
+      "max_to_blast (%d) is greater than the number of blast seeds (%d).  Reducing max_to_blast to %d.",
+      max_to_blast,
+      nrow(blast_seeds_m),
+      nrow(blast_seeds_m)
     )
 
     max_to_blast <- nrow(blast_seeds_m)
@@ -144,7 +148,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
     if (file.exists(unsampled_indicies_file)) {
 
-      message('Previous unsampled indices exist, continuing from there.')
+      rcrux_logger$debug("Previous unsampled indices exist, continuing from there.")
 
       rounds_path <- file.path(save_dir, "num_rounds.txt")
       num_rounds <- as.numeric(readLines(con = rounds_path))
@@ -167,8 +171,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     }
 
     # Information about state of blast
-    message("BLAST round: ", num_rounds)
-    message('  ', length(unsampled_indices), " indices left to process.\n")
+    rcrux_logger$debug("Blasting", round = num_rounds, remaining_indices = length(unsampled_indices))
 
     # Update status of blast seeds by labeling all reads not in the upsampled
     # indicies list as "done"
@@ -238,13 +241,15 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     # clean up messages
     if (rank_number < max_to_blast & nrow(blast_seeds_m) > max_to_blast) {
 
-      message(
-        rank, " has ", rank_number, " unique occurrences in the blast seeds data table.\n",
-        "An additional ", length(filler), " indices will be randomly sampled.\n"
-        # if zero more genera exist, but more indices than the max_to_blast are present
-        # randomly select indices up to the max_to_blast value
-        # accession numbers into a vector
-        # set random.seed for reproducible results
+      # if zero more genera exist, but more indices than the max_to_blast are present
+      # randomly select indices up to the max_to_blast value
+      # accession numbers into a vector
+      # set random.seed for reproducible results
+      rcrux_logger$debug(
+        "%s has %d unique occurrences in the blast seeds data table.  An additional %d indices will be randomly sampled.",
+        rank,
+        rank_number,
+        length(filler)
       )
 
       #seeds_left_indices <-
@@ -259,19 +264,19 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
 
     } else if (length(unsampled_indices) >= max_to_blast & rank_number >= max_to_blast ) {
-      message(
-        rank, " has ", rank_number, " unique occurrences in the blast seeds data table.\n",
-        "These may be subset ...\n"
+      rcrux_logger$debug(
+        "%s has %d unique occurrences in the blast seeds data table.  These may be subset....",
+        rank,
+        rank_number
       )
-
     } else if (length(unsampled_indices) >= max_to_blast & rank_number < 10  ) {
-        message(
-          rank, " has ", rank_number, " unique occurrences in the blast seeds data table.\n",
-          "These remaining indices will be blasted and may be subset ...\n"
-        )
-
+      rcrux_logger$debug(
+        "%s has %d unique occurrences in the blast seeds data table.  These remaining indices will be blasted and may be subset....",
+        rank,
+        rank_number
+      )
     } else {
-      message("The number of unsampled indices is less than or equal to the maximum number to be blasted.\n")
+      rcrux_logger$debug("The number of unsampled indices is less than or equal to the maximum number to be blasted.")
     }
 
 
@@ -325,7 +330,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
       if (length(sample_indices) == length(unsampled_indices)) {
 
-        message('tmp - length(sample_indices) == length(unsampled_indices)\n')
+        rcrux_logger$debug("tmp - length(sample_indices) == length(unsampled_indices)")
 
         run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices,
                                                    save_dir = save_dir,
@@ -347,7 +352,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
       } else if (length(sample_indices) <= max_to_blast) {
 
-        message('tmp - length(sample_indices) <= max_to_blast\n')
+        rcrux_logger$debug("tmp - length(sample_indices) <= max_to_blast")
 
         run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = sample_indices,
                                                    save_dir = save_dir,
@@ -370,7 +375,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
       } else {
 
-        message('tmp - Subsetting sample_indices\n')
+        rcrux_logger$debug("tmp - Subsetting sample_indices")
 
         # take chunks of the sample indices that are equivalent to max_to_blast
         subset <- utils::head(sample_indices, max_to_blast)
@@ -433,6 +438,8 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     suppressWarnings(
       get_taxonomy_from_accession(output_table, accession_taxa_sql_path)
     )
+
+  rcrux_logger$debug("blast_datatable done")
 
   return(output_table_taxonomy)
 
