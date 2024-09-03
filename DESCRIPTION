@@ -50,7 +50,8 @@ Imports:
     phyloseq,
     ggplot2,
     yaml,
-    devtools
+    devtools,
+    lgr
 Remotes:
     cpauvert/psadd
 Encoding: UTF-8
