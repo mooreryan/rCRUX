@@ -56,7 +56,9 @@ rcrux_logger$info("Starting rCRUX pipeline")
 
 rcrux_logger$debug("Pipeline config", config = config)
 
-do.call(what = run_basic_pipeline, args = config)
+# Capture the result here.  This prevents prenting NULL to the console when
+# calling Rscript.
+result <- do.call(what = run_basic_pipeline, args = config)
 
 rcrux_logger$info(
   "rCRUX pipeline done",
