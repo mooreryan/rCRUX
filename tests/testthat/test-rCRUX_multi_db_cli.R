@@ -102,3 +102,39 @@ test_that("rCRUX_multi_db.R CLI program works", {
       print()
   })
 })
+
+
+test_that("rCRUX_multi_db.R CLI program writes a JSONL log file if the env var is set", {
+  conf <- set_up()
+
+  # Write the params.
+  yaml::write_yaml(conf$params, conf$params_yml_path)
+
+  # This is the CLI script.
+  cli_script_file_path <- system.file(
+    package = "rCRUX",
+    "cli",
+    "rCRUX_multi_db.R"
+  )
+
+  # JSON log file
+  json_logfile <- file.path(conf$output_directory_path, "LOG.jsonl")
+
+  # The log file doesn't exist before the program is run.
+  testthat::expect_false(file.exists(json_logfile))
+
+  # Actually run the CLI program.
+  system2(
+    command = file.path(R.home("bin"), "Rscript"),
+    args = c(
+      "--vanilla",
+      cli_script_file_path,
+      conf$params_yml_path,
+      conf$rcrux_package_path
+    ),
+    env = c(stringr::str_glue("RCRUX_LOG={json_logfile}"))
+  )
+
+  # The log file exists after the program  is run.
+  testthat::expect_true(file.exists(json_logfile))
+})
