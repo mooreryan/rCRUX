@@ -52,15 +52,15 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
            wildcards,
            num_rounds,
            ...) {
-    rcrux_logger$debug("run_blastdbcmd_blastn_and_aggregate_resuts starting")
+    rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts starting")
 
     # Run blastdbcmd on each sample index
     # sort results into appropriate buckets
     aggregate_fasta <- NULL
-    rcrux_logger$info("Running blastdbcmd on %d samples.", length(sample_indices))
+    rcrux_log_info("Running blastdbcmd on %d samples.", length(sample_indices))
 
     for (index in sample_indices) {
-      rcrux_logger$debug("Working on index %d of %d.", index, length(sample_indices))
+      rcrux_log_debug("Working on index %d of %d.", index, length(sample_indices))
 
       fasta <-
         run_blastdbcmd(query_row = blast_seeds_m[index, ],
@@ -101,7 +101,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
                blast_seeds_m = blast_seeds_m)
 
     if (!is.character(aggregate_fasta)) {
-      rcrux_logger$debug("No useable accession numbers. Proceeding to next round.")
+      rcrux_log_debug("No useable accession numbers. Proceeding to next round.")
 
     }
     else {
@@ -114,7 +114,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
                    ...)
 
       if (nrow(blastn_output) == 0 && length(unsampled_indices) > 0) {
-        msg <- rcrux_logger$fatal(
+        msg <- rcrux_log_fatal(
           "%d blast hits returned.  Either 1) blastn is having trouble blasting the number of seeds selected with the given set of parameters, or 2)  There were no hits returned for your blastn search because there were no valid matches in the database."
         )
         stop(msg)
@@ -122,7 +122,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
       }
       else {
 
-        rcrux_logger$debug("%d blast hits returned.", nrow(blastn_output))
+        rcrux_log_debug("%d blast hits returned.", nrow(blastn_output))
 
       }
 
@@ -165,12 +165,12 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     }
 
     # report number of total unique blast hits
-    rcrux_logger$debug("%d unique blast hits after this round.", nrow(output_table))
+    rcrux_log_debug("%d unique blast hits after this round.", nrow(output_table))
 
     # add new blast round
     num_rounds <- num_rounds + 1
 
-    rcrux_logger$debug("run_blastdbcmd_blastn_and_aggregate_resuts done")
+    rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
     # update files
     save_state(save_dir = save_dir,

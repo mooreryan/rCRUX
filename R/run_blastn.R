@@ -38,7 +38,7 @@
 
 run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
                        evalue = 1e-6, align = 50000, coverage = 50, perID = 70, num_threads = 1) {
-  rcrux_logger$debug("run_blastn starting")
+  rcrux_log_debug("run_blastn starting")
 
 
   if (!is.null(ncbi_bin)){
@@ -81,8 +81,8 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
     "-num_threads ", cores
   )
 
-  rcrux_logger$info("Calling blastn. This may take a long time.")
-  rcrux_logger$debug("Running blastn", blastn = blastn, args = args)
+  rcrux_log_info("Calling blastn. This may take a long time.")
+  rcrux_log_debug("Running blastn", blastn = blastn, args = args)
 
   blastn_output <-
     system2(command = blastn,
@@ -107,7 +107,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
       "evalue",
       "BLAST_db_taxids")
 
-  rcrux_logger$debug("run_blastn done")
+  rcrux_log_debug("run_blastn done")
 
   # blastn_output is a tab-delimited string, we need split it into columns
   # as_tibble creates a one-column tibble with "value" as its col name

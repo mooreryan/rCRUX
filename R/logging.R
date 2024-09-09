@@ -45,9 +45,9 @@ make_log_function <- function(log_fn) {
 }
 
 # Set up logging facade.
-log_fatal <- make_log_function(rcrux_logger$fatal)
-log_error <- make_log_function(rcrux_logger$error)
-log_warn <- make_log_function(rcrux_logger$warn)
-log_info <- make_log_function(rcrux_logger$info)
-log_debug <- make_log_function(rcrux_logger$debug)
-log_trace <- make_log_function(rcrux_logger$trace)
+rcrux_log_fatal <- make_log_function(rcrux_logger$fatal)
+rcrux_log_error <- make_log_function(rcrux_logger$error)
+rcrux_log_warn <- make_log_function(rcrux_logger$warn)
+rcrux_log_info <- make_log_function(rcrux_logger$info)
+rcrux_log_debug <- make_log_function(rcrux_logger$debug)
+rcrux_log_trace <- make_log_function(rcrux_logger$trace)

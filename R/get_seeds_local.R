@@ -223,7 +223,7 @@ get_seeds_local <-
     random_seed = NULL,
     # run_primer_blastn parameters
     ...) {
-    rcrux_logger$debug("get_seeds_local starting")
+    rcrux_log_debug("get_seeds_local starting")
 
     dots <- list(...)
 
@@ -232,7 +232,7 @@ get_seeds_local <-
     if (!dir.exists(output_directory_path)){
       dir.create(output_directory_path)
     }  else{
-      rcrux_logger$debug(
+      rcrux_log_debug(
         "Output directory already exists", 
         output_directory = output_directory_path
       )
@@ -241,7 +241,7 @@ get_seeds_local <-
     out <- file.path(output_directory_path, "get_seeds_local")
     dir.create(out, showWarnings = FALSE)
 
-    rcrux_logger$debug(
+    rcrux_log_debug(
       "get_seeds_local output directory",
       output_directory = out
     )
@@ -252,7 +252,7 @@ get_seeds_local <-
     check_blast_db(blast_db_path, ncbi_bin = if('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
 
     if (!file.exists(accession_taxa_sql_path)) {
-      msg <- rcrux_logger$fatal(
+      msg <- rcrux_log_fatal(
         "The taxonomizr SQL file does not exist.  Please revise the provided path.",
         accession_taxa_sql_path = accession_taxa_sql_path
       )
@@ -270,8 +270,8 @@ get_seeds_local <-
     no_previous_files_to_blast <- !file.exists(left_to_blast_path)
 
     if (no_previous_files_to_blast) {
-      rcrux_logger$debug("No previous primer blast files found. Starting pipeline from beginning.")
-      rcrux_logger$info("Examining primers for degenerate bases.")
+      rcrux_log_debug("No previous primer blast files found. Starting pipeline from beginning.")
+      rcrux_log_info("Examining primers for degenerate bases.")
 
       # add multiple primers and or get the possible combinations for degenerate primers using functions in primer tree
       fPrimer <- NULL
@@ -295,7 +295,7 @@ get_seeds_local <-
 
       #subset primers if user so chooses
       if (nforward > num_fprimers_to_blast){
-        rcrux_logger$debug(
+        rcrux_log_debug(
           "Forward primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_fprimers_to_blast.",
           nforward,
           num_fprimers_to_blast
@@ -310,14 +310,14 @@ get_seeds_local <-
 
       } else {
 
-        rcrux_logger$debug("%d forward primer(s) will be blasted", nforward)
+        rcrux_log_debug("%d forward primer(s) will be blasted", nforward)
 
         forward_sample = fPrimer
       }
 
       if(nreverse > num_rprimers_to_blast){
 
-        rcrux_logger$debug(
+        rcrux_log_debug(
           "Reverse primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_rprimers_to_blast.",
           nreverse,
           num_rprimers_to_blast
@@ -332,7 +332,7 @@ get_seeds_local <-
 
       }  else {
 
-        rcrux_logger$debug("%d reverse primer(s) will be blasted", nreverse)
+        rcrux_log_debug("%d reverse primer(s) will be blasted", nreverse)
 
         reverse_sample = rPrimer
       }
@@ -364,7 +364,7 @@ get_seeds_local <-
 
     } else {
 
-      rcrux_logger$debug("Previous primer blast files found. Continuing from there.")
+      rcrux_log_debug("Previous primer blast files found. Continuing from there.")
       fasta_path = left_to_blast_path
       append_table = utils::read.csv(append_table_path, colClasses = "character")
 
@@ -372,7 +372,7 @@ get_seeds_local <-
 
     input <- readr::read_lines(fasta_path)
 
-    rcrux_logger$debug(
+    rcrux_log_debug(
       "Reads will be blasted in subsets of up to %d read(s).  To change this, modify max_to_blast.", 
       max_to_blast
     )
@@ -419,13 +419,13 @@ get_seeds_local <-
     unlink(left_to_blast_path)
     unlink(to_blast_path)
 
-    rcrux_logger$info("Blasting complete.  Wrangling results.")
+    rcrux_log_info("Blasting complete.  Wrangling results.")
 
     append_table <- utils::read.csv(append_table_path, colClasses = "character")
 
     # if output table is empty and give warning and stop
     if (nrow(append_table) <= 1){
-      msg <- rcrux_logger$fatal(
+      msg <- rcrux_log_fatal(
         "No blast output generated.  Either no hits were found, or your compute environment could not support memory needs of the blastn step.  Try modifying parameters to reduce blast returns (e.g. align, max_to_blast, evalue, etc.)"
       )
       stop(msg)
@@ -526,7 +526,7 @@ final_table <-
 
     # if table is empty and give warning and stop
     if (nrow( final_table ) <= 1){
-      msg <- rcrux_logger$fatal(
+      msg <- rcrux_log_fatal(
         "No plausible amplicons were found.  Try modifying parameters to increase blast returns (e.g. num_fprimers_to_blast, num_rprimers_to_blast, align, evalue, etc.)"
       )
       stop(msg)
@@ -545,7 +545,7 @@ final_table <-
 
     # if table is empty and give warning and stop
     if (nrow( f_and_r ) <= 1){
-      msg <- rcrux_logger$fatal(
+      msg <- rcrux_log_fatal(
         "Filtering removed all plausible amplicons.  Try modifying parameters to allow more amplicons to pass filter (e.g. minimum_length, maximum_length, mismatch, etc.)"
       )
       stop(msg)
@@ -556,7 +556,7 @@ final_table <-
 
     # issue with taxonomizr remove.file that leads to warnings that can be omitted
     # TODO: debug or info?
-    rcrux_logger$info("Attaching taxonomies.")
+    rcrux_log_info("Attaching taxonomies.")
 
     taxonomized_table <-
       suppressWarnings(
@@ -582,7 +582,7 @@ final_table <-
 
     unlink(append_table_path)
 
-    rcrux_logger$info('get_seeds_local done')
+    rcrux_log_info('get_seeds_local done')
 
     # return if you're supposed to
     if (return_table) {

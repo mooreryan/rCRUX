@@ -18,7 +18,7 @@ run_basic_pipeline <- function(
     args_get_seeds_local,
     # A list of arguments that is passed only to blast_seeds
     args_blast_seeds) {
-  rcrux_logger$debug("run_basic_pipeline starting")
+  rcrux_log_debug("run_basic_pipeline starting")
 
   # These paths are "known" values given the get_seeds_local and blast_seeds
   # functions.  If those change, this will also need to be changed.
@@ -35,7 +35,7 @@ run_basic_pipeline <- function(
     "summary.csv"
   )
 
-  rcrux_logger$info("Getting seeds")
+  rcrux_log_info("Getting seeds")
   # Get seeds
   do.call(
     what = get_seeds_local,
@@ -52,7 +52,7 @@ run_basic_pipeline <- function(
     )
   )
 
-  rcrux_logger$info("Blasting seeds")
+  rcrux_log_info("Blasting seeds")
   # BLAST seeds
   do.call(
     what = blast_seeds,
@@ -68,14 +68,14 @@ run_basic_pipeline <- function(
     )
   )
 
-  rcrux_logger$info("Derepping and cleaning DB")
+  rcrux_log_info("Derepping and cleaning DB")
   derep_and_clean_db(
     output_directory_path = output_directory_path,
     summary_path = summary_path,
     metabarcode_name = metabarcode_name
   )
 
-  rcrux_logger$debug("run_basic_pipeline done")
+  rcrux_log_debug("run_basic_pipeline done")
 
   NULL
 }
