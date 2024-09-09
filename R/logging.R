@@ -54,26 +54,49 @@ make_log_function <- function(log_fn) {
   }
 }
 
+rcrux_logger_namespace <- "rCRUX"
+
 # Set up logging facade.
-rcrux_log_fatal <- make_log_function(logger::log_fatal)
-rcrux_log_error <- make_log_function(logger::log_error)
-rcrux_log_warn <- make_log_function(logger::log_warn)
-rcrux_log_info <- make_log_function(logger::log_info)
-rcrux_log_debug <- make_log_function(logger::log_debug)
-rcrux_log_trace <- make_log_function(logger::log_trace)
+rcrux_log_fatal <- make_log_function(function(...) {
+  logger::log_fatal(..., namespace = rcrux_logger_namespace)
+})
+rcrux_log_error <- make_log_function(function(...) {
+  logger::log_error(..., namespace = rcrux_logger_namespace)
+})
+rcrux_log_warn <- make_log_function(function(...) {
+  logger::log_warn(..., namespace = rcrux_logger_namespace)
+})
+rcrux_log_info <- make_log_function(function(...) {
+  logger::log_info(..., namespace = rcrux_logger_namespace)
+})
+rcrux_log_debug <- make_log_function(function(...) {
+  logger::log_debug(..., namespace = rcrux_logger_namespace)
+})
+rcrux_log_trace <- make_log_function(function(...) {
+  logger::log_trace(..., namespace = rcrux_logger_namespace)
+})
 
 set_up_logger <- function() {
-  logger::log_threshold(logger::INFO)
-  logger::log_formatter(logger::formatter_json)
+  logger::log_threshold(logger::INFO, namespace = rcrux_logger_namespace)
+  logger::log_formatter(
+    logger::formatter_json,
+    namespace = rcrux_logger_namespace
+  )
 
   logfile <- Sys.getenv("RCRUX_LOG")
   if (logfile != "") {
-    logger::log_threshold(logger::TRACE, index = 2)
+    logger::log_threshold(
+      logger::TRACE,
+      namespace = rcrux_logger_namespace, index = 2
+    )
 
     logfile |>
       logger::appender_file() |>
-      logger::log_appender(index = 2)
+      logger::log_appender(namespace = rcrux_logger_namespace, index = 2)
 
-    logger::log_layout(logger::layout_json_parser(), index = 2)
+    logger::log_layout(
+      logger::layout_json_parser(),
+      namespace = rcrux_logger_namespace, index = 2
+    )
   }
 }
