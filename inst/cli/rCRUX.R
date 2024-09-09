@@ -41,15 +41,7 @@ if (!dir.exists(config$output_directory_path)) {
   )
 }
 
-logfile <- Sys.getenv("RCRUX_LOG")
-if (logfile != "") {
-  rcrux_logger$add_appender(
-    lgr::AppenderJson$new(file = logfile),
-    name = "json"
-  )
-}
-
-rcrux_logger$set_threshold("all")
+set_up_logger()
 
 # This check is repeated here because we want the note about local rCRUX to be
 # included in the specified logfile.

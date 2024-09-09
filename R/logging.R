@@ -51,3 +51,15 @@ rcrux_log_warn <- make_log_function(rcrux_logger$warn)
 rcrux_log_info <- make_log_function(rcrux_logger$info)
 rcrux_log_debug <- make_log_function(rcrux_logger$debug)
 rcrux_log_trace <- make_log_function(rcrux_logger$trace)
+
+set_up_logger <- function() {
+  logfile <- Sys.getenv("RCRUX_LOG")
+  if (logfile != "") {
+    rcrux_logger$add_appender(
+      lgr::AppenderJson$new(file = logfile),
+      name = "json"
+    )
+  }
+
+  rcrux_logger$set_threshold("all")
+}
