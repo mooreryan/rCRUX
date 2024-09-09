@@ -1,10 +1,11 @@
-# Make the logger globally available as `rcrux_logger` when the package is
-# loaded.
+rcrux_logger_namespace <- "rCRUX"
+
 .onLoad <- function(...) {
-  assign(
-    "rcrux_logger",
-    lgr::get_logger("rCRUX"),
-    envir = parent.env(environment())
+  # JSON formatter for logger is set on package load because the log message
+  # formatter is specific to the way rCRUX does logging calls.
+  logger::log_formatter(
+    logger::formatter_json,
+    namespace = rcrux_logger_namespace
   )
 }
 
@@ -53,8 +54,6 @@ make_log_function <- function(log_fn) {
     invisible(NULL)
   }
 }
-
-rcrux_logger_namespace <- "rCRUX"
 
 # Set up logging facade.
 rcrux_log_fatal <- make_log_function(function(...) {
