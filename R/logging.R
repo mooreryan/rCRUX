@@ -12,6 +12,16 @@ get_logfile_lock <- function() {
   get0("rcrux_logfile_lock", envir = globalenv(), mode = "character")
 }
 
+
+assign_logfile_lock <- function() {
+  lockfile <- tempfile("rcrux_log_", fileext = ".lock")
+
+  assign("rcrux_logfile_lock", value = lockfile, envir = globalenv())
+
+  lockfile
+}
+
+
 make_log_function <- function(log_fn) {
   function(...) {
     logfile_lock <- get_logfile_lock()
@@ -45,21 +55,25 @@ make_log_function <- function(log_fn) {
 }
 
 # Set up logging facade.
-rcrux_log_fatal <- make_log_function(rcrux_logger$fatal)
-rcrux_log_error <- make_log_function(rcrux_logger$error)
-rcrux_log_warn <- make_log_function(rcrux_logger$warn)
-rcrux_log_info <- make_log_function(rcrux_logger$info)
-rcrux_log_debug <- make_log_function(rcrux_logger$debug)
-rcrux_log_trace <- make_log_function(rcrux_logger$trace)
+rcrux_log_fatal <- make_log_function(logger::log_fatal)
+rcrux_log_error <- make_log_function(logger::log_error)
+rcrux_log_warn <- make_log_function(logger::log_warn)
+rcrux_log_info <- make_log_function(logger::log_info)
+rcrux_log_debug <- make_log_function(logger::log_debug)
+rcrux_log_trace <- make_log_function(logger::log_trace)
 
 set_up_logger <- function() {
+  logger::log_threshold(logger::INFO)
+  logger::log_formatter(logger::formatter_json)
+
   logfile <- Sys.getenv("RCRUX_LOG")
   if (logfile != "") {
-    rcrux_logger$add_appender(
-      lgr::AppenderJson$new(file = logfile),
-      name = "json"
-    )
-  }
+    logger::log_threshold(logger::TRACE, index = 2)
 
-  rcrux_logger$set_threshold("all")
+    logfile |>
+      logger::appender_file() |>
+      logger::log_appender(index = 2)
+
+    logger::log_layout(logger::layout_json_parser(), index = 2)
+  }
 }

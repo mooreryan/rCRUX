@@ -35,6 +35,9 @@ if (!dir.exists(config$output_directory_path)) {
 
 
 set_up_logger()
+# Locking must be set up in the multi DB pipeline as it will be logging to a
+# single logfile from multiple processes.
+logfile_lock <- assign_logfile_lock()
 
 # This check is repeated here because we want the note about local rCRUX to be
 # included in the specified logfile.
@@ -56,3 +59,7 @@ rcrux_log_info(
   output_directory = config$output_directory_path,
   collated_output_directory = collated_output_directory
 )
+
+if (file.exists(logfile_lock)) {
+  unlink(logfile_lock)
+}

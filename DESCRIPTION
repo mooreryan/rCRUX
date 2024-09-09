@@ -51,7 +51,8 @@ Imports:
     ggplot2,
     yaml,
     devtools,
-    lgr
+    logger,
+    jsonlite
 Remotes:
     cpauvert/psadd
 Encoding: UTF-8
