@@ -123,6 +123,8 @@ test_that("rCRUX_multi_db.R CLI program writes a JSONL log file if the env var i
   # The log file doesn't exist before the program is run.
   testthat::expect_false(file.exists(json_logfile))
 
+  Sys.setenv(RCRUX_LOG = json_logfile)
+
   # Actually run the CLI program.
   system2(
     command = file.path(R.home("bin"), "Rscript"),
@@ -131,10 +133,16 @@ test_that("rCRUX_multi_db.R CLI program writes a JSONL log file if the env var i
       cli_script_file_path,
       conf$params_yml_path,
       conf$rcrux_package_path
-    ),
-    env = c(stringr::str_glue("RCRUX_LOG={json_logfile}"))
+    )
   )
 
   # The log file exists after the program  is run.
   testthat::expect_true(file.exists(json_logfile))
+
+  # Clean up
+  Sys.unsetenv("RCRUX_LOG")
+
+  if (file.exists(json_logfile)) {
+    unlink(json_logfile)
+  }
 })
