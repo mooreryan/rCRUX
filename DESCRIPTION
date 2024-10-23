@@ -52,7 +52,8 @@ Imports:
     yaml,
     devtools,
     logger,
-    jsonlite
+    jsonlite,
+    filelock
 Remotes:
     cpauvert/psadd
 Encoding: UTF-8
