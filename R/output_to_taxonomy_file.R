@@ -14,8 +14,8 @@ output_to_taxonomy_file <- function(table_path, metabarcode, out_dir) {
   output_table <- utils::read.table(table_path, header = T, sep = ",")
 
   output_table <- output_table %>%
-    dplyr::select('accession', 'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') %>%
-    tidyr::unite(col = 'taxonomic_path', 'superkingdom':'species', sep = ";", remove = TRUE, na.rm = FALSE) %>%
+    dplyr::select("accession", "superkingdom", "phylum", "class", "order", "family", "genus", "species") %>%
+    tidyr::unite(col = "taxonomic_path", "superkingdom":"species", sep = ";", remove = TRUE, na.rm = FALSE) %>%
     dplyr::slice(-1)
 
   taxa_table_path <- file.path(out_dir, paste0(metabarcode, "_taxonomy.txt"))

@@ -99,10 +99,10 @@
 
 blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa_sql_path,
                             ncbi_bin = NULL, force_db = FALSE,
-                            sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = 'genus', max_to_blast = 1000, random_seed = NULL, ...) {
+                            sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = "genus", max_to_blast = 1000, random_seed = NULL, ...) {
   rcrux_log_debug("blast_datatable starting")
 
-  check_blast_plus_installation(ncbi_bin = if ('ncbi_bin' %in% names(list(...))) ncbi_bin else NULL)
+  check_blast_plus_installation(ncbi_bin = if ("ncbi_bin" %in% names(list(...))) ncbi_bin else NULL)
   check_blast_db(blast_db_path)
   if (!file.exists(accession_taxa_sql_path)) {
     msg <- rcrux_log_fatal(
@@ -178,7 +178,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     # the blast seed table will be randomly sampled by taxonomic ranks
     if (length(unsampled_indices) <= max_to_blast) {
       sample_indices <- unsampled_indices
-    } else if (rank == 'all') {
+    } else if (rank == "all") {
       sample_indices <- unsampled_indices
       rank_number <- length(sample_indices)
     } else {
@@ -189,7 +189,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
       seeds_by_rank_indices <-
         blast_seeds_m %>%
-        dplyr::filter(.data$blast_status == 'not_done') %>%
+        dplyr::filter(.data$blast_status == "not_done") %>%
         dplyr::group_by(!!!rlang::syms(rank)) %>%
         dplyr::slice_sample(n = sample_size) %>%
         dplyr::pull(.data$accession)
@@ -200,11 +200,11 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
 
       if (rank_number < max_to_blast & nrow(blast_seeds_m) > max_to_blast) {
-        remainder = max_to_blast - rank_number - 1
+        remainder <- max_to_blast - rank_number - 1
 
         filler <-
           blast_seeds_m %>%
-          dplyr::filter(.data$blast_status == 'not_done') %>%
+          dplyr::filter(.data$blast_status == "not_done") %>%
           dplyr::filter(!.data$accession %in% seeds_by_rank_indices) %>%
           dplyr::slice_sample(n = remainder) %>%
           dplyr::pull(.data$accession)

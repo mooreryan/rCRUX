@@ -102,8 +102,8 @@ There are two options to generate seeds for the database generating blast step b
 This example uses default parameters, with the exception of evalue to minimize run time.
 
 ```{r run get_seeds_local()}
-forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-reverse_primer_seq = "TTAGATACCCCACTATGC"
+forward_primer_seq <- "TAGAACAGGCTCCTCTAG"
+reverse_primer_seq <- "TTAGATACCCCACTATGC"
 output_directory_path <- "/my/directory/12S_V5F1_local_111122_e300" # path to desired output directory
 metabarcode_name <- "12S_V5F1" # desired name of metabarcode locus
 accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql" # path to taxonomizr sql database
@@ -151,9 +151,9 @@ This example uses default parameters to minimize run time.
 Searching jawless vertebrates (taxid: "1476529") and jawed vertebrates (taxid: "7776").
 
 ```{r run get_seeds_remote()}
-forward_primer_seq = "TAGAACAGGCTCCTCTAG"
+forward_primer_seq <- "TAGAACAGGCTCCTCTAG"
 
-reverse_primer_seq = "TTAGATACCCCACTATGC"
+reverse_primer_seq <- "TTAGATACCCCACTATGC"
 
 output_directory_path <- "/my/directory/12S_V5F1_remote_111122" # path to desired output directory
 
@@ -192,13 +192,13 @@ Iterative searches are based on a stratified random sampling unique taxonomic gr
 
 
 ```{r run blast_seeds()}
-seeds_output_path <- '/my/directory/12S_V5F1_remote_111122/12S_V5F1_filtered_get_seeds_remote_output_with_taxonomy.csv' # this is output from get_seeds_local or get_seeds_remote
+seeds_output_path <- "/my/directory/12S_V5F1_remote_111122/12S_V5F1_filtered_get_seeds_remote_output_with_taxonomy.csv" # this is output from get_seeds_local or get_seeds_remote
 
 blast_db_path <- "/my/directory/blast_database/nt" # path to blast formatted database
 
 accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql" # path to taxonomizr sql database
 
-output_directory_path <- '/my/directory/12S_V5F1_remote_111122/' # path to desired output directory
+output_directory_path <- "/my/directory/12S_V5F1_remote_111122/" # path to desired output directory
 
 metabarcode_name <- "12S_V5F1" # desired name of metabarcode locus
 
@@ -244,7 +244,7 @@ There will be variability between runs due to primer blast return parameters and
 This function takes the output of blast_seeds and de-replicates identical sequences and collapses ambiguous taxonomy to generate a clean reference database.
 
 ```{r run derep_and_clean_db()}
-output_directory_path <- '/my/directory/12S_V5F1_remote_111122/' # path to desired output directory
+output_directory_path <- "/my/directory/12S_V5F1_remote_111122/" # path to desired output directory
 
 summary_path <- "/my/directory/12S_V5F1_remote_111122/blast_seeds_output/summary.csv" # this is the path to the output from blast_seeds
 

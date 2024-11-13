@@ -68,7 +68,7 @@ derep_and_clean_db <- function(output_directory_path, summary_path, metabarcode_
   summary <- utils::read.csv(summary_path)
 
   # get relevant df to work with
-  summary <- dplyr::select(summary, 'accession', 'amplicon_length', 'sequence', 'taxid', 'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+  summary <- dplyr::select(summary, "accession", "amplicon_length", "sequence", "taxid", "superkingdom", "phylum", "class", "order", "family", "genus", "species")
 
   # remove hyphens from sequence
   summary <- dplyr::mutate(summary, sequence = gsub("-", "", .data$sequence))
@@ -116,13 +116,13 @@ derep_and_clean_db <- function(output_directory_path, summary_path, metabarcode_
   sub_dups <-
     dplyr::filter(
       phy_sum,
-      grepl(', ', .data$superkingdom) |
-        grepl(', ', .data$phylum) |
-        grepl(', ', .data$class) |
-        grepl(', ', .data$order) |
-        grepl(', ', .data$family) |
-        grepl(', ', .data$genus) |
-        grepl(', ', .data$species)
+      grepl(", ", .data$superkingdom) |
+        grepl(", ", .data$phylum) |
+        grepl(", ", .data$class) |
+        grepl(", ", .data$order) |
+        grepl(", ", .data$family) |
+        grepl(", ", .data$genus) |
+        grepl(", ", .data$species)
     )
 
 

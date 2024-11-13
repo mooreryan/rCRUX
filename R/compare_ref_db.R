@@ -101,7 +101,7 @@ compare_ref_db <-
     ref_db_1 <-
       utils::read.table(ref_db_1_path, header = F, sep = "\t") %>%
       tibble::as_tibble() %>%
-      dplyr::rename(accession = 'V1', sum.taxonomy = 'V2') %>%
+      dplyr::rename(accession = "V1", sum.taxonomy = "V2") %>%
       tidyr::separate(
         .data$sum.taxonomy,
         into = c(
@@ -119,7 +119,7 @@ compare_ref_db <-
     ref_db_2 <-
       utils::read.table(ref_db_2_path, header = F, sep = "\t") %>%
       tibble::as_tibble() %>%
-      dplyr::rename(accession = 'V1', sum.taxonomy = 'V2') %>%
+      dplyr::rename(accession = "V1", sum.taxonomy = "V2") %>%
       tidyr::separate(
         .data$sum.taxonomy,
         into = c(
@@ -233,26 +233,26 @@ compare_ref_db <-
     combined_data_long %>%
       dplyr::select(.data$sample_Sample) %>%
       dplyr::distinct() %>%
-      as.data.frame -> sampledata
+      as.data.frame() -> sampledata
 
     rownames(sampledata) <- sampledata$sample_Sample
     phyloseq::sample_data(sampledata) -> sampledata
 
     # add TAXonomy
     combined_data_long %>%
-      dplyr::select(-c('sample_Sample', 'Detected', 'accession')) %>%
-      dplyr::select('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'number') %>%
+      dplyr::select(-c("sample_Sample", "Detected", "accession")) %>%
+      dplyr::select("superkingdom", "phylum", "class", "order", "family", "genus", "species", "number") %>%
       dplyr::distinct() -> taxonomy_table
 
 
     taxonomy_table %>% as.matrix() -> taxonomy_table_mat
     rownames(taxonomy_table_mat) <- taxonomy_table$number
 
-    TAX = phyloseq::tax_table(taxonomy_table_mat[, -length(colnames(taxonomy_table_mat))])
+    TAX <- phyloseq::tax_table(taxonomy_table_mat[, -length(colnames(taxonomy_table_mat))])
 
     # add ASV table
     combined_data_long %>%
-      dplyr::select('number', 'sample_Sample', 'Detected') %>%
+      dplyr::select("number", "sample_Sample", "Detected") %>%
       tidyr::pivot_wider(names_from = "sample_Sample", values_from = "Detected") -> combined_wide
 
     combined_wide %>%
@@ -261,22 +261,22 @@ compare_ref_db <-
 
     rownames(otu_table) <- combined_wide$number
 
-    OTU = phyloseq::otu_table(otu_table, taxa_are_rows = TRUE)
-    physeq_obj = phyloseq::phyloseq(OTU, TAX, sampledata)
+    OTU <- phyloseq::otu_table(otu_table, taxa_are_rows = TRUE)
+    physeq_obj <- phyloseq::phyloseq(OTU, TAX, sampledata)
 
     # error if there are zero differences
-    physeq_obj_diff = phyloseq::prune_taxa(phyloseq::taxa_sums(physeq_obj) < 2, physeq_obj)
+    physeq_obj_diff <- phyloseq::prune_taxa(phyloseq::taxa_sums(physeq_obj) < 2, physeq_obj)
 
     phyloseq::sample_data(physeq_obj_diff)$sample_Sample <- c(paste("Unique_to_", ref_db_1_name), paste("Unique_to_", ref_db_2_name))
     phyloseq::sample_names(physeq_obj_diff) <- c(paste("Unique_to_", ref_db_1_name), paste("Unique_to_", ref_db_2_name))
 
     # plot Phyloseq object
     psadd::plot_krona(physeq_obj_diff, paste0(out_dir, "db_comparison_unique"), "sample_Sample", trim = T)
-    i = 1
+    i <- 1
 
-    physeq_obj_int = phyloseq::prune_taxa(phyloseq::taxa_sums(physeq_obj) > 1, physeq_obj)
+    physeq_obj_int <- phyloseq::prune_taxa(phyloseq::taxa_sums(physeq_obj) > 1, physeq_obj)
     names <- phyloseq::sample_names(physeq_obj_int)
-    physeq_obj_int_2 = phyloseq::prune_samples(names[1], physeq_obj_int)
+    physeq_obj_int_2 <- phyloseq::prune_samples(names[1], physeq_obj_int)
 
     phyloseq::sample_data(physeq_obj_int_2)$sample_Sample <- c("Overlapping_Accessions")
     phyloseq::sample_names(physeq_obj_int_2) <- c("Overlapping_Accessions")

@@ -134,8 +134,8 @@
 #' \dontrun{
 #' # Non degenerate primer example: 12S_V5F1 (Riaz et al. 2011)
 #'
-#' forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-#' reverse_primer_seq = "TTAGATACCCCACTATGC"
+#' forward_primer_seq <- "TAGAACAGGCTCCTCTAG"
+#' reverse_primer_seq <- "TTAGATACCCCACTATGC"
 #' output_directory_path <- "/my/directory/12S_V5F1_local_111122_species_750"
 #' metabarcode_name <- "12S_V5F1"
 #' accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql"
@@ -174,7 +174,7 @@
 #'   blast_db_path,
 #'   minimum_length = 200,
 #'   maximum_length = 400,
-#'   aligns = '10000',
+#'   aligns = "10000",
 #'   num_rprimers_to_blast = 200,
 #'   num_rprimers_to_blast = 2000,
 #'   max_to_blast = 10
@@ -205,26 +205,25 @@
 #' # blasting one at a time is more feasible for personal computers with 16 GB RAM
 #' }
 get_seeds_local <-
-  function(
-      # I/O parameters
-      forward_primer_seq,
-      reverse_primer_seq,
-      metabarcode_name,
-      output_directory_path,
-      accession_taxa_sql_path,
-      blast_db_path,
-      return_table = TRUE,
-      # Output filtering parameters
-      mismatch = 6,
-      minimum_length = 5,
-      maximum_length = 500,
-      # primer_specificity_database = "nt",
-      num_fprimers_to_blast = 50,
-      num_rprimers_to_blast = 50,
-      max_to_blast = 2,
-      random_seed = NULL,
-      # run_primer_blastn parameters
-      ...) {
+  function( # I/O parameters
+           forward_primer_seq,
+           reverse_primer_seq,
+           metabarcode_name,
+           output_directory_path,
+           accession_taxa_sql_path,
+           blast_db_path,
+           return_table = TRUE,
+           # Output filtering parameters
+           mismatch = 6,
+           minimum_length = 5,
+           maximum_length = 500,
+           # primer_specificity_database = "nt",
+           num_fprimers_to_blast = 50,
+           num_rprimers_to_blast = 50,
+           max_to_blast = 2,
+           random_seed = NULL,
+           # run_primer_blastn parameters
+           ...) {
     rcrux_log_debug("get_seeds_local starting")
 
     dots <- list(...)
@@ -249,9 +248,9 @@ get_seeds_local <-
     )
 
     # Check paths provided
-    check_blast_plus_installation(ncbi_bin = if ('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
+    check_blast_plus_installation(ncbi_bin = if ("ncbi_bin" %in% names(dots)) dots$ncbi_bin else NULL)
 
-    check_blast_db(blast_db_path, ncbi_bin = if ('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
+    check_blast_db(blast_db_path, ncbi_bin = if ("ncbi_bin" %in% names(dots)) dots$ncbi_bin else NULL)
 
     if (!file.exists(accession_taxa_sql_path)) {
       msg <- rcrux_log_fatal(
@@ -280,13 +279,13 @@ get_seeds_local <-
       rPrimer <- NULL
 
       for (pf in forward_primer_seq) {
-        forward_primers = enumerate_ambiguity(pf)
+        forward_primers <- enumerate_ambiguity(pf)
         forward.df <- data.frame(forward = forward_primers, stringsAsFactors = FALSE)
         fPrimer <- rbind(fPrimer, forward.df)
       }
 
       for (pr in reverse_primer_seq) {
-        reverse_primers = enumerate_ambiguity(pr)
+        reverse_primers <- enumerate_ambiguity(pr)
         reverse.df <- data.frame(reverse = reverse_primers, stringsAsFactors = FALSE)
         rPrimer <- rbind(rPrimer, reverse.df)
       }
@@ -308,11 +307,11 @@ get_seeds_local <-
           set.seed(random_seed)
         }
 
-        forward_sample = dplyr::sample_n(fPrimer, num_fprimers_to_blast, replace = FALSE)
+        forward_sample <- dplyr::sample_n(fPrimer, num_fprimers_to_blast, replace = FALSE)
       } else {
         rcrux_log_debug("%d forward primer(s) will be blasted", nforward)
 
-        forward_sample = fPrimer
+        forward_sample <- fPrimer
       }
 
       if (nreverse > num_rprimers_to_blast) {
@@ -327,11 +326,11 @@ get_seeds_local <-
           set.seed(random_seed)
         }
 
-        reverse_sample = dplyr::sample_n(rPrimer, num_rprimers_to_blast, replace = FALSE)
+        reverse_sample <- dplyr::sample_n(rPrimer, num_rprimers_to_blast, replace = FALSE)
       } else {
         rcrux_log_debug("%d reverse primer(s) will be blasted", nreverse)
 
-        reverse_sample = rPrimer
+        reverse_sample <- rPrimer
       }
 
       # forward fasta first
@@ -362,8 +361,8 @@ get_seeds_local <-
         )
     } else {
       rcrux_log_debug("Previous primer blast files found. Continuing from there.")
-      fasta_path = left_to_blast_path
-      append_table = utils::read.csv(append_table_path, colClasses = "character")
+      fasta_path <- left_to_blast_path
+      append_table <- utils::read.csv(append_table_path, colClasses = "character")
     }
 
     input <- readr::read_lines(fasta_path)
@@ -384,7 +383,7 @@ get_seeds_local <-
       }
 
       # make and write subset to blast file
-      to_blast = input[(0:remove)]
+      to_blast <- input[(0:remove)]
       writeLines(to_blast, to_blast_path)
 
       # blast the subset
@@ -402,7 +401,7 @@ get_seeds_local <-
         dplyr::distinct(.data$saccver, .data$sstart, .keep_all = TRUE)
 
       # update the file that contains primers to be blasted
-      input = input[-(0:remove)]
+      input <- input[-(0:remove)]
       # stats::na.omit(input)
       writeLines(input, left_to_blast_path)
 
@@ -428,7 +427,7 @@ get_seeds_local <-
       stop(msg)
     }
 
-    subset = 10000
+    subset <- 10000
 
 
     sorted <- dplyr::arrange(append_table, saccver, send, mismatch)
@@ -484,24 +483,24 @@ get_seeds_local <-
 
       F_only <-
         sub %>%
-        dplyr::filter(grepl('forward', .data$qseqid)) %>%
+        dplyr::filter(grepl("forward", .data$qseqid)) %>%
         dplyr::rename(
-          gi = 'sgi',
-          accession = 'saccver',
-          mismatch_forward = 'mismatch',
-          forward_start = 'sstart',
-          forward_stop = 'send'
+          gi = "sgi",
+          accession = "saccver",
+          mismatch_forward = "mismatch",
+          forward_start = "sstart",
+          forward_stop = "send"
         )
 
       R_only <-
         sub %>%
-        dplyr::filter(grepl('reverse', .data$qseqid)) %>%
+        dplyr::filter(grepl("reverse", .data$qseqid)) %>%
         dplyr::rename(
-          gi = 'sgi',
-          accession = 'saccver',
-          mismatch_reverse = 'mismatch',
-          reverse_start = 'sstart',
-          reverse_stop = 'send'
+          gi = "sgi",
+          accession = "saccver",
+          mismatch_reverse = "mismatch",
+          reverse_start = "sstart",
+          reverse_stop = "send"
         )
 
       # keep only the accessions with forward and reverse primer hits, and add a column for product length
@@ -513,7 +512,7 @@ get_seeds_local <-
         ) %>%
         dplyr::mutate(
           product_length = 0,
-          dplyr::across(c('forward_start', 'forward_stop', 'reverse_start', 'reverse_stop'), .fns = as.integer)
+          dplyr::across(c("forward_start", "forward_stop", "reverse_start", "reverse_stop"), .fns = as.integer)
         )
 
       # calculate product length if F and R primer pairs are in correct orientation to make amplicon
@@ -585,7 +584,7 @@ get_seeds_local <-
     tax_rank_sum <-
       taxonomized_table %>%
       dplyr::summarise(
-        dplyr::across(c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'), .fns = dplyr::n_distinct)
+        dplyr::across(c("superkingdom", "phylum", "class", "order", "family", "genus", "species"), .fns = dplyr::n_distinct)
       )
 
     # Write output to blast_seeds_output
@@ -596,7 +595,7 @@ get_seeds_local <-
 
     unlink(append_table_path)
 
-    rcrux_log_info('get_seeds_local done')
+    rcrux_log_info("get_seeds_local done")
 
     # return if you're supposed to
     if (return_table) {

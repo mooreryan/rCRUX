@@ -2,12 +2,12 @@ test_that("get_taxonomy_from_accession works", {
   input <-
     data.frame(
       accession = c(
-        'AB021891.1', # Anguilla australis schmidti
-        'AB021889.1'
+        "AB021891.1", # Anguilla australis schmidti
+        "AB021889.1"
       ) # Anguilla australis australis
     )
 
-  accession_taxa_sql_path <- system.file(package = 'rCRUX', 'mock-db/taxonomizr-ncbi-db-small.sql')
+  accession_taxa_sql_path <- system.file(package = "rCRUX", "mock-db/taxonomizr-ncbi-db-small.sql")
 
   # hide taxonomizr warnings "cannot remove file '...', reason 'Permission denied'
   suppressWarnings(

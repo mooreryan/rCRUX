@@ -29,16 +29,16 @@ has_blast_plus_binaries <- function(ncbi_bin = NULL) {
   checked_binaries <-
     c(
       blastn =
-        tryCatch(system2(command = binaries_to_check$blastn, args = '-version', stdout = TRUE),
-          error = function(e) 'Not installed'
+        tryCatch(system2(command = binaries_to_check$blastn, args = "-version", stdout = TRUE),
+          error = function(e) "Not installed"
         )[1],
       blastdbcmd =
-        tryCatch(system2(command = binaries_to_check$blastdbcmd, args = '-version', stdout = TRUE),
-          error = function(e) 'Not installed'
+        tryCatch(system2(command = binaries_to_check$blastdbcmd, args = "-version", stdout = TRUE),
+          error = function(e) "Not installed"
         )[1]
     )
 
-  all_binaries_installed = !all(checked_binaries %in% 'Not installed')
+  all_binaries_installed <- !all(checked_binaries %in% "Not installed")
 
   structure(
     all_binaries_installed,

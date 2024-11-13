@@ -51,17 +51,17 @@ build_blastn_args <- function() {
 #'
 #' @examples
 #'
-#' temp_fasta <- tempfile(fileext = '.fasta')
+#' temp_fasta <- tempfile(fileext = ".fasta")
 #'
 #' test_primers <-
 #'   c(
-#'     '>primer_forward', 'AGAGGAGCGCGGAATTCC',
-#'     '>primer_reverse', 'TACCTTGTTACGACTT'
+#'     ">primer_forward", "AGAGGAGCGCGGAATTCC",
+#'     ">primer_reverse", "TACCTTGTTACGACTT"
 #'   )
 #'
 #' writeLines(test_primers, temp_fasta)
 #'
-#' blast_db_path <- file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
+#' blast_db_path <- file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
 #'
 #' # Returns a data.frame of results
 #' result <- run_primer_blastn(primer_fasta = temp_fasta, db = blast_db_path)
@@ -72,8 +72,8 @@ run_primer_blastn <-
            db,
            task = "blastn-short",
            word_size = 7,
-           evalue = '3e+07',
-           align = '10000000',
+           evalue = "3e+07",
+           align = "10000000",
            coverage = 90,
            perID = 50,
            reward = 2,
@@ -82,7 +82,7 @@ run_primer_blastn <-
     rcrux_log_debug("run_primer_blastn starting")
 
     # Not sure this is the best default
-    if (num_threads == 'max') {
+    if (num_threads == "max") {
       cores <- parallel::detectCores()
     } else {
       cores <- num_threads
@@ -93,9 +93,9 @@ run_primer_blastn <-
 
     # Prepare call to blastn
     if (!is.null(ncbi_bin)) {
-      blastn <- file.path(ncbi_bin, 'blastn')
+      blastn <- file.path(ncbi_bin, "blastn")
     } else {
-      blastn = 'blastn'
+      blastn <- "blastn"
     }
 
     args <-

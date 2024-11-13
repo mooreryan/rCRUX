@@ -34,7 +34,7 @@ cat(
   sep = "\n",
   list.files(
     recursive = TRUE,
-    system.file(package = 'rCRUX', 'mock-db')
+    system.file(package = "rCRUX", "mock-db")
   )
 )
 ```
@@ -46,18 +46,18 @@ Setup
 ```{r}
 # Create a temp output directory
 output_directory_path_top <- tempdir()
-output_directory_path <- file.path(output_directory_path_top, '16S')
+output_directory_path <- file.path(output_directory_path_top, "16S")
 dir.create(output_directory_path, showWarnings = FALSE)
 
 # Source DBs
 # Need to tag on 'mock-db' the end of 'mock-db/blastdb' file path
-blast_db_path <- file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
-accession_taxa_sql_path <- system.file(package = 'rCRUX', 'mock-db/taxonomizr-ncbi-db-small.sql')
+blast_db_path <- file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
+accession_taxa_sql_path <- system.file(package = "rCRUX", "mock-db/taxonomizr-ncbi-db-small.sql")
 
 # Primers
 # Nitrospira F probe, Bacteria 1492R
-forward_primer_seq <- 'AGAGGAGCGCGGAATTCC'
-reverse_primer_seq <- 'TACCTTGTTACGACTT'
+forward_primer_seq <- "AGAGGAGCGCGGAATTCC"
+reverse_primer_seq <- "TACCTTGTTACGACTT"
 
 metabarcode_name <- "Nitrospira"
 ```
@@ -73,7 +73,7 @@ get_seeds_local(
   minimum_length = 5,
   maximum_length = 900,
   return_table = FALSE,
-  num_threads = 'max'
+  num_threads = "max"
 )
 ```
 
@@ -82,19 +82,19 @@ get_seeds_local(
 # files in get_seeds_local/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'get_seeds_local'))
+  list.files(file.path(output_directory_path, "get_seeds_local"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'get_seeds_local/Nitrospira_filtered_get_seeds_local_output_with_taxonomy.csv')
+  file.path(output_directory_path, "get_seeds_local/Nitrospira_filtered_get_seeds_local_output_with_taxonomy.csv")
 )
 ```
 
 ```{r}
 seeds_output_path <-
-  file.path(output_directory_path, 'get_seeds_local/Nitrospira_filtered_get_seeds_local_output_with_taxonomy.csv')
+  file.path(output_directory_path, "get_seeds_local/Nitrospira_filtered_get_seeds_local_output_with_taxonomy.csv")
 
 blast_seeds(
   seeds_output_path = seeds_output_path,
@@ -104,7 +104,7 @@ blast_seeds(
   metabarcode_name = metabarcode_name,
   maximum_length = 900,
   perID = 90,
-  num_threads = 'max'
+  num_threads = "max"
 )
 ```
 
@@ -112,13 +112,13 @@ blast_seeds(
 # files in blast_seeds_output/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'blast_seeds_output'))
+  list.files(file.path(output_directory_path, "blast_seeds_output"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'blast_seeds_output/summary.csv')
+  file.path(output_directory_path, "blast_seeds_output/summary.csv")
 )
 ```
 
@@ -136,19 +136,19 @@ derep_and_clean_db(
 # files in derep_and_clean_db/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'derep_and_clean_db'))
+  list.files(file.path(output_directory_path, "derep_and_clean_db"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'derep_and_clean_db/Sequences_with_single_taxonomic_path.csv')
+  file.path(output_directory_path, "derep_and_clean_db/Sequences_with_single_taxonomic_path.csv")
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'derep_and_clean_db/Sequences_with_multiple_taxonomic_paths.csv')
+  file.path(output_directory_path, "derep_and_clean_db/Sequences_with_multiple_taxonomic_paths.csv")
 )
 ```
 
@@ -157,17 +157,17 @@ read.csv(
 ```{r}
 # Create a temp output directory
 output_directory_path_top <- tempdir()
-output_directory_path <- file.path(output_directory_path_top, '12S')
+output_directory_path <- file.path(output_directory_path_top, "12S")
 dir.create(output_directory_path, showWarnings = FALSE)
 
 # Source DBs
 # Need to tag on 'mock-db' the end of 'mock-db/blastdb' file path
-blast_db_path <- file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
-accession_taxa_sql_path <- system.file(package = 'rCRUX', 'mock-db/taxonomizr-ncbi-db-small.sql')
+blast_db_path <- file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
+accession_taxa_sql_path <- system.file(package = "rCRUX", "mock-db/taxonomizr-ncbi-db-small.sql")
 
 # 12S probes
-forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-reverse_primer_seq = "TTAGATACCCCACTATGC"
+forward_primer_seq <- "TAGAACAGGCTCCTCTAG"
+reverse_primer_seq <- "TTAGATACCCCACTATGC"
 metabarcode_name <- "12S"
 ```
 
@@ -189,25 +189,25 @@ get_seeds_local(
 # files in get_seeds_local/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'get_seeds_local'))
+  list.files(file.path(output_directory_path, "get_seeds_local"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'get_seeds_local/12S_filtered_get_seeds_local_output_with_taxonomy.csv')
+  file.path(output_directory_path, "get_seeds_local/12S_filtered_get_seeds_local_output_with_taxonomy.csv")
 )[1:10, ]
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'get_seeds_local/12S_filtered_get_seeds_local_unique_taxonomic_rank_counts.csv')
+  file.path(output_directory_path, "get_seeds_local/12S_filtered_get_seeds_local_unique_taxonomic_rank_counts.csv")
 )
 ```
 
 ```{r}
 seeds_output_path <-
-  file.path(output_directory_path, 'get_seeds_local/12S_filtered_get_seeds_local_output_with_taxonomy.csv')
+  file.path(output_directory_path, "get_seeds_local/12S_filtered_get_seeds_local_output_with_taxonomy.csv")
 
 blast_seeds(
   seeds_output_path = seeds_output_path,
@@ -223,13 +223,13 @@ blast_seeds(
 # files in blast_seeds_output/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'blast_seeds_output'))
+  list.files(file.path(output_directory_path, "blast_seeds_output"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'blast_seeds_output/summary.csv')
+  file.path(output_directory_path, "blast_seeds_output/summary.csv")
 )
 ```
 
@@ -247,18 +247,18 @@ derep_and_clean_db(
 # files in derep_and_clean_db/
 cat(
   sep = "\n",
-  list.files(file.path(output_directory_path, 'derep_and_clean_db'))
+  list.files(file.path(output_directory_path, "derep_and_clean_db"))
 )
 ```
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'derep_and_clean_db/Sequences_with_multiple_taxonomic_paths.csv')
+  file.path(output_directory_path, "derep_and_clean_db/Sequences_with_multiple_taxonomic_paths.csv")
 )
 ``` 
 
 ```{r}
 read.csv(
-  file.path(output_directory_path, 'derep_and_clean_db/Sequences_with_single_taxonomic_path.csv')
+  file.path(output_directory_path, "derep_and_clean_db/Sequences_with_single_taxonomic_path.csv")
 )
 ```

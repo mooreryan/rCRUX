@@ -68,12 +68,12 @@ get_taxonomy_from_accession <-
     if (arrange_taxonomy) {
       output <-
         output %>%
-        dplyr::arrange('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
+        dplyr::arrange("superkingdom", "phylum", "class", "order", "family", "genus", "species")
     }
 
     output
   }
 
 get_taxonomizr_from_accession <- function() {
-  .Deprecated('get_taxonomy_from_accession', old = 'get_taxonomizr_from_accession')
+  .Deprecated("get_taxonomy_from_accession", old = "get_taxonomizr_from_accession")
 }

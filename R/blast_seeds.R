@@ -137,7 +137,7 @@
 #'   accession_taxa_sql_path,
 #'   output_directory_path,
 #'   metabarcode_name,
-#'   rank = 'species',
+#'   rank = "species",
 #'   max_to_blast = 750
 #' )
 #'
@@ -200,7 +200,7 @@ blast_seeds <-
     output_table <- dplyr::filter(output_table, dplyr::between(.data$amplicon_length, minimum_length, maximum_length))
 
     if (nrow(output_table) == 0) {
-      msg <- rcrux_log_fatal('Nothing left after filtering amplicon_length by minimum_length and maximum_length values.')
+      msg <- rcrux_log_fatal("Nothing left after filtering amplicon_length by minimum_length and maximum_length values.")
       stop(msg)
     }
 
@@ -222,8 +222,8 @@ blast_seeds <-
     # Taxonomy file format (tidyr and dplyr)
     taxa_table <-
       output_table %>%
-      dplyr::select('accession', 'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species') %>%
-      tidyr::unite(col = 'taxonomic_path', 'superkingdom':'species', sep = ";", remove = TRUE, na.rm = FALSE) %>%
+      dplyr::select("accession", "superkingdom", "phylum", "class", "order", "family", "genus", "species") %>%
+      tidyr::unite(col = "taxonomic_path", "superkingdom":"species", sep = ";", remove = TRUE, na.rm = FALSE) %>%
       dplyr::slice(-1)
 
     taxa_table_path <- file.path(output_dir, paste0(metabarcode_name, "_taxonomy.txt"))
@@ -234,7 +234,7 @@ blast_seeds <-
       output_table %>%
       dplyr::summarise(
         dplyr::across(
-          .cols = c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'),
+          .cols = c("superkingdom", "phylum", "class", "order", "family", "genus", "species"),
           .fns = dplyr::n_distinct
         )
       )
@@ -266,7 +266,7 @@ blast_seeds <-
     # Clear temporary directory
     unlink(save_dir, recursive = TRUE)
 
-    rcrux_log_info('blast_seeds done')
+    rcrux_log_info("blast_seeds done")
 
     # return nothing
     invisible(NULL)

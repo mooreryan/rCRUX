@@ -1,10 +1,10 @@
 test_that("expand_multi_taxids works", {
-  blast_db_path <- file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
+  blast_db_path <- file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
 
   test_df <-
     data.frame(
-      BLAST_db_taxids = c('1794900;1798809;1857655;1857656;1857657', '1117319', '59291;1735697'),
-      accession = c('KT851545.1', 'KY987560.1', 'JQ661395.1')
+      BLAST_db_taxids = c("1794900;1798809;1857655;1857656;1857657", "1117319", "59291;1735697"),
+      accession = c("KT851545.1", "KY987560.1", "JQ661395.1")
     )
 
   result <- expand_multi_taxids(output_table = test_df, max_to_blast = 2, blast_db_path = blast_db_path)

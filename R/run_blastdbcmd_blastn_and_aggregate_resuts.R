@@ -71,11 +71,11 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
 
       # Check status (if attribute present) and if not 0 - blastdbcmd failed
       blastdbcmd_failed_status <-
-        !is.null(attr(fasta, 'status')) && attr(fasta, 'status') != 0
+        !is.null(attr(fasta, "status")) && attr(fasta, "status") != 0
 
       # No status returned if successful fasta returned, check wildcard
       has_too_many_ns <-
-        is.null(attr(fasta, 'status')) && length(grep(wildcards, fasta)) > 0
+        is.null(attr(fasta, "status")) && length(grep(wildcards, fasta)) > 0
 
       if (blastdbcmd_failed_status) {
         blastdbcmd_failed <- append(blastdbcmd_failed, index)

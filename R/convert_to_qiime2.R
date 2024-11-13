@@ -82,7 +82,7 @@ convert_to_qiime2 <-
     ref_db_1 <-
       utils::read.table(ref_db_1_path, header = F, sep = "\t") %>%
       tibble::as_tibble() %>%
-      dplyr::rename(accession = 'V1', sum.taxonomy = 'V2') %>%
+      dplyr::rename(accession = "V1", sum.taxonomy = "V2") %>%
       tidyr::separate(
         .data$sum.taxonomy,
         into = c(

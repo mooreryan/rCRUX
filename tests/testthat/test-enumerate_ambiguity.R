@@ -40,7 +40,7 @@ test_that("enumerate_ambiguity complex works", {
       "I" = c("A", "T", "C")
     )
 
-  enumerated_ambiguties <- enumerate_ambiguity('MRWS')
+  enumerated_ambiguties <- enumerate_ambiguity("MRWS")
 
   # data.frame of combinations
   expected_enumeration_df <-
@@ -52,7 +52,7 @@ test_that("enumerate_ambiguity complex works", {
     )
 
   # vector of collapsed values, but not in the expected order as enumerated_ambiguties
-  expected_enumerations <- apply(expected_enumeration_df, MARGIN = 1, FUN = paste, collapse = '')
+  expected_enumerations <- apply(expected_enumeration_df, MARGIN = 1, FUN = paste, collapse = "")
 
   # sort on comparison
   expect_equal(sort(enumerated_ambiguties), sort(expected_enumerations))

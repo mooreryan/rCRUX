@@ -32,8 +32,8 @@ representative_fasta_and_taxonomy <- function(paths_to_summary_tables, metabarco
   writeLines(fasta, file.path(output_directory_path, paste0(metabarcode_name, "_derep_and_clean.fasta")))
 
   # Taxonomy file format (tidyr and dplyr)
-  taxa_table <- dplyr::select(concat, 'rep_accession_number', 'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
-  taxa_table <- tidyr::unite(taxa_table, col = 'taxonomic_path', 'superkingdom':'species', sep = ";", remove = TRUE, na.rm = FALSE)
+  taxa_table <- dplyr::select(concat, "rep_accession_number", "superkingdom", "phylum", "class", "order", "family", "genus", "species")
+  taxa_table <- tidyr::unite(taxa_table, col = "taxonomic_path", "superkingdom":"species", sep = ";", remove = TRUE, na.rm = FALSE)
 
 
   # Write the thing
@@ -41,7 +41,7 @@ representative_fasta_and_taxonomy <- function(paths_to_summary_tables, metabarco
   utils::write.table(taxa_table, file = taxa_table_path, row.names = FALSE, col.names = FALSE, sep = "\t")
 
   # Count distinct taxonomic ranks - includes NA
-  tax_rank_sum <- dplyr::summarise_at(concat, c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'), dplyr::n_distinct)
+  tax_rank_sum <- dplyr::summarise_at(concat, c("superkingdom", "phylum", "class", "order", "family", "genus", "species"), dplyr::n_distinct)
 
   # Write output to blast_seeds_output
   tax_rank_sum_table_path <- file.path(output_directory_path, paste0(metabarcode_name, "_derep_and_clean_unique_taxonomic_rank_counts.txt"))

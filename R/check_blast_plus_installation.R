@@ -10,27 +10,27 @@
 check_blast_plus_installation <- function(ncbi_bin = NULL, return_success_message = FALSE) {
   has_blast_plus <- has_blast_plus_binaries(ncbi_bin = ncbi_bin)
 
-  ncbi_bin <- attr(has_blast_plus, 'ncbi_bin')
-  checked_binaries <- sub('.*: ', '', attr(has_blast_plus, 'checked_binaries'))
+  ncbi_bin <- attr(has_blast_plus, "ncbi_bin")
+  checked_binaries <- sub(".*: ", "", attr(has_blast_plus, "checked_binaries"))
 
   checked_binaries_text <-
-    paste(names(checked_binaries), checked_binaries, sep = ': ')
+    paste(names(checked_binaries), checked_binaries, sep = ": ")
 
-  binaries_not_installed <- checked_binaries %in% 'Not installed'
+  binaries_not_installed <- checked_binaries %in% "Not installed"
 
   if (any(binaries_not_installed)) {
     if (!is.null(ncbi_bin)) {
       error_message <-
         c(
-          'The NCBI binaries could not be found at ', ncbi_bin,
-          '. Please revise the path given or install NCBI Blast+'
+          "The NCBI binaries could not be found at ", ncbi_bin,
+          ". Please revise the path given or install NCBI Blast+"
         )
     } else {
       error_message <-
         c(
-          'Some dependencies could not be found and require installation. See README for instructions.\n    ',
+          "Some dependencies could not be found and require installation. See README for instructions.\n    ",
           paste(
-            collapse = '\n    ',
+            collapse = "\n    ",
             checked_binaries_text[binaries_not_installed]
           )
         )
@@ -42,9 +42,9 @@ check_blast_plus_installation <- function(ncbi_bin = NULL, return_success_messag
   if (return_success_message) {
     success_message <-
       c(
-        'Found required dependencies:\n  ',
+        "Found required dependencies:\n  ",
         paste(
-          collapse = '\n  ',
+          collapse = "\n  ",
           checked_binaries_text[!binaries_not_installed]
         )
       )

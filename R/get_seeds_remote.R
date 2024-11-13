@@ -149,8 +149,8 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-#' reverse_primer_seq = "TTAGATACCCCACTATGC"
+#' forward_primer_seq <- "TAGAACAGGCTCCTCTAG"
+#' reverse_primer_seq <- "TTAGATACCCCACTATGC"
 #' output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
 #' metabarcode_name <- "12S_V5F1"
 #' accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql"
@@ -161,11 +161,11 @@
 #'   output_directory_path,
 #'   metabarcode_name,
 #'   accession_taxa_sql_path,
-#'   HITSIZE = '1000000',
-#'   evalue = '100000',
-#'   word_size = '6',
-#'   MAX_TARGET_PER_TEMPLATE = '5',
-#'   NUM_TARGETS_WITH_PRIMERS = '500000', minimum_length = 50,
+#'   HITSIZE = "1000000",
+#'   evalue = "100000",
+#'   word_size = "6",
+#'   MAX_TARGET_PER_TEMPLATE = "5",
+#'   NUM_TARGETS_WITH_PRIMERS = "500000", minimum_length = 50,
 #'   MAX_TARGET_SIZE = 200,
 #'   organism = c("1476529", "7776"), return_table = FALSE
 #' )
@@ -201,7 +201,7 @@ get_seeds_remote <- function(forward_primer_seq,
   out <- file.path(output_directory_path, "get_seeds_local")
   dir.create(out, showWarnings = FALSE)
 
-  message('Output directory: ', out, '\n')
+  message("Output directory: ", out, "\n")
 
   # Aggregate the primer_search return values
   # Then parse_primer_hits all of them
@@ -246,7 +246,7 @@ get_seeds_remote <- function(forward_primer_seq,
   tax_rank_sum <-
     taxonomized_table %>%
     dplyr::summarise(
-      dplyr::across(c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'), .fns = dplyr::n_distinct)
+      dplyr::across(c("superkingdom", "phylum", "class", "order", "family", "genus", "species"), .fns = dplyr::n_distinct)
     )
 
   # Write output to blast_seeds_output

@@ -42,12 +42,12 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
 
 
   if (!is.null(ncbi_bin)) {
-    blastn <- file.path(ncbi_bin, 'blastn')
+    blastn <- file.path(ncbi_bin, "blastn")
   } else {
-    blastn = 'blastn'
+    blastn <- "blastn"
   }
 
-  if (num_threads == 'max') {
+  if (num_threads == "max") {
     cores <- parallel::detectCores()
   } else {
     cores <- num_threads
@@ -63,7 +63,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   # the handoff
 
   if (is.null(temp_fasta_path)) {
-    temp_fasta_path <- tempfile(fileext = '.fasta')
+    temp_fasta_path <- tempfile(fileext = ".fasta")
   }
 
   writeLines(fasta, con = temp_fasta_path)

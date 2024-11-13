@@ -17,7 +17,7 @@ test_that("blastn_output works - example 12S", {
     )
 
   blast_db_path <-
-    file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
+    file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
 
   blastn_output <-
     run_blastn(
@@ -30,7 +30,7 @@ test_that("blastn_output works - example 12S", {
       num_threads = 1
     )
 
-  expect_true(all(blastn_output$accession %in% c('KY815349.1', 'KY815345.1')))
+  expect_true(all(blastn_output$accession %in% c("KY815349.1", "KY815345.1")))
 })
 
 test_that("blastn_output works - example 16S", {
@@ -63,7 +63,7 @@ test_that("blastn_output works - example 16S", {
     )
 
   blast_db_path <-
-    file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
+    file.path(system.file(package = "rCRUX", "mock-db/blastdb"), "mock-db")
 
   blastn_output <-
     run_blastn(

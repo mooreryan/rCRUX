@@ -35,8 +35,8 @@
 #'
 #' output_directory_path <- "/my/directory/12S_mifish"
 #' metabarcode_name <- "12S_mifish"
-#' fasta_path = "/my/directory/12S_fasta_and_taxonomy/12S_.fasta"
-#' taxonomy_path = "/my/directory/12S_fasta_and_taxonomy/12S_fasta_and_taxonomy/12S_taxonomy.txt"
+#' fasta_path <- "/my/directory/12S_fasta_and_taxonomy/12S_.fasta"
+#' taxonomy_path <- "/my/directory/12S_fasta_and_taxonomy/12S_fasta_and_taxonomy/12S_taxonomy.txt"
 #'
 #' combine_fasta_and_taxonomy(
 #'   output_directory_path = output_directory_path,
@@ -58,14 +58,14 @@ combine_fasta_and_taxonomy <-
     # turn a fasta file and taxonomy file into a dataframe with tax id and amplicon length
 
     # convert the fasta to a df get amplicon length
-    fasta.df = phylotools::read.fasta(fasta_path)
+    fasta.df <- phylotools::read.fasta(fasta_path)
     fasta.df <- dplyr::rename(fasta.df, accession = .data$seq.name, sequence = .data$seq.text)
     fasta.df <- dplyr::mutate(fasta.df, amplicon_length = nchar(sequence))
 
     # split taxonomic path
     tax <- utils::read.delim(taxonomy_path, header = FALSE)
     tax <- dplyr::rename(tax, accession = 1, tax_path = 2)
-    tax <- tidyr::separate(tax, col = 'tax_path', into = c("superkingdom", "phylum", "class", "order", "family", "genus", "species"), ";")
+    tax <- tidyr::separate(tax, col = "tax_path", into = c("superkingdom", "phylum", "class", "order", "family", "genus", "species"), ";")
 
     # join sequence and taxonomy
     full.df <- dplyr::left_join(fasta.df, tax, by = "accession", keep = FALSE)

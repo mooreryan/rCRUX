@@ -33,9 +33,9 @@ run_blastdbcmd <- function(query_row, db, ncbi_bin = NULL) {
   seq_range <- paste0(forward, "-", reverse)
 
   if (!is.null(ncbi_bin)) {
-    blastdbcmd <- file.path(ncbi_bin, 'blastdbcmd')
+    blastdbcmd <- file.path(ncbi_bin, "blastdbcmd")
   } else {
-    blastdbcmd = 'blastdbcmd'
+    blastdbcmd <- "blastdbcmd"
   }
 
   # run blastdbcmd, suppress status warning and use them outside of function
