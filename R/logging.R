@@ -56,23 +56,30 @@ make_log_function <- function(log_fn) {
 }
 
 # Set up logging facade.
+
+# The default of `.topcall = sys.call(-1)` gives most log lines a `fn` value of
+# `log_fn`.  Setting it to `-2`, gives most log calls the name of the function
+# from which the logging function was called.  However, if the logger is called
+# directly from a script not in a function, it gives NA.  It's good enough for
+# now.
+
 rcrux_log_fatal <- make_log_function(function(...) {
-  logger::log_fatal(..., namespace = rcrux_logger_namespace)
+  logger::log_fatal(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 rcrux_log_error <- make_log_function(function(...) {
-  logger::log_error(..., namespace = rcrux_logger_namespace)
+  logger::log_error(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 rcrux_log_warn <- make_log_function(function(...) {
-  logger::log_warn(..., namespace = rcrux_logger_namespace)
+  logger::log_warn(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 rcrux_log_info <- make_log_function(function(...) {
-  logger::log_info(..., namespace = rcrux_logger_namespace)
+  logger::log_info(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 rcrux_log_debug <- make_log_function(function(...) {
-  logger::log_debug(..., namespace = rcrux_logger_namespace)
+  logger::log_debug(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 rcrux_log_trace <- make_log_function(function(...) {
-  logger::log_trace(..., namespace = rcrux_logger_namespace)
+  logger::log_trace(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
 })
 
 set_up_logger <- function() {
