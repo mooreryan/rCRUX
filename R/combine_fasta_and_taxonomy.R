@@ -40,7 +40,7 @@
 #' taxonomy_path = "/my/directory/12S_fasta_and_taxonomy/12S_fasta_and_taxonomy/12S_taxonomy.txt"
 #'
 #' combine_fasta_and_taxonomy(
-#'  output_directory_path = output_directory_path
+#'  output_directory_path = output_directory_path,
 #'  metabarcode_name = metabarcode_name,
 #'  fasta_path = fasta_path,
 #'  taxonomy_path = taxonomy_path,
