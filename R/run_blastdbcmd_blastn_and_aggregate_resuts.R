@@ -57,10 +57,18 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     # Run blastdbcmd on each sample index
     # sort results into appropriate buckets
     aggregate_fasta <- NULL
-    rcrux_log_info("Running blastdbcmd on %d samples.", length(sample_indices))
+    rcrux_log_info(
+      stringr::str_glue(
+        "Running blastdbcmd on {length(sample_indices)} samples."
+      )
+    )
 
     for (index in sample_indices) {
-      rcrux_log_debug("Working on index %d of %d.", index, length(sample_indices))
+      rcrux_log_debug(
+        stringr::str_glue(
+          "Working on index {index} of {length(sample_indices)}."
+        )
+      )
 
       fasta <-
         run_blastdbcmd(
@@ -116,11 +124,15 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
 
       if (nrow(blastn_output) == 0 && length(unsampled_indices) > 0) {
         msg <- rcrux_log_fatal(
-          "%d blast hits returned.  Either 1) blastn is having trouble blasting the number of seeds selected with the given set of parameters, or 2)  There were no hits returned for your blastn search because there were no valid matches in the database."
+          "No blast hits returned.  Either 1) blastn is having trouble blasting the number of seeds selected with the given set of parameters, or 2)  There were no hits returned for your blastn search because there were no valid matches in the database."
         )
         stop(msg)
       } else {
-        rcrux_log_debug("%d blast hits returned.", nrow(blastn_output))
+        rcrux_log_debug(
+          stringr::str_glue(
+            "{nrow(blastn_output)} blast hits returned."
+          )
+        )
       }
 
       # remove accession numbers found by blast
@@ -156,7 +168,11 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     }
 
     # report number of total unique blast hits
-    rcrux_log_debug("%d unique blast hits after this round.", nrow(output_table))
+    rcrux_log_debug(
+      stringr::str_glue(
+        "{nrow(output_table)} unique blast hits after this round."
+      )
+    )
 
     # add new blast round
     num_rounds <- num_rounds + 1

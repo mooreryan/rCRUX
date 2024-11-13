@@ -114,7 +114,10 @@ run_primer_blastn <-
       )
 
     rcrux_log_info("Calling blastn for primers. This may take a long time.")
-    rcrux_log_debug("Running blastn", blastn = blastn, args = args)
+    rcrux_log_debug(
+      "Running blastn",
+      details = list(blastn = blastn, args = args)
+    )
 
     # Catch stdout to character vector (a tab-delimited table)
     blastn_output <-

@@ -42,12 +42,14 @@ logfile_lock <- assign_logfile_lock()
 # This check is repeated here because we want the note about local rCRUX to be
 # included in the specified logfile.
 if (num_args == 2) {
-  rcrux_log_info("Using a local rCRUX installation.", path = cli_args[[2]])
+  rcrux_log_info(
+    stringr::str_glue("Using a local rCRUX installation: {cli_args[[2]]}")
+  )
 }
 
 rcrux_log_info("Starting rCRUX pipeline")
 
-rcrux_log_debug("Pipeline config", config = config)
+rcrux_log_debug("Pipeline config", details = config)
 
 collated_output_directory <- do.call(
   what = run_multi_db_pipeline,
@@ -56,8 +58,10 @@ collated_output_directory <- do.call(
 
 rcrux_log_info(
   "rCRUX pipeline done",
-  output_directory = config$output_directory_path,
-  collated_output_directory = collated_output_directory
+  details = list(
+    output_directory = config$output_directory_path,
+    collated_output_directory = collated_output_directory
+  )
 )
 
 if (file.exists(logfile_lock)) {

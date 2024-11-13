@@ -84,7 +84,10 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   )
 
   rcrux_log_info("Calling blastn. This may take a long time.")
-  rcrux_log_debug("Running blastn", blastn = blastn, args = args)
+  rcrux_log_debug(
+    "Running blastn",
+    details = list(blastn = blastn, args = args)
+  )
 
   blastn_output <-
     system2(

@@ -234,8 +234,9 @@ get_seeds_local <-
       dir.create(output_directory_path)
     } else {
       rcrux_log_debug(
-        "Output directory already exists",
-        output_directory = output_directory_path
+        stringr::str_glue(
+          "Output directory already exists: '{output_directory_path}'"
+        )
       )
     }
 
@@ -243,8 +244,9 @@ get_seeds_local <-
     dir.create(out, showWarnings = FALSE)
 
     rcrux_log_debug(
-      "get_seeds_local output directory",
-      output_directory = out
+      stringr::str_glue(
+        "get_seeds_local output directory: '{out}'"
+      )
     )
 
     # Check paths provided
@@ -254,8 +256,9 @@ get_seeds_local <-
 
     if (!file.exists(accession_taxa_sql_path)) {
       msg <- rcrux_log_fatal(
-        "The taxonomizr SQL file does not exist.  Please revise the provided path.",
-        accession_taxa_sql_path = accession_taxa_sql_path
+        stringr::str_glue(
+          "The taxonomizr SQL file ('{accession_taxa_sql_path}') does not exist.  Please revise the provided path."
+        )
       )
       stop(msg)
     }
@@ -297,9 +300,9 @@ get_seeds_local <-
       # subset primers if user so chooses
       if (nforward > num_fprimers_to_blast) {
         rcrux_log_debug(
-          "Forward primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_fprimers_to_blast.",
-          nforward,
-          num_fprimers_to_blast
+          stringr::str_glue(
+            "Forward primers have {nforward} possible sequences due to degenerate bases.  Randomly sampling {num_fprimers_to_blast} forward primers. To change this, modify num_fprimers_to_blast."
+          )
         )
 
         # set random.seed for reproducible results
@@ -309,16 +312,20 @@ get_seeds_local <-
 
         forward_sample <- dplyr::sample_n(fPrimer, num_fprimers_to_blast, replace = FALSE)
       } else {
-        rcrux_log_debug("%d forward primer(s) will be blasted", nforward)
+        rcrux_log_debug(
+          stringr::str_glue(
+            "{nforward} forward primer(s) will be blasted"
+          )
+        )
 
         forward_sample <- fPrimer
       }
 
       if (nreverse > num_rprimers_to_blast) {
         rcrux_log_debug(
-          "Reverse primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_rprimers_to_blast.",
-          nreverse,
-          num_rprimers_to_blast
+          stringr::str_glue(
+            "Reverse primers have {nreverse} possible sequences due to degenerate bases.  Randomly sampling {num_rprimers_to_blast} forward primers. To change this, modify num_rprimers_to_blast."
+          )
         )
 
         # set random.seed for reproducible results
@@ -328,7 +335,9 @@ get_seeds_local <-
 
         reverse_sample <- dplyr::sample_n(rPrimer, num_rprimers_to_blast, replace = FALSE)
       } else {
-        rcrux_log_debug("%d reverse primer(s) will be blasted", nreverse)
+        rcrux_log_debug(
+          stringr::str_glue("{nreverse} reverse primer(s) will be blasted")
+        )
 
         reverse_sample <- rPrimer
       }
@@ -368,8 +377,9 @@ get_seeds_local <-
     input <- readr::read_lines(fasta_path)
 
     rcrux_log_debug(
-      "Reads will be blasted in subsets of up to %d read(s).  To change this, modify max_to_blast.",
-      max_to_blast
+      stringr::str_glue(
+        "Reads will be blasted in subsets of up to {max_to_blast} read(s).  To change this, modify max_to_blast."
+      )
     )
 
     # take a subset of the primers and blast - keep subsetting until we finish

@@ -46,12 +46,14 @@ set_up_logger()
 # This check is repeated here because we want the note about local rCRUX to be
 # included in the specified logfile.
 if (num_args == 2) {
-  rcrux_log_info("Using a local rCRUX installation.", path = cli_args[[2]])
+  rcrux_log_info(
+    stringr::str_glue("Using a local rCRUX installation: {cli_args[[2]]}")
+  )
 }
 
 rcrux_log_info("Starting rCRUX pipeline")
 
-rcrux_log_debug("Pipeline config", config = config)
+rcrux_log_debug("Pipeline config", details = config)
 
 # Capture the result here.  This prevents prenting NULL to the console when
 # calling Rscript.
@@ -59,5 +61,7 @@ result <- do.call(what = run_basic_pipeline, args = config)
 
 rcrux_log_info(
   "rCRUX pipeline done",
-  output_directory = config$output_directory_path
+  details = list(
+    output_directory = config$output_directory_path
+  )
 )

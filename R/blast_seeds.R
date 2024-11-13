@@ -162,8 +162,7 @@ blast_seeds <-
     output_dir <- file.path(output_directory_path, "blast_seeds_output")
 
     rcrux_log_debug(
-      "blast_seeds output directory",
-      output_directory = output_dir
+      stringr::str_glue("blast_seeds output directory: '{output_dir}'")
     )
 
     save_dir <- file.path(output_directory_path, "blast_seeds_save")
