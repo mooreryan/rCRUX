@@ -43,28 +43,24 @@
 #'
 #' @export
 #' @examples
-#' 
 #' \dontrun{
 #'
 #' output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
-#' summary_path <- 
-#'   file.path("my", "directory", 
-#'   "12S_V5F1_remote_111122_modified_params", 
-#'   "blast_seeds_output/summary.csv")
-#'   
+#' summary_path <-
+#'   file.path(
+#'     "my", "directory",
+#'     "12S_V5F1_remote_111122_modified_params",
+#'     "blast_seeds_output/summary.csv"
+#'   )
+#'
 #' metabarcode_name <- "12S_V5F1"
 #'
 #'
 #' derep_and_clean_db(output_directory_path, summary_path, metabarcode_name)
-#'}
-
-
+#' }
 # function to summarize the rcrux summary data by identical sequence and identify / collapse reads with multiple assignments for a given taxonomic rank.
 # "We ain't too pretty, we ain't too proud" - Billy Joel, "Only the good die young"
-
-
 derep_and_clean_db <- function(output_directory_path, summary_path, metabarcode_name) {
-
   out <- file.path(output_directory_path, "derep_and_clean_db")
   dir.create(out, showWarnings = FALSE)
 
@@ -74,8 +70,8 @@ derep_and_clean_db <- function(output_directory_path, summary_path, metabarcode_
   # get relevant df to work with
   summary <- dplyr::select(summary, 'accession', 'amplicon_length', 'sequence', 'taxid', 'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
 
-  #remove hyphens from sequence
-  summary <-  dplyr::mutate(summary, sequence = gsub("-", "", .data$sequence))
+  # remove hyphens from sequence
+  summary <- dplyr::mutate(summary, sequence = gsub("-", "", .data$sequence))
 
   # save hits with no tax path
   no_path_summary <- dplyr::filter(summary, is.na(.data$phylum) & is.na(.data$class) & is.na(.data$family) & is.na(.data$genus))
@@ -85,92 +81,97 @@ derep_and_clean_db <- function(output_directory_path, summary_path, metabarcode_
 
 
   # merge accessions and ranks for identical sequence
-  phy_sum <- 
-    summary %>% 
-    dplyr::group_by(.data$sequence) %>% 
-    dplyr::summarize(accession = paste0(.data$accession, collapse = ", "), 
-                     amplicon_length = paste0(unique(.data$amplicon_length), collapse = ", "), 
-                     taxid = paste0(unique(.data$taxid), collapse = ", "), 
-                     superkingdom = paste0(unique(.data$superkingdom), collapse = ", "), 
-                     phylum = paste0(unique(.data$phylum), collapse = ", "), 
-                     class = paste0(unique(.data$class), collapse = ", "), 
-                     order = paste0(unique(.data$order), collapse = ", "), 
-                     family = paste0(unique(.data$family), collapse = ", "), 
-                     genus = paste0(unique(.data$genus), collapse = ", "),   
-                     species = paste0(unique(.data$species), collapse = ", "))
+  phy_sum <-
+    summary %>%
+    dplyr::group_by(.data$sequence) %>%
+    dplyr::summarize(
+      accession = paste0(.data$accession, collapse = ", "),
+      amplicon_length = paste0(unique(.data$amplicon_length), collapse = ", "),
+      taxid = paste0(unique(.data$taxid), collapse = ", "),
+      superkingdom = paste0(unique(.data$superkingdom), collapse = ", "),
+      phylum = paste0(unique(.data$phylum), collapse = ", "),
+      class = paste0(unique(.data$class), collapse = ", "),
+      order = paste0(unique(.data$order), collapse = ", "),
+      family = paste0(unique(.data$family), collapse = ", "),
+      genus = paste0(unique(.data$genus), collapse = ", "),
+      species = paste0(unique(.data$species), collapse = ", ")
+    )
 
 
-  #count number of accessions make new column
-  phy_sum <- dplyr::mutate(phy_sum, num_of_accessions = (stringr::str_count(.data$accession, ",") + 1 ))
+  # count number of accessions make new column
+  phy_sum <- dplyr::mutate(phy_sum, num_of_accessions = (stringr::str_count(.data$accession, ",") + 1))
 
   # remove , NA from ranks - they are most likely due to env seq or issues with sequence submission
 
-    phy_sum <-  dplyr::mutate(phy_sum, superkingdom = gsub(", NA", "", .data$superkingdom))
-    phy_sum <-  dplyr::mutate(phy_sum, phylum = gsub(", NA", "", .data$phylum))
-    phy_sum <- dplyr::mutate(phy_sum, class = gsub(", NA", "", .data$class))
-    phy_sum <- dplyr::mutate(phy_sum, order = gsub(", NA", "", .data$order))
-    phy_sum <- dplyr::mutate(phy_sum, family = gsub(", NA", "", .data$family))
-    phy_sum <- dplyr::mutate(phy_sum, genus = gsub(", NA", "", .data$genus))
-    phy_sum <- dplyr::mutate(phy_sum, species = gsub(", NA", "", .data$species))
+  phy_sum <- dplyr::mutate(phy_sum, superkingdom = gsub(", NA", "", .data$superkingdom))
+  phy_sum <- dplyr::mutate(phy_sum, phylum = gsub(", NA", "", .data$phylum))
+  phy_sum <- dplyr::mutate(phy_sum, class = gsub(", NA", "", .data$class))
+  phy_sum <- dplyr::mutate(phy_sum, order = gsub(", NA", "", .data$order))
+  phy_sum <- dplyr::mutate(phy_sum, family = gsub(", NA", "", .data$family))
+  phy_sum <- dplyr::mutate(phy_sum, genus = gsub(", NA", "", .data$genus))
+  phy_sum <- dplyr::mutate(phy_sum, species = gsub(", NA", "", .data$species))
 
-  #Identify rows with multiple ids
+  # Identify rows with multiple ids
   # subset dups:
-    sub_dups <-
-      dplyr::filter(
-        phy_sum,
-        grepl(', ', .data$superkingdom) |
-          grepl(', ', .data$phylum) |
-          grepl(', ', .data$class) |
-          grepl(', ', .data$order) |
-          grepl(', ', .data$family) | 
-          grepl(', ', .data$genus) | 
-          grepl(', ', .data$species)
-      )
-    
+  sub_dups <-
+    dplyr::filter(
+      phy_sum,
+      grepl(', ', .data$superkingdom) |
+        grepl(', ', .data$phylum) |
+        grepl(', ', .data$class) |
+        grepl(', ', .data$order) |
+        grepl(', ', .data$family) |
+        grepl(', ', .data$genus) |
+        grepl(', ', .data$species)
+    )
 
-  #remove single taxonomy sequence
+
+  # remove single taxonomy sequence
   clean_tax <- dplyr::setdiff(phy_sum, sub_dups)
 
 
   # change rank to NA if multiple names
   sub_dup_to_NA <- sub_dups
 
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, superkingdom = gsub(".*, .*", "NA", .data$superkingdom))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, phylum = gsub(".*, .*", "NA", .data$phylum))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, class = gsub(".*, .*", "NA", .data$class))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, order = gsub(".*, .*", "NA", .data$order))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, family = gsub(".*, .*", "NA", .data$family))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, genus = gsub(".*, .*", "NA", .data$genus))
-    sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, species = gsub(".*, .*", "NA", .data$species))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, superkingdom = gsub(".*, .*", "NA", .data$superkingdom))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, phylum = gsub(".*, .*", "NA", .data$phylum))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, class = gsub(".*, .*", "NA", .data$class))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, order = gsub(".*, .*", "NA", .data$order))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, family = gsub(".*, .*", "NA", .data$family))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, genus = gsub(".*, .*", "NA", .data$genus))
+  sub_dup_to_NA <- dplyr::mutate(sub_dup_to_NA, species = gsub(".*, .*", "NA", .data$species))
 
 
   utils::write.csv(sub_dups,
-            file = file.path(out, "Sequences_with_multiple_taxonomic_paths.csv"),
-            row.names = FALSE)
+    file = file.path(out, "Sequences_with_multiple_taxonomic_paths.csv"),
+    row.names = FALSE
+  )
 
   utils::write.csv(sub_dup_to_NA,
-            file = file.path(out, "Sequences_with_lowest_common_taxonomic_path_agreement.csv"),
-            row.names = FALSE)
+    file = file.path(out, "Sequences_with_lowest_common_taxonomic_path_agreement.csv"),
+    row.names = FALSE
+  )
 
 
   utils::write.csv(clean_tax,
-            file = file.path(out, "Sequences_with_single_taxonomic_path.csv"),
-            row.names = FALSE)
+    file = file.path(out, "Sequences_with_single_taxonomic_path.csv"),
+    row.names = FALSE
+  )
 
   utils::write.csv(no_path_summary,
-            file = file.path(out, "Sequences_with_mostly_NA_taxonomic_paths.csv"),
-            row.names = FALSE)
+    file = file.path(out, "Sequences_with_mostly_NA_taxonomic_paths.csv"),
+    row.names = FALSE
+  )
 
-  paths_to_summary_tables <- 
-    c(file.path(out, "Sequences_with_lowest_common_taxonomic_path_agreement.csv"), 
-      file.path(out, "Sequences_with_single_taxonomic_path.csv"))
+  paths_to_summary_tables <-
+    c(
+      file.path(out, "Sequences_with_lowest_common_taxonomic_path_agreement.csv"),
+      file.path(out, "Sequences_with_single_taxonomic_path.csv")
+    )
 
-  representative_fasta_and_taxonomy(paths_to_summary_tables = paths_to_summary_tables,
-                                    metabarcode_name = metabarcode_name,
-                                    output_directory_path = out)
-
+  representative_fasta_and_taxonomy(
+    paths_to_summary_tables = paths_to_summary_tables,
+    metabarcode_name = metabarcode_name,
+    output_directory_path = out
+  )
 }
-
-
-
-

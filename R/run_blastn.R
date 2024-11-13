@@ -41,7 +41,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   rcrux_log_debug("run_blastn starting")
 
 
-  if (!is.null(ncbi_bin)){
+  if (!is.null(ncbi_bin)) {
     blastn <- file.path(ncbi_bin, 'blastn')
   } else {
     blastn = 'blastn'
@@ -71,9 +71,11 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   args <- c(
     "-db", db,
     "-query", temp_fasta_path,
-    "-outfmt", paste("\"6", "saccver", "length",
-                     "pident", "qacc", "slen", "sstart",
-                     "send", "sseq", "evalue", "staxids\""),
+    "-outfmt", paste(
+      "\"6", "saccver", "length",
+      "pident", "qacc", "slen", "sstart",
+      "send", "sseq", "evalue", "staxids\""
+    ),
     "-evalue", evalue,
     "-num_alignments", align,
     "-qcov_hsp_perc", coverage,
@@ -85,10 +87,12 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   rcrux_log_debug("Running blastn", blastn = blastn, args = args)
 
   blastn_output <-
-    system2(command = blastn,
-            args = args,
-            wait = TRUE,
-            stdout = TRUE)
+    system2(
+      command = blastn,
+      args = args,
+      wait = TRUE,
+      stdout = TRUE
+    )
 
 
 
@@ -96,7 +100,8 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
 
   # Format output
   column_names <-
-    c("accession",
+    c(
+      "accession",
       "amplicon_length",
       "pident",
       "query_accession",
@@ -105,7 +110,8 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
       "amplicon_stop",
       "sequence",
       "evalue",
-      "BLAST_db_taxids")
+      "BLAST_db_taxids"
+    )
 
   rcrux_log_debug("run_blastn done")
 
@@ -113,7 +119,8 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
   # as_tibble creates a one-column tibble with "value" as its col name
   blastn_output %>%
     tibble::as_tibble() %>%
-    tidyr::separate(col = .data$value, into = column_names,
-                    sep = "\t")
-
+    tidyr::separate(
+      col = .data$value, into = column_names,
+      sep = "\t"
+    )
 }

@@ -15,10 +15,10 @@ test_that("blastn_output works - example 12S", {
       GAACGATGTTCTGAAATAAACATCTGAAGGAGGATTTAGTAGTAAGTAGAGAGCAGAGTGCTCTACTGAAGCCGGCCCTG
       AAGCGCGTACACACCGCCCGTCACTCTCCCCGAGCTAACCAAACACATTACTAATAAACAAAACTTGCAAAGGGGAGGC"
     )
-  
+
   blast_db_path <-
     file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
-  
+
   blastn_output <-
     run_blastn(
       fasta = aggregate_fasta,
@@ -29,10 +29,8 @@ test_that("blastn_output works - example 12S", {
       perID = 90,
       num_threads = 1
     )
-  
+
   expect_true(all(blastn_output$accession %in% c('KY815349.1', 'KY815345.1')))
-  
-  
 })
 
 test_that("blastn_output works - example 16S", {
@@ -63,10 +61,10 @@ test_that("blastn_output works - example 16S", {
    CACCGCCCGTCACACCACGAAAGCCTGTTGTACCTGAAGTCGCCCAAGCCAACCGCAAGGAGGCAGGCGCCCACGGTATG
    GCCGGTGATTGGGGTGAA"
     )
-  
+
   blast_db_path <-
     file.path(system.file(package = 'rCRUX', 'mock-db/blastdb'), 'mock-db')
-  
+
   blastn_output <-
     run_blastn(
       fasta = aggregate_fasta,
@@ -77,11 +75,11 @@ test_that("blastn_output works - example 16S", {
       perID = 90,
       num_threads = 1
     )
-  
+
   nitro_ids <- unique(blastn_output$accession)
-  
+
   expect_true(all(
-    nitro_ids %in%  c(
+    nitro_ids %in% c(
       "FP929003.1",
       "EU559167.1",
       "DQ059545.1",
@@ -92,5 +90,4 @@ test_that("blastn_output works - example 16S", {
       "HQ686084.1"
     )
   ))
-  
 })

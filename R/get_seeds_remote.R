@@ -66,7 +66,7 @@
 #' after for = and add it to get_seeds_remote as the name of a parameter,
 #' setting it equal to whatever you like.
 #'
-#' As of 2022-08-16, the primer blast GUI contains some options that are not implemented 
+#' As of 2022-08-16, the primer blast GUI contains some options that are not implemented
 #' by primer_search. The table below documents some of the available options.
 #'
 #' | Name                                   |       Default  |
@@ -145,36 +145,37 @@
 #        throttling due to memory limitations
 #'
 #' @return a data.frame containing the same information as the .csv it generates
-#' 
+#'
 #' @export
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-#' reverse_primer_seq =  "TTAGATACCCCACTATGC"
+#' reverse_primer_seq = "TTAGATACCCCACTATGC"
 #' output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
 #' metabarcode_name <- "12S_V5F1"
 #' accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql"
 #'
 #'
 #' get_seeds_remote(forward_primer_seq,
-#'                 reverse_primer_seq,
-#'                 output_directory_path,
-#'                 metabarcode_name,
-#'                 accession_taxa_sql_path,
-#'                 HITSIZE ='1000000',
-#'                 evalue='100000',
-#'                 word_size='6',
-#'                 MAX_TARGET_PER_TEMPLATE = '5',
-#'                 NUM_TARGETS_WITH_PRIMERS ='500000', minimum_length = 50,
-#'                 MAX_TARGET_SIZE = 200,
-#'                 organism = c("1476529", "7776"), return_table = FALSE)
+#'   reverse_primer_seq,
+#'   output_directory_path,
+#'   metabarcode_name,
+#'   accession_taxa_sql_path,
+#'   HITSIZE = '1000000',
+#'   evalue = '100000',
+#'   word_size = '6',
+#'   MAX_TARGET_PER_TEMPLATE = '5',
+#'   NUM_TARGETS_WITH_PRIMERS = '500000', minimum_length = 50,
+#'   MAX_TARGET_SIZE = 200,
+#'   organism = c("1476529", "7776"), return_table = FALSE
+#' )
 #'
 #'
-#' # This results in approximately 111500 blast seed returns (there is some 
-#' # variation due to database updates, etc.), note the default generated 
-#' # approximately 1047. This assumes the user is not throttled by memory 
+#' # This results in approximately 111500 blast seed returns (there is some
+#' # variation due to database updates, etc.), note the default generated
+#' # approximately 1047. This assumes the user is not throttled by memory
 #' # limitations.
-#'}
+#' }
 get_seeds_remote <- function(forward_primer_seq,
                              reverse_primer_seq,
                              output_directory_path,
@@ -187,70 +188,78 @@ get_seeds_remote <- function(forward_primer_seq,
                              primer_specificity_database = "nt",
                              ...,
                              return_table = TRUE) {
-  
-  
   # Check paths provided
   if (!file.exists(accession_taxa_sql_path)) {
-    stop("accession_taxa_sql_path does not exist.\n",
-         "The path to the taxonomizr SQL file cannot be found. ",
-         "Please revise the path provided:\n", accession_taxa_sql_path)
+    stop(
+      "accession_taxa_sql_path does not exist.\n",
+      "The path to the taxonomizr SQL file cannot be found. ",
+      "Please revise the path provided:\n", accession_taxa_sql_path
+    )
   }
-  
+
   # Create output directories
   out <- file.path(output_directory_path, "get_seeds_local")
   dir.create(out, showWarnings = FALSE)
-  
+
   message('Output directory: ', out, '\n')
-  
+
   # Aggregate the primer_search return values
   # Then parse_primer_hits all of them
-  raw_table <- 
-    iterative_primer_search(forward_primer_seq, reverse_primer_seq,
-                            organism,
-                            primer_specificity_database, ...)
-  
+  raw_table <-
+    iterative_primer_search(
+      forward_primer_seq, reverse_primer_seq,
+      organism,
+      primer_specificity_database, ...
+    )
+
   # Throw an error if there are no results
   if (nrow(raw_table) < 1) {
     stop("Primer search returned no hits.")
   }
-  
-  filtered_table <- 
-    filter_primer_hits(raw_table,
-                       forward_primer_seq, reverse_primer_seq,
-                       mismatch, minimum_length,
-                       maximum_length)
-  
-  taxonomized_table <- 
-    get_taxonomy_from_accession(filtered_table,
-                                  accession_taxa_sql_path)
-  
+
+  filtered_table <-
+    filter_primer_hits(
+      raw_table,
+      forward_primer_seq, reverse_primer_seq,
+      mismatch, minimum_length,
+      maximum_length
+    )
+
+  taxonomized_table <-
+    get_taxonomy_from_accession(
+      filtered_table,
+      accession_taxa_sql_path
+    )
+
   # save output
   utils::write.csv(taxonomized_table,
-            file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_remote_output_with_taxonomy.csv")),
-            row.names = FALSE)
-  
+    file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_remote_output_with_taxonomy.csv")),
+    row.names = FALSE
+  )
+
   utils::write.csv(raw_table,
-            file = file.path(out, paste0(metabarcode_name, "_unfiltered_get_seeds_remote_output.csv")),
-            row.names = FALSE)
-  
+    file = file.path(out, paste0(metabarcode_name, "_unfiltered_get_seeds_remote_output.csv")),
+    row.names = FALSE
+  )
+
   # Count distinct taxonomic ranks - includes NA
-  tax_rank_sum <- 
-    taxonomized_table %>% 
+  tax_rank_sum <-
+    taxonomized_table %>%
     dplyr::summarise(
-      dplyr::across(c('superkingdom', 'phylum','class','order','family','genus','species'), .fns = dplyr::n_distinct)
+      dplyr::across(c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'), .fns = dplyr::n_distinct)
     )
-  
+
   # Write output to blast_seeds_output
   utils::write.csv(tax_rank_sum,
-            file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_remote_unique_taxonomic_rank_counts.csv")),
-            row.names = FALSE)
-  
-  
-  #return if you're supposed to
+    file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_remote_unique_taxonomic_rank_counts.csv")),
+    row.names = FALSE
+  )
+
+
+  # return if you're supposed to
   if (return_table) {
     return(taxonomized_table)
   }
-  
+
   invisible(NULL)
-  
 }

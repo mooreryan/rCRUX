@@ -31,25 +31,25 @@ filter_primer_hits <-
            mismatch = 3,
            minimum_length = 5,
            maximum_length = 500) {
-    
     # filter like get_seeds_local or get_seeds_remote used to
     output <- dplyr::filter(hits_table, !(.data$accession == " "))
-    output <- 
+    output <-
       output %>%
       dplyr::filter(.data$mismatch_forward <= mismatch) %>%
       dplyr::filter(.data$mismatch_reverse <= mismatch) %>%
       dplyr::filter(.data$product_length >= minimum_length) %>%
       dplyr::filter(.data$product_length <= maximum_length)
-    
+
     # Add amplicon_length column
     # This needs to know the size of the forward and reverse primers
     # That means we either need to pass the forward and reverse primers
     # to this function or we need to pass their lengths here
     # Or maybe that is supposed to happen in another function?
-    output <- 
-      dplyr::mutate(output, 
-                    amplicon_length = .data$product_length -
-                      nchar(.data$forward_primer_seq) - nchar(.data$reverse_primer_seq))
-    
+    output <-
+      dplyr::mutate(output,
+        amplicon_length = .data$product_length -
+          nchar(.data$forward_primer_seq) - nchar(.data$reverse_primer_seq)
+      )
+
     output
   }

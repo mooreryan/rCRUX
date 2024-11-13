@@ -100,10 +100,9 @@
 blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa_sql_path,
                             ncbi_bin = NULL, force_db = FALSE,
                             sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = 'genus', max_to_blast = 1000, random_seed = NULL, ...) {
-
   rcrux_log_debug("blast_datatable starting")
 
-  check_blast_plus_installation(ncbi_bin = if('ncbi_bin' %in% names(list(...))) ncbi_bin else NULL)
+  check_blast_plus_installation(ncbi_bin = if ('ncbi_bin' %in% names(list(...))) ncbi_bin else NULL)
   check_blast_db(blast_db_path)
   if (!file.exists(accession_taxa_sql_path)) {
     msg <- rcrux_log_fatal(
@@ -125,11 +124,11 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
   seeds_by_rank_indices <- max_to_blast
   rank_number <- 0
 
-  if (!is.null(random_seed)){
+  if (!is.null(random_seed)) {
     set.seed(random_seed)
   }
 
-  if (nrow(blast_seeds_m) < max_to_blast){
+  if (nrow(blast_seeds_m) < max_to_blast) {
     rcrux_log_debug(
       "max_to_blast (%d) is greater than the number of blast seeds (%d).  Reducing max_to_blast to %d.",
       max_to_blast,
@@ -138,16 +137,13 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     )
 
     max_to_blast <- nrow(blast_seeds_m)
-
   }
 
   while (length(unsampled_indices) > 0) {
-
     # Get previous information if they exist
     unsampled_indicies_file <- file.path(save_dir, "unsampled_indices.txt")
 
     if (file.exists(unsampled_indicies_file)) {
-
       rcrux_log_debug("Previous unsampled indices exist, continuing from there.")
 
       rounds_path <- file.path(save_dir, "num_rounds.txt")
@@ -167,7 +163,6 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
       blast_seeds_m_path <- file.path(save_dir, "blast_seeds_passed_filter.txt")
       blast_seeds_m <- utils::read.csv(blast_seeds_m_path, colClasses = "character")
-
     }
 
     # Information about state of blast
@@ -183,15 +178,10 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     # the blast seed table will be randomly sampled by taxonomic ranks
     if (length(unsampled_indices) <= max_to_blast) {
       sample_indices <- unsampled_indices
-    }
-
-    else if (rank == 'all') {
-
+    } else if (rank == 'all') {
       sample_indices <- unsampled_indices
       rank_number <- length(sample_indices)
-
-    }
-    else {
+    } else {
       # if more indices than the max_to_blast are present
       # randomly select entries (default is n=1) for each rank then turn the
       # accession numbers into a vector
@@ -205,42 +195,38 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
         dplyr::pull(.data$accession)
 
 
-     rank_number <- length(seeds_by_rank_indices)
+      rank_number <- length(seeds_by_rank_indices)
 
 
 
-     if (rank_number < max_to_blast & nrow(blast_seeds_m) > max_to_blast){
-
+      if (rank_number < max_to_blast & nrow(blast_seeds_m) > max_to_blast) {
         remainder = max_to_blast - rank_number - 1
 
         filler <-
           blast_seeds_m %>%
           dplyr::filter(.data$blast_status == 'not_done') %>%
-          dplyr::filter(!.data$accession %in%  seeds_by_rank_indices) %>%
+          dplyr::filter(!.data$accession %in% seeds_by_rank_indices) %>%
           dplyr::slice_sample(n = remainder) %>%
           dplyr::pull(.data$accession)
+      }
 
-        }
+      seeds_to_blast <- c(seeds_by_rank_indices, filler)
 
-        seeds_to_blast <- c(seeds_by_rank_indices,filler)
-
-        sample_indices <- which(blast_seeds_m$accession %in% seeds_to_blast)
+      sample_indices <- which(blast_seeds_m$accession %in% seeds_to_blast)
 
 
 
       # search the original output blast_seeds for the indices (row numbers) to
       # be used as blast seeds and make vector or sample indices
-      #sample_indices <- which(blast_seeds_m$accession %in% seeds_by_rank_indices)
-
+      # sample_indices <- which(blast_seeds_m$accession %in% seeds_by_rank_indices)
     }
 
-    if (rank_number < 10){
-        sample_indices <- unsampled_indices
+    if (rank_number < 10) {
+      sample_indices <- unsampled_indices
     }
 
     # clean up messages
     if (rank_number < max_to_blast & nrow(blast_seeds_m) > max_to_blast) {
-
       # if zero more genera exist, but more indices than the max_to_blast are present
       # randomly select indices up to the max_to_blast value
       # accession numbers into a vector
@@ -252,7 +238,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
         length(filler)
       )
 
-      #seeds_left_indices <-
+      # seeds_left_indices <-
       #  blast_seeds_m %>%
       #  dplyr::filter(.data$blast_status == 'not_done') %>%
       ##  dplyr::pull(.data$accession)
@@ -260,16 +246,13 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
       # search the original output blast_seeds for the indices (row numbers) to
       # be used as blast seeds and make vector or sample indices
       # sample_indices <- which(blast_seeds_m$accession %in% seeds_left_indices)
-
-
-
-    } else if (length(unsampled_indices) >= max_to_blast & rank_number >= max_to_blast ) {
+    } else if (length(unsampled_indices) >= max_to_blast & rank_number >= max_to_blast) {
       rcrux_log_debug(
         "%s has %d unique occurrences in the blast seeds data table.  These may be subset....",
         rank,
         rank_number
       )
-    } else if (length(unsampled_indices) >= max_to_blast & rank_number < 10  ) {
+    } else if (length(unsampled_indices) >= max_to_blast & rank_number < 10) {
       rcrux_log_debug(
         "%s has %d unique occurrences in the blast seeds data table.  These remaining indices will be blasted and may be subset....",
         rank,
@@ -292,13 +275,11 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
     # it will run. If not the number of indices to be blasted for a rank will be
     # broken into the max_to_blast value.
 
-    while (length(sample_indices) > 0 ){
-
+    while (length(sample_indices) > 0) {
       # Get previous information if they exist
       unsampled_indicies_file <- file.path(save_dir, "unsampled_indices.txt")
 
       if (file.exists(unsampled_indicies_file)) {
-
         rounds_path <- file.path(save_dir, "num_rounds.txt")
         num_rounds <- as.numeric(readLines(con = rounds_path))
 
@@ -316,7 +297,6 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
 
         blast_seeds_m_path <- file.path(save_dir, "blast_seeds_passed_filter.txt")
         blast_seeds_m <- utils::read.csv(blast_seeds_m_path, colClasses = "character")
-
       }
 
       # TODO - this section could use better layout to only run run_blastdbcmd_blastn_and_aggregate_resuts
@@ -329,83 +309,81 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
       # How to update sample indices?
 
       if (length(sample_indices) == length(unsampled_indices)) {
-
         rcrux_log_debug("tmp - length(sample_indices) == length(unsampled_indices)")
 
-        run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = unsampled_indices,
-                                                   save_dir = save_dir,
-                                                   blast_seeds_m = blast_seeds_m,
-                                                   ncbi_bin = ncbi_bin,
-                                                   db = blast_db_path,
-                                                   too_many_ns = too_many_ns,
-                                                   blastdbcmd_failed = blastdbcmd_failed,
-                                                   unsampled_indices = unsampled_indices,
-                                                   output_table = output_table,
-                                                   wildcards = wildcards,
-                                                   num_rounds = num_rounds,
-                                                   ...)
+        run_blastdbcmd_blastn_and_aggregate_resuts(
+          sample_indices = unsampled_indices,
+          save_dir = save_dir,
+          blast_seeds_m = blast_seeds_m,
+          ncbi_bin = ncbi_bin,
+          db = blast_db_path,
+          too_many_ns = too_many_ns,
+          blastdbcmd_failed = blastdbcmd_failed,
+          unsampled_indices = unsampled_indices,
+          output_table = output_table,
+          wildcards = wildcards,
+          num_rounds = num_rounds,
+          ...
+        )
 
         unsampled_indices <- unsampled_indices[!(unsampled_indices)]
         blast_seeds_m$blast_status[-unsampled_indices] <- "done"
 
         break
-
       } else if (length(sample_indices) <= max_to_blast) {
-
         rcrux_log_debug("tmp - length(sample_indices) <= max_to_blast")
 
-        run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = sample_indices,
-                                                   save_dir = save_dir,
-                                                   blast_seeds_m = blast_seeds_m,
-                                                   ncbi_bin = ncbi_bin,
-                                                   db = blast_db_path,
-                                                   too_many_ns = too_many_ns,
-                                                   blastdbcmd_failed = blastdbcmd_failed,
-                                                   unsampled_indices = unsampled_indices,
-                                                   output_table = output_table,
-                                                   wildcards = wildcards,
-                                                   num_rounds = num_rounds,
-                                                   ...)
+        run_blastdbcmd_blastn_and_aggregate_resuts(
+          sample_indices = sample_indices,
+          save_dir = save_dir,
+          blast_seeds_m = blast_seeds_m,
+          ncbi_bin = ncbi_bin,
+          db = blast_db_path,
+          too_many_ns = too_many_ns,
+          blastdbcmd_failed = blastdbcmd_failed,
+          unsampled_indices = unsampled_indices,
+          output_table = output_table,
+          wildcards = wildcards,
+          num_rounds = num_rounds,
+          ...
+        )
 
         sample_indices <- sample_indices[!(sample_indices)]
         blast_seeds_m$blast_status[-sample_indices] <- "done"
 
 
         break
-
       } else {
-
         rcrux_log_debug("tmp - Subsetting sample_indices")
 
         # take chunks of the sample indices that are equivalent to max_to_blast
         subset <- utils::head(sample_indices, max_to_blast)
 
-        run_blastdbcmd_blastn_and_aggregate_resuts(sample_indices = subset,
-                                                   save_dir = save_dir,
-                                                   blast_seeds_m = blast_seeds_m,
-                                                   ncbi_bin = ncbi_bin,
-                                                   db = blast_db_path,
-                                                   too_many_ns = too_many_ns,
-                                                   blastdbcmd_failed = blastdbcmd_failed,
-                                                   unsampled_indices = unsampled_indices,
-                                                   output_table = output_table,
-                                                   wildcards = wildcards,
-                                                   num_rounds = num_rounds,
-                                                   ...)
+        run_blastdbcmd_blastn_and_aggregate_resuts(
+          sample_indices = subset,
+          save_dir = save_dir,
+          blast_seeds_m = blast_seeds_m,
+          ncbi_bin = ncbi_bin,
+          db = blast_db_path,
+          too_many_ns = too_many_ns,
+          blastdbcmd_failed = blastdbcmd_failed,
+          unsampled_indices = unsampled_indices,
+          output_table = output_table,
+          wildcards = wildcards,
+          num_rounds = num_rounds,
+          ...
+        )
 
         # update sample indices
         sample_indices <- sample_indices[!(sample_indices %in% subset)]
         blast_seeds_m$blast_status[-sample_indices] <- "done"
-
       }
-
     }
 
     rm(output_table)
     rm(too_many_ns)
     rm(blastdbcmd_failed)
     rm(blast_seeds_m)
-
   }
 
   # Clean up final datatable by removing any hyphens, updating amplicon_length
@@ -442,5 +420,4 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
   rcrux_log_debug("blast_datatable done")
 
   return(output_table_taxonomy)
-
 }

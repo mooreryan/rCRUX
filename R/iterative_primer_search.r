@@ -28,22 +28,22 @@ iterative_primer_search <- function(forward_primer_seq, reverse_primer_seq, orga
   output <- NULL
   # Use for loops to iterate over all the vector options
   for (org in organisms) {
-    
     response <- try(
-      primer_search(forward = forward_primer_seq, 
-                    reverse =  reverse_primer_seq, 
-                    organism = org,
-                    primer_specificity_database = db, ...),
+      primer_search(
+        forward = forward_primer_seq,
+        reverse = reverse_primer_seq,
+        organism = org,
+        primer_specificity_database = db, ...
+      ),
       silent = TRUE
     )
-    
-    
+
+
     if (inherits(response) == "try-error") {
       # To do: include useful metadata and messages
       msg <- conditionMessage(attr(response, "condition"))
       warning(msg)
-    }
-    else {
+    } else {
       # Splice the parse onto the output
       for (r in response) {
         parsed <- try(
@@ -55,17 +55,17 @@ iterative_primer_search <- function(forward_primer_seq, reverse_primer_seq, orga
           msg <- conditionMessage(attr(response, "condition"))
           warning(msg)
           message("This occurred while processing organism ", org, ".")
-        }
-        else if (!is.data.frame(parsed)) {
-          warning("parse_primer_hits returned an object that is not a dataframe. ", 
-                  "It will be ignored.")
+        } else if (!is.data.frame(parsed)) {
+          warning(
+            "parse_primer_hits returned an object that is not a dataframe. ",
+            "It will be ignored."
+          )
           message("This occurred while processing organism ", org, ".")
-        }
-        else {
+        } else {
           # turn it into a data.table
           # because I think that makes this faster?
           data.table::setDT(parsed)
-          
+
           # It should only not be a data.frame
           # when nothing has been added yet
           # Why not initialize it as an empty data.table?
@@ -73,25 +73,26 @@ iterative_primer_search <- function(forward_primer_seq, reverse_primer_seq, orga
           # changing the output format
           if (is.null(output)) {
             output <- parsed
-          }
-          else {
+          } else {
             output <- tibble::add_row(output, parsed)
           }
         }
       }
     }
   }
-  
+
   # Check if we got anything
   # We want it to stop because not finding anything is a problem for anything
   # that depends on it finding something and it is more helpful to simply
   # fail than return an empty data.frame that code down the line will need to
   # figure out how to deal with
   if (!is.data.frame(output)) {
-    stop("Output is not a data.frame\n",
-         "Hint: your searches may not have returned any results.")
+    stop(
+      "Output is not a data.frame\n",
+      "Hint: your searches may not have returned any results."
+    )
   }
-  
+
   # remove duplicate rows
   output <- dplyr::distinct(output)
   return(output)

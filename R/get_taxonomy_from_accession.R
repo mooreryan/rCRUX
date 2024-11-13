@@ -22,52 +22,58 @@
 #'
 #' @export
 #'
-get_taxonomy_from_accession <- 
-  function(input, 
+get_taxonomy_from_accession <-
+  function(input,
            accession_taxa_sql_path,
            arrange_taxonomy = TRUE) {
-    
     if (!file.exists(accession_taxa_sql_path)) {
-      stop("accession_taxa_sql_path does not exist.\n",
-           "The path to the taxonomizr SQL file cannot be found. ",
-           "Please revise the path provided:\n", accession_taxa_sql_path)
+      stop(
+        "accession_taxa_sql_path does not exist.\n",
+        "The path to the taxonomizr SQL file cannot be found. ",
+        "Please revise the path provided:\n", accession_taxa_sql_path
+      )
     }
-    
+
     if (!"accession" %in% colnames(input)) {
       stop("No `accession` column in input.")
     }
-    
-    input_taxids <- 
-      taxonomizr::accessionToTaxa(input$accession,
-                                  accession_taxa_sql_path)
-    
-    input_taxonomy <- 
+
+    input_taxids <-
+      taxonomizr::accessionToTaxa(
+        input$accession,
+        accession_taxa_sql_path
+      )
+
+    input_taxonomy <-
       taxonomizr::getTaxonomy(input_taxids, accession_taxa_sql_path,
-                              desiredTaxa = c("species", "superkingdom",
-                                              "kingdom", "phylum", "subphylum", "superclass",
-                                              "class", "subclass", "order", "family",
-                                              "subfamily", "genus", "infraorder", "subcohort",
-                                              "superorder", "superfamily", "tribe",
-                                              "subspecies", "subgenus", "species group",
-                                              "parvorder", "varietas"))
-    
+        desiredTaxa = c(
+          "species", "superkingdom",
+          "kingdom", "phylum", "subphylum", "superclass",
+          "class", "subclass", "order", "family",
+          "subfamily", "genus", "infraorder", "subcohort",
+          "superorder", "superfamily", "tribe",
+          "subspecies", "subgenus", "species group",
+          "parvorder", "varietas"
+        )
+      )
+
     output <-
       dplyr::mutate(input, taxid = input_taxids, data.frame(input_taxonomy))
-    
+
     if (!"species" %in% colnames(output)) {
       stop("Failed to create column `species` in output.
             Hint: Is your data frame empty?")
     }
-    
+
     if (arrange_taxonomy) {
-      output <- 
+      output <-
         output %>%
         dplyr::arrange('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species')
     }
-    
+
     output
   }
 
-get_taxonomizr_from_accession <- function(){
+get_taxonomizr_from_accession <- function() {
   .Deprecated('get_taxonomy_from_accession', old = 'get_taxonomizr_from_accession')
 }

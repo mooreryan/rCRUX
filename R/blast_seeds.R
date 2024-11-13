@@ -117,13 +117,14 @@
 #' @export
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' seeds_output_path <-
-#'   file.path("my/directory",
-#'    "12S_V5F1_remote_111122_modified_params/blast_seeds_output",
-#'    "summary.csv")
+#'   file.path(
+#'     "my/directory",
+#'     "12S_V5F1_remote_111122_modified_params/blast_seeds_output",
+#'     "summary.csv"
+#'   )
 #'
 #' output_directory_path <- "/my/directory/12S_V5F1_remote_111122_modified_params"
 #' metabarcode_name <- "12S_V5F1"
@@ -132,18 +133,18 @@
 #'
 #'
 #' blast_seeds(seeds_output_path,
-#'             blast_db_path,
-#'             accession_taxa_sql_path,
-#'             output_directory_path,
-#'             metabarcode_name,
-#'             rank = 'species',
-#'             max_to_blast = 750)
+#'   blast_db_path,
+#'   accession_taxa_sql_path,
+#'   output_directory_path,
+#'   metabarcode_name,
+#'   rank = 'species',
+#'   max_to_blast = 750
+#' )
 #'
 #' # using the rank of species will increase the number of total unique blast hits
 #' # modifying the max_to_blast submits fewer reads simultaneously and reduces
 #' # overall RAM while extending the run
-#'}
-
+#' }
 blast_seeds <-
   function(seeds_output_path,
            blast_db_path,
@@ -170,8 +171,8 @@ blast_seeds <-
     # if run failed before any blast output delete save_dir
     output_table_path <- file.path(save_dir, "output_table.txt")
 
-    if (file.exists(output_table_path) & file.size(output_table_path) < 5){
-      unlink(save_dir, recursive=TRUE)
+    if (file.exists(output_table_path) & file.size(output_table_path) < 5) {
+      unlink(save_dir, recursive = TRUE)
     }
 
     # create directories if they do not exist
@@ -185,10 +186,12 @@ blast_seeds <-
     blast_seeds <- utils::read.csv(seeds_output_path)
 
     output_table <-
-      blast_datatable(blast_seeds = blast_seeds,
-                      save_dir = save_dir,
-                      blast_db_path = blast_db_path,
-                      accession_taxa_sql_path = accession_taxa_sql_path, ...)
+      blast_datatable(
+        blast_seeds = blast_seeds,
+        save_dir = save_dir,
+        blast_db_path = blast_db_path,
+        accession_taxa_sql_path = accession_taxa_sql_path, ...
+      )
 
     rcrux_log_info("Blasting complete.  Wrangling results.")
 
@@ -196,7 +199,7 @@ blast_seeds <-
     # keep only hits with acceptable product length
     output_table <- dplyr::filter(output_table, dplyr::between(.data$amplicon_length, minimum_length, maximum_length))
 
-    if (nrow(output_table) == 0){
+    if (nrow(output_table) == 0) {
       msg <- rcrux_log_fatal('Nothing left after filtering amplicon_length by minimum_length and maximum_length values.')
       stop(msg)
     }
@@ -224,14 +227,16 @@ blast_seeds <-
       dplyr::slice(-1)
 
     taxa_table_path <- file.path(output_dir, paste0(metabarcode_name, "_taxonomy.txt"))
-    utils::write.table(taxa_table, file = taxa_table_path, row.names = FALSE, col.names=FALSE, sep = "\t")
+    utils::write.table(taxa_table, file = taxa_table_path, row.names = FALSE, col.names = FALSE, sep = "\t")
 
     # Count distinct taxonomic ranks - includes NA
     tax_rank_sum <-
       output_table %>%
       dplyr::summarise(
-        dplyr::across(.cols = c('superkingdom','phylum','class','order','family','genus','species'),
-                      .fns = dplyr::n_distinct)
+        dplyr::across(
+          .cols = c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'),
+          .fns = dplyr::n_distinct
+        )
       )
     tax_rank_sum_table_path <- file.path(output_dir, paste0(metabarcode_name, "_blast_seeds_summary_unique_taxonomic_rank_counts.csv"))
     utils::write.csv(tax_rank_sum, file = tax_rank_sum_table_path, row.names = FALSE)
@@ -242,7 +247,7 @@ blast_seeds <-
       too_many_ns_path <- file.path(save_dir, "too_many_ns.txt")
       too_many_ns_indices <- as.numeric(readLines(too_many_ns_path))
 
-      if (length(too_many_ns_indices) > 0){
+      if (length(too_many_ns_indices) > 0) {
         too_many_ns <- blast_seeds[too_many_ns_indices, ]
         too_many_ns_csv_path <- file.path(output_dir, "too_many_ns.csv")
         utils::write.csv(too_many_ns, file = too_many_ns_csv_path, row.names = FALSE)
@@ -251,7 +256,7 @@ blast_seeds <-
       blastdbcmd_failed_path <- file.path(save_dir, "blastdbcmd_failed.txt")
       blastdbcmd_failed_indices <- as.numeric(readLines(blastdbcmd_failed_path))
 
-      if (length(blastdbcmd_failed_indices) > 0){
+      if (length(blastdbcmd_failed_indices) > 0) {
         blastdbcmd_failed <- blast_seeds[blastdbcmd_failed_indices, ]
         blastdbcmd_failed_csv_path <- file.path(output_dir, "blastdbcmd_failed.csv")
         utils::write.csv(blastdbcmd_failed, file = blastdbcmd_failed_csv_path, row.names = FALSE)
@@ -259,7 +264,7 @@ blast_seeds <-
     }
 
     # Clear temporary directory
-    unlink(save_dir, recursive=TRUE)
+    unlink(save_dir, recursive = TRUE)
 
     rcrux_log_info('blast_seeds done')
 

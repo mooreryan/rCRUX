@@ -131,12 +131,11 @@
 #' @export
 #'
 #' @examples
-#'
 #' \dontrun{
 #' # Non degenerate primer example: 12S_V5F1 (Riaz et al. 2011)
 #'
 #' forward_primer_seq = "TAGAACAGGCTCCTCTAG"
-#' reverse_primer_seq =  "TTAGATACCCCACTATGC"
+#' reverse_primer_seq = "TTAGATACCCCACTATGC"
 #' output_directory_path <- "/my/directory/12S_V5F1_local_111122_species_750"
 #' metabarcode_name <- "12S_V5F1"
 #' accession_taxa_sql_path <- "/my/directory/accessionTaxa.sql"
@@ -144,13 +143,14 @@
 #'
 #'
 #' get_seeds_local(forward_primer_seq,
-#'                 reverse_primer_seq,
-#'                 output_directory_path,
-#'                 metabarcode_name,
-#'                 accession_taxa_sql_path,
-#'                 blast_db_path,
-#'                 minimum_length = 80,
-#'                 maximum_length = 150)
+#'   reverse_primer_seq,
+#'   output_directory_path,
+#'   metabarcode_name,
+#'   accession_taxa_sql_path,
+#'   blast_db_path,
+#'   minimum_length = 80,
+#'   maximum_length = 150
+#' )
 #'
 #' # adjusting the minimum_length and maximum_length parameters reduces the
 #' # number of total hits by removing reads that could result from off
@@ -167,17 +167,18 @@
 #'
 #'
 #' get_seeds_local(forward_primer_seq,
-#'                 reverse_primer_seq,
-#'                 output_directory_path,
-#'                 metabarcode_name,
-#'                 accession_taxa_sql_path,
-#'                 blast_db_path,
-#'                 minimum_length = 200,
-#'                 maximum_length = 400,
-#'                 aligns = '10000',
-#'                 num_rprimers_to_blast = 200,
-#'                 num_rprimers_to_blast = 2000,
-#'                 max_to_blast = 10)
+#'   reverse_primer_seq,
+#'   output_directory_path,
+#'   metabarcode_name,
+#'   accession_taxa_sql_path,
+#'   blast_db_path,
+#'   minimum_length = 200,
+#'   maximum_length = 400,
+#'   aligns = '10000',
+#'   num_rprimers_to_blast = 200,
+#'   num_rprimers_to_blast = 2000,
+#'   max_to_blast = 10
+#' )
 #'
 #'
 #' # Non Degenerate but high return primer example - 18S (Amaral-Zettler et al. 2009)
@@ -190,50 +191,51 @@
 #'
 #'
 #' get_seeds_local(forward_primer_seq,
-#'                 reverse_primer_seq,
-#'                 output_directory_path,
-#'                 metabarcode_name,
-#'                 accession_taxa_sql_path,
-#'                 blast_db_path,
-#'                 minimum_length = 250,
-#'                 maximum_length = 350,
-#'                 max_to_blast = 1)
+#'   reverse_primer_seq,
+#'   output_directory_path,
+#'   metabarcode_name,
+#'   accession_taxa_sql_path,
+#'   blast_db_path,
+#'   minimum_length = 250,
+#'   maximum_length = 350,
+#'   max_to_blast = 1
+#' )
 #'
 #' # blasting two primers at a time can max out a system's RAM, however
 #' # blasting one at a time is more feasible for personal computers with 16 GB RAM
-#'}
+#' }
 get_seeds_local <-
   function(
-    # I/O parameters
-    forward_primer_seq,
-    reverse_primer_seq,
-    metabarcode_name,
-    output_directory_path,
-    accession_taxa_sql_path,
-    blast_db_path,
-    return_table = TRUE,
-    # Output filtering parameters
-    mismatch = 6,
-    minimum_length = 5,
-    maximum_length = 500,
-    #primer_specificity_database = "nt",
-    num_fprimers_to_blast = 50,
-    num_rprimers_to_blast = 50,
-    max_to_blast = 2,
-    random_seed = NULL,
-    # run_primer_blastn parameters
-    ...) {
+      # I/O parameters
+      forward_primer_seq,
+      reverse_primer_seq,
+      metabarcode_name,
+      output_directory_path,
+      accession_taxa_sql_path,
+      blast_db_path,
+      return_table = TRUE,
+      # Output filtering parameters
+      mismatch = 6,
+      minimum_length = 5,
+      maximum_length = 500,
+      # primer_specificity_database = "nt",
+      num_fprimers_to_blast = 50,
+      num_rprimers_to_blast = 50,
+      max_to_blast = 2,
+      random_seed = NULL,
+      # run_primer_blastn parameters
+      ...) {
     rcrux_log_debug("get_seeds_local starting")
 
     dots <- list(...)
 
     # Create output directories
 
-    if (!dir.exists(output_directory_path)){
+    if (!dir.exists(output_directory_path)) {
       dir.create(output_directory_path)
-    }  else{
+    } else {
       rcrux_log_debug(
-        "Output directory already exists", 
+        "Output directory already exists",
         output_directory = output_directory_path
       )
     }
@@ -247,9 +249,9 @@ get_seeds_local <-
     )
 
     # Check paths provided
-    check_blast_plus_installation(ncbi_bin = if('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
+    check_blast_plus_installation(ncbi_bin = if ('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
 
-    check_blast_db(blast_db_path, ncbi_bin = if('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
+    check_blast_db(blast_db_path, ncbi_bin = if ('ncbi_bin' %in% names(dots)) dots$ncbi_bin else NULL)
 
     if (!file.exists(accession_taxa_sql_path)) {
       msg <- rcrux_log_fatal(
@@ -261,9 +263,9 @@ get_seeds_local <-
 
     # Make file paths for storing primer blast runs
     fasta_path <- file.path(out, paste0(metabarcode_name, "_primers_selected_for_blastn.fasta"))
-    to_blast_path <- file.path(out,  paste0(metabarcode_name, "_subset_for_blastn.fasta"))
-    left_to_blast_path <- file.path(out,  paste0(metabarcode_name, "_need_to_blastn.fasta"))
-    append_table_path <- file.path(out,  paste0(metabarcode_name, "_temp_blast_output.csv"))
+    to_blast_path <- file.path(out, paste0(metabarcode_name, "_subset_for_blastn.fasta"))
+    left_to_blast_path <- file.path(out, paste0(metabarcode_name, "_need_to_blastn.fasta"))
+    append_table_path <- file.path(out, paste0(metabarcode_name, "_temp_blast_output.csv"))
 
     # with any luck this function will pick up where it left off by checking for the left_to_blast file.
     # If it does not exist it starts from scratch.  If it does exist it skips the beginning bit and go strait to sub-setting for blast.
@@ -283,7 +285,7 @@ get_seeds_local <-
         fPrimer <- rbind(fPrimer, forward.df)
       }
 
-      for (pr in reverse_primer_seq ) {
+      for (pr in reverse_primer_seq) {
         reverse_primers = enumerate_ambiguity(pr)
         reverse.df <- data.frame(reverse = reverse_primers, stringsAsFactors = FALSE)
         rPrimer <- rbind(rPrimer, reverse.df)
@@ -293,8 +295,8 @@ get_seeds_local <-
       nforward <- nrow(fPrimer)
       nreverse <- nrow(rPrimer)
 
-      #subset primers if user so chooses
-      if (nforward > num_fprimers_to_blast){
+      # subset primers if user so chooses
+      if (nforward > num_fprimers_to_blast) {
         rcrux_log_debug(
           "Forward primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_fprimers_to_blast.",
           nforward,
@@ -302,21 +304,18 @@ get_seeds_local <-
         )
 
         # set random.seed for reproducible results
-        if (!is.null(random_seed)){
-            set.seed(random_seed)
+        if (!is.null(random_seed)) {
+          set.seed(random_seed)
         }
 
         forward_sample = dplyr::sample_n(fPrimer, num_fprimers_to_blast, replace = FALSE)
-
       } else {
-
         rcrux_log_debug("%d forward primer(s) will be blasted", nforward)
 
         forward_sample = fPrimer
       }
 
-      if(nreverse > num_rprimers_to_blast){
-
+      if (nreverse > num_rprimers_to_blast) {
         rcrux_log_debug(
           "Reverse primers have %d possible sequences due to degenerate bases.  Randomly sampling %d forward primers. To change this, modify num_rprimers_to_blast.",
           nreverse,
@@ -324,26 +323,24 @@ get_seeds_local <-
         )
 
         # set random.seed for reproducible results
-        if (!is.null(random_seed)){
-            set.seed(random_seed)
+        if (!is.null(random_seed)) {
+          set.seed(random_seed)
         }
 
-        reverse_sample = dplyr::sample_n(rPrimer, num_rprimers_to_blast, replace=FALSE)
-
-      }  else {
-
+        reverse_sample = dplyr::sample_n(rPrimer, num_rprimers_to_blast, replace = FALSE)
+      } else {
         rcrux_log_debug("%d reverse primer(s) will be blasted", nreverse)
 
         reverse_sample = rPrimer
       }
 
       # forward fasta first
-      fastaf <- character(nrow(forward_sample) * 2 )
+      fastaf <- character(nrow(forward_sample) * 2)
       fastaf[c(TRUE, FALSE)] <- paste0(">forward_row_", row.names(forward_sample))
       fastaf[c(FALSE, TRUE)] <- forward_sample$forward
 
       # then reverse fasta
-      fastar <- character(nrow(reverse_sample) *2 )
+      fastar <- character(nrow(reverse_sample) * 2)
       fastar[c(TRUE, FALSE)] <- paste0(">reverse_row_", row.names(reverse_sample))
       fastar[c(FALSE, TRUE)] <- reverse_sample$reverse
 
@@ -354,36 +351,35 @@ get_seeds_local <-
       # make a tibble to store blast output
       # -outfmt 6 ...
       append_table <-
-        tibble::tibble("qseqid" = character(0),
-                       "sgi" = character(0),
-                       "saccver" = character(0),
-                       "mismatch" = character(0),
-                       "sstart" = character(0),
-                       "send" = character(0),
-                       "staxids" = character(0))
-
+        tibble::tibble(
+          "qseqid" = character(0),
+          "sgi" = character(0),
+          "saccver" = character(0),
+          "mismatch" = character(0),
+          "sstart" = character(0),
+          "send" = character(0),
+          "staxids" = character(0)
+        )
     } else {
-
       rcrux_log_debug("Previous primer blast files found. Continuing from there.")
       fasta_path = left_to_blast_path
       append_table = utils::read.csv(append_table_path, colClasses = "character")
-
     }
 
     input <- readr::read_lines(fasta_path)
 
     rcrux_log_debug(
-      "Reads will be blasted in subsets of up to %d read(s).  To change this, modify max_to_blast.", 
+      "Reads will be blasted in subsets of up to %d read(s).  To change this, modify max_to_blast.",
       max_to_blast
     )
 
     # take a subset of the primers and blast - keep subsetting until we finish
-    while (length(input) > 0){
+    while (length(input) > 0) {
       # lines to subset
-      remove <- max_to_blast*2
+      remove <- max_to_blast * 2
 
       # if max_to_blast is more than the number of things to blast - take the number of things...
-      if (length(input) < remove){
+      if (length(input) < remove) {
         remove <- length(input)
       }
 
@@ -407,13 +403,14 @@ get_seeds_local <-
 
       # update the file that contains primers to be blasted
       input = input[-(0:remove)]
-      #stats::na.omit(input)
+      # stats::na.omit(input)
       writeLines(input, left_to_blast_path)
 
-      #save results for later
+      # save results for later
       utils::write.csv(append_table,
-                file = append_table_path,
-                row.names = FALSE)
+        file = append_table_path,
+        row.names = FALSE
+      )
     }
 
     unlink(left_to_blast_path)
@@ -424,7 +421,7 @@ get_seeds_local <-
     append_table <- utils::read.csv(append_table_path, colClasses = "character")
 
     # if output table is empty and give warning and stop
-    if (nrow(append_table) <= 1){
+    if (nrow(append_table) <= 1) {
       msg <- rcrux_log_fatal(
         "No blast output generated.  Either no hits were found, or your compute environment could not support memory needs of the blastn step.  Try modifying parameters to reduce blast returns (e.g. align, max_to_blast, evalue, etc.)"
       )
@@ -434,108 +431,123 @@ get_seeds_local <-
     subset = 10000
 
 
-    sorted <- dplyr::arrange(append_table,saccver,send,mismatch)
-    sorted <- sorted %>% dplyr::group_by(saccver) %>% dplyr::filter(any(grepl("forward",qseqid)) && any(grepl("reverse",qseqid)), mismatch < 4)
-    sorted <- sorted  %>% dplyr::group_by(saccver,send) %>% dplyr::filter(dplyr::row_number()==1) %>% dplyr::ungroup()
-    sorted <- dplyr::arrange(sorted,saccver,sstart,mismatch)
-    sorted <- sorted %>% dplyr::group_by(saccver,sstart) %>% dplyr::filter(dplyr::row_number()==1) %>% dplyr::ungroup()
+    sorted <- dplyr::arrange(append_table, saccver, send, mismatch)
+    sorted <- sorted %>%
+      dplyr::group_by(saccver) %>%
+      dplyr::filter(any(grepl("forward", qseqid)) && any(grepl("reverse", qseqid)), mismatch < 4)
+    sorted <- sorted %>%
+      dplyr::group_by(saccver, send) %>%
+      dplyr::filter(dplyr::row_number() == 1) %>%
+      dplyr::ungroup()
+    sorted <- dplyr::arrange(sorted, saccver, sstart, mismatch)
+    sorted <- sorted %>%
+      dplyr::group_by(saccver, sstart) %>%
+      dplyr::filter(dplyr::row_number() == 1) %>%
+      dplyr::ungroup()
 
 
-vdf <- sorted %>% dplyr::distinct(saccver)
+    vdf <- sorted %>% dplyr::distinct(saccver)
 
 
-vdf <- sorted %>% dplyr::group_by(saccver) %>%
-  dplyr::summarize(distinct_entries = dplyr::n_distinct(send)) %>% dplyr::filter(distinct_entries < 50) %>% dplyr::ungroup()
+    vdf <- sorted %>%
+      dplyr::group_by(saccver) %>%
+      dplyr::summarize(distinct_entries = dplyr::n_distinct(send)) %>%
+      dplyr::filter(distinct_entries < 50) %>%
+      dplyr::ungroup()
 
 
 
 
-# make a tibble to store plausable amplicons
-final_table <-
-  tibble::tibble("qseqid.x" = character(0),
-                 "gi" = character(0),
-                 "accession" = character(0),
-                 "mismatch_forward" = character(0),
-                 "forward_start" = character(0),
-                 "forward_stop " = character(0),
-                 "staxids" = character(0),
-                 "qseqid.y" = character(0),
-                 "mismatch_reverse" = character(0),
-                 "reverse_start" = character(0),
-                 "reverse_stop " = character(0))
+    # make a tibble to store plausable amplicons
+    final_table <-
+      tibble::tibble(
+        "qseqid.x" = character(0),
+        "gi" = character(0),
+        "accession" = character(0),
+        "mismatch_forward" = character(0),
+        "forward_start" = character(0),
+        "forward_stop " = character(0),
+        "staxids" = character(0),
+        "qseqid.y" = character(0),
+        "mismatch_reverse" = character(0),
+        "reverse_start" = character(0),
+        "reverse_stop " = character(0)
+      )
 
 
-    while (nrow(vdf) > 0){
-
-      vec <- dplyr::slice_head(vdf, n=subset)
-      remove <- nrow(vdf)-nrow(vec)
-      vdf <- dplyr::slice_tail(vdf, n=remove)
+    while (nrow(vdf) > 0) {
+      vec <- dplyr::slice_head(vdf, n = subset)
+      remove <- nrow(vdf) - nrow(vec)
+      vdf <- dplyr::slice_tail(vdf, n = remove)
 
       sub <- dplyr::inner_join(sorted, vec, by = "saccver")
 
       F_only <-
         sub %>%
-          dplyr::filter(grepl('forward', .data$qseqid)) %>%
-            dplyr::rename(
-            gi = 'sgi',
-            accession = 'saccver',
-            mismatch_forward = 'mismatch',
-            forward_start = 'sstart',
-            forward_stop = 'send'
-            )
+        dplyr::filter(grepl('forward', .data$qseqid)) %>%
+        dplyr::rename(
+          gi = 'sgi',
+          accession = 'saccver',
+          mismatch_forward = 'mismatch',
+          forward_start = 'sstart',
+          forward_stop = 'send'
+        )
 
       R_only <-
         sub %>%
-          dplyr::filter(grepl('reverse', .data$qseqid)) %>%
-          dplyr::rename(
+        dplyr::filter(grepl('reverse', .data$qseqid)) %>%
+        dplyr::rename(
           gi = 'sgi',
           accession = 'saccver',
           mismatch_reverse = 'mismatch',
           reverse_start = 'sstart',
           reverse_stop = 'send'
-          )
+        )
 
-  # keep only the accessions with forward and reverse primer hits, and add a column for product length
-    f_and_r <-
-      dplyr::inner_join(x = F_only,
-                      y = R_only,
-                      by = c("accession", "gi", "staxids"), relationship = "many-to-many") %>%
-      dplyr::mutate(product_length = 0,
-                  dplyr::across(c('forward_start', 'forward_stop', 'reverse_start', 'reverse_stop'), .fns = as.integer))
+      # keep only the accessions with forward and reverse primer hits, and add a column for product length
+      f_and_r <-
+        dplyr::inner_join(
+          x = F_only,
+          y = R_only,
+          by = c("accession", "gi", "staxids"), relationship = "many-to-many"
+        ) %>%
+        dplyr::mutate(
+          product_length = 0,
+          dplyr::across(c('forward_start', 'forward_stop', 'reverse_start', 'reverse_stop'), .fns = as.integer)
+        )
 
-  # calculate product length if F and R primer pairs are in correct orientation to make amplicon
-    f_and_r <-
-      dplyr::mutate(f_and_r, product_length = dplyr::case_when(
-        (forward_start < reverse_start &
-         forward_start < forward_stop &
-         reverse_stop < reverse_start) ~ (as.numeric(reverse_start) - as.numeric(forward_start)),
-         (forward_start > reverse_start &
-         forward_start > forward_stop &
-         reverse_stop > reverse_start) ~ (as.numeric(forward_start) - as.numeric(reverse_start)),
-         ))
+      # calculate product length if F and R primer pairs are in correct orientation to make amplicon
+      f_and_r <-
+        dplyr::mutate(f_and_r, product_length = dplyr::case_when(
+          (forward_start < reverse_start &
+            forward_start < forward_stop &
+            reverse_stop < reverse_start) ~ (as.numeric(reverse_start) - as.numeric(forward_start)),
+          (forward_start > reverse_start &
+            forward_start > forward_stop &
+            reverse_stop > reverse_start) ~ (as.numeric(forward_start) - as.numeric(reverse_start)),
+        ))
 
-  # remove all F and R primer pairs that would not make an amplicon
-    f_and_r <- dplyr::filter(f_and_r, !is.na(.data$product_length))
+      # remove all F and R primer pairs that would not make an amplicon
+      f_and_r <- dplyr::filter(f_and_r, !is.na(.data$product_length))
 
-    f_and_r <- dplyr::filter(f_and_r, dplyr::between(.data$product_length, minimum_length, maximum_length))
+      f_and_r <- dplyr::filter(f_and_r, dplyr::between(.data$product_length, minimum_length, maximum_length))
 
-    final_table <- rbind(final_table, f_and_r)
-
-
-  }
+      final_table <- rbind(final_table, f_and_r)
+    }
 
     # if table is empty and give warning and stop
-    if (nrow( final_table ) <= 1){
+    if (nrow(final_table) <= 1) {
       msg <- rcrux_log_fatal(
         "No plausible amplicons were found.  Try modifying parameters to increase blast returns (e.g. num_fprimers_to_blast, num_rprimers_to_blast, align, evalue, etc.)"
       )
       stop(msg)
     }
 
-    #save unfiltered seeds output
+    # save unfiltered seeds output
     utils::write.csv(final_table,
-              file = file.path(out, paste0(metabarcode_name, "_unfiltered_get_seeds_local_output.csv")),
-              row.names = FALSE)
+      file = file.path(out, paste0(metabarcode_name, "_unfiltered_get_seeds_local_output.csv")),
+      row.names = FALSE
+    )
 
     # keep only hits with acceptable product length
     f_and_r <- dplyr::filter(final_table, dplyr::between(.data$product_length, minimum_length, maximum_length))
@@ -544,7 +556,7 @@ final_table <-
     f_and_r <- dplyr::filter(f_and_r, .data$mismatch_forward <= mismatch & .data$mismatch_reverse <= mismatch)
 
     # if table is empty and give warning and stop
-    if (nrow( f_and_r ) <= 1){
+    if (nrow(f_and_r) <= 1) {
       msg <- rcrux_log_fatal(
         "Filtering removed all plausible amplicons.  Try modifying parameters to allow more amplicons to pass filter (e.g. minimum_length, maximum_length, mismatch, etc.)"
       )
@@ -565,20 +577,22 @@ final_table <-
 
     # save output
     utils::write.csv(taxonomized_table,
-              file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_local_output_with_taxonomy.csv")),
-              row.names = FALSE)
+      file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_local_output_with_taxonomy.csv")),
+      row.names = FALSE
+    )
 
     # Count distinct taxonomic ranks - includes NA
     tax_rank_sum <-
       taxonomized_table %>%
       dplyr::summarise(
-        dplyr::across(c('superkingdom', 'phylum','class','order','family','genus','species'), .fns = dplyr::n_distinct)
+        dplyr::across(c('superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'), .fns = dplyr::n_distinct)
       )
 
     # Write output to blast_seeds_output
     utils::write.csv(tax_rank_sum,
-              file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_local_unique_taxonomic_rank_counts.csv")),
-              row.names = FALSE)
+      file = file.path(out, paste0(metabarcode_name, "_filtered_get_seeds_local_unique_taxonomic_rank_counts.csv")),
+      row.names = FALSE
+    )
 
     unlink(append_table_path)
 
@@ -590,5 +604,4 @@ final_table <-
     }
 
     invisible(NULL)
-
   }

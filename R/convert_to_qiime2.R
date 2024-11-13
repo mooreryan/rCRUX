@@ -68,21 +68,20 @@ convert_to_qiime2 <-
            ref_db_1_name,
            out_dir,
            format_ref_db_1 = FALSE) {
-    
     dir.create(out_dir, showWarnings = FALSE)
-    
+
     # if input files are not in accession s;p;c;o;f;g;s format but have separate columns for accession s p c o f g s  make taxonomy formatted files and save to out_dir
-    
+
     if (isTRUE(format_ref_db_1)) {
       output_to_taxonomy_file(ref_db_1_path, "ref_db_1", out_dir)
       ref_db_1_path <- file.path(out_dir, "ref_db_1_taxonomy.txt")
     }
-    
+
     # import files.  A bit redundant if you just made them...
-    
+
     ref_db_1 <-
       utils::read.table(ref_db_1_path, header = F, sep = "\t") %>%
-      tibble::as_tibble() %>% 
+      tibble::as_tibble() %>%
       dplyr::rename(accession = 'V1', sum.taxonomy = 'V2') %>%
       tidyr::separate(
         .data$sum.taxonomy,
@@ -97,11 +96,11 @@ convert_to_qiime2 <-
         ),
         sep = ";"
       )
-    
+
     # Convert
-    
+
     ref_db_1_qiime <-
-      ref_db_1 %>%  
+      ref_db_1 %>%
       dplyr::mutate(
         species = stringr::str_replace_all(.data$species, " ", "_"),
         superkingdom = paste0("k__", .data$superkingdom),
@@ -125,10 +124,10 @@ convert_to_qiime2 <-
         ),
         sep = ";"
       )
-    
+
     taxa_table_path <-
       file.path(out_dir, paste0(ref_db_1_name, "_qiime2_taxonomy.txt"))
-    
+
     utils::write.table(
       ref_db_1_qiime,
       file = taxa_table_path,
@@ -137,5 +136,4 @@ convert_to_qiime2 <-
       sep = "\t",
       quote = FALSE
     )
-    
   }

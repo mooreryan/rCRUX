@@ -1,5 +1,5 @@
 build_blastn_args <- function() {
-  
+
 }
 
 #' Run blastn with a fasta file
@@ -54,8 +54,10 @@ build_blastn_args <- function() {
 #' temp_fasta <- tempfile(fileext = '.fasta')
 #'
 #' test_primers <-
-#'   c('>primer_forward', 'AGAGGAGCGCGGAATTCC',
-#'   '>primer_reverse', 'TACCTTGTTACGACTT')
+#'   c(
+#'     '>primer_forward', 'AGAGGAGCGCGGAATTCC',
+#'     '>primer_reverse', 'TACCTTGTTACGACTT'
+#'   )
 #'
 #' writeLines(test_primers, temp_fasta)
 #'
@@ -78,7 +80,7 @@ run_primer_blastn <-
            num_threads = 1,
            ncbi_bin = NULL) {
     rcrux_log_debug("run_primer_blastn starting")
-   
+
     # Not sure this is the best default
     if (num_threads == 'max') {
       cores <- parallel::detectCores()
@@ -88,16 +90,17 @@ run_primer_blastn <-
 
     check_blast_plus_installation(ncbi_bin)
     check_blast_db(db, ncbi_bin = ncbi_bin)
-    
+
     # Prepare call to blastn
-    if (!is.null(ncbi_bin)){
+    if (!is.null(ncbi_bin)) {
       blastn <- file.path(ncbi_bin, 'blastn')
     } else {
       blastn = 'blastn'
     }
 
     args <-
-      c("-db", db,
+      c(
+        "-db", db,
         "-task", task,
         "-query", primer_fasta,
         "-outfmt", '"6 qseqid sgi saccver mismatch sstart send staxids"',
@@ -107,36 +110,42 @@ run_primer_blastn <-
         "-perc_identity", perID,
         "-reward", reward,
         "-word_size", word_size,
-        "-num_threads", cores)
+        "-num_threads", cores
+      )
 
     rcrux_log_info("Calling blastn for primers. This may take a long time.")
     rcrux_log_debug("Running blastn", blastn = blastn, args = args)
 
     # Catch stdout to character vector (a tab-delimited table)
     blastn_output <-
-      system2(command = blastn,
-              args = args,
-              wait = TRUE,
-              stdout = TRUE)
+      system2(
+        command = blastn,
+        args = args,
+        wait = TRUE,
+        stdout = TRUE
+      )
 
     file.remove(primer_fasta)
 
     # Wrangle return data to a tibble
     column_names <-
-      c("qseqid",
+      c(
+        "qseqid",
         "sgi",
         "saccver",
         "mismatch",
         "sstart",
         "send",
-        "staxids")
+        "staxids"
+      )
 
     rcrux_log_debug("run_primer_blastn done")
 
     blastn_output %>%
       tibble::as_tibble() %>%
-      tidyr::separate(col = .data$value,
-                      into = column_names,
-                      sep = "\t")
-
+      tidyr::separate(
+        col = .data$value,
+        into = column_names,
+        sep = "\t"
+      )
   }

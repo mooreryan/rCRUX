@@ -63,9 +63,11 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
       rcrux_log_debug("Working on index %d of %d.", index, length(sample_indices))
 
       fasta <-
-        run_blastdbcmd(query_row = blast_seeds_m[index, ],
-                       db = db,
-                       ncbi_bin = ncbi_bin)
+        run_blastdbcmd(
+          query_row = blast_seeds_m[index, ],
+          db = db,
+          ncbi_bin = ncbi_bin
+        )
 
       # Check status (if attribute present) and if not 0 - blastdbcmd failed
       blastdbcmd_failed_status <-
@@ -80,50 +82,45 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
         blast_seeds_m$blast_status[-blastdbcmd_failed] <- "done"
         unsampled_indices <-
           unsampled_indices[!(unsampled_indices %in% blastdbcmd_failed)]
-      }
-      else if (has_too_many_ns) {
+      } else if (has_too_many_ns) {
         too_many_ns <- append(too_many_ns, index)
         blast_seeds_m$blast_status[-too_many_ns] <- "done"
         unsampled_indices <-
           unsampled_indices[!(unsampled_indices %in% too_many_ns)]
-      }
-      else {
+      } else {
         aggregate_fasta <- append(aggregate_fasta, fasta)
       }
     }
 
-    save_state(save_dir = save_dir,
-               output_table = output_table,
-               unsampled_indices = unsampled_indices,
-               too_many_ns = too_many_ns,
-               blastdbcmd_failed = blastdbcmd_failed,
-               num_rounds = num_rounds,
-               blast_seeds_m = blast_seeds_m)
+    save_state(
+      save_dir = save_dir,
+      output_table = output_table,
+      unsampled_indices = unsampled_indices,
+      too_many_ns = too_many_ns,
+      blastdbcmd_failed = blastdbcmd_failed,
+      num_rounds = num_rounds,
+      blast_seeds_m = blast_seeds_m
+    )
 
     if (!is.character(aggregate_fasta)) {
       rcrux_log_debug("No useable accession numbers. Proceeding to next round.")
-
-    }
-    else {
-
+    } else {
       # run blastn and aggregate results
       blastn_output <-
-        run_blastn(fasta = aggregate_fasta,
-                   db = db,
-                   ncbi_bin = ncbi_bin,
-                   ...)
+        run_blastn(
+          fasta = aggregate_fasta,
+          db = db,
+          ncbi_bin = ncbi_bin,
+          ...
+        )
 
       if (nrow(blastn_output) == 0 && length(unsampled_indices) > 0) {
         msg <- rcrux_log_fatal(
           "%d blast hits returned.  Either 1) blastn is having trouble blasting the number of seeds selected with the given set of parameters, or 2)  There were no hits returned for your blastn search because there were no valid matches in the database."
         )
         stop(msg)
-
-      }
-      else {
-
+      } else {
         rcrux_log_debug("%d blast hits returned.", nrow(blastn_output))
-
       }
 
       # remove accession numbers found by blast
@@ -143,14 +140,9 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
 
       # Add output to existing output
       if (is.null(output_table)) {
-
         output_table <- blastn_output
-
-      }
-      else {
-
+      } else {
         output_table <- tibble::add_row(output_table, blastn_output)
-
       }
 
 
@@ -161,7 +153,6 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
         dplyr::filter(.data$amplicon_length == max(.data$amplicon_length)) %>%
         dplyr::filter(!(duplicated(.data$accession))) %>%
         dplyr::ungroup()
-
     }
 
     # report number of total unique blast hits
@@ -173,13 +164,13 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
     # update files
-    save_state(save_dir = save_dir,
-               output_table = output_table,
-               unsampled_indices = unsampled_indices,
-               too_many_ns =too_many_ns,
-               blastdbcmd_failed = blastdbcmd_failed,
-               num_rounds = num_rounds,
-               blast_seeds_m = blast_seeds_m)
-
-
+    save_state(
+      save_dir = save_dir,
+      output_table = output_table,
+      unsampled_indices = unsampled_indices,
+      too_many_ns = too_many_ns,
+      blastdbcmd_failed = blastdbcmd_failed,
+      num_rounds = num_rounds,
+      blast_seeds_m = blast_seeds_m
+    )
   }
