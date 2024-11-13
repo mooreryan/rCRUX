@@ -23,14 +23,22 @@ assign_logfile_lock <- function() {
 }
 
 
+# NOTE: If there is a step that requires a ton of very short system calls that
+# are surrounded by log calls, then this locking scheme could potentially become
+# a choke point in a parallel program.
+#
+# NOTE: If these start having a noticable affect on timing, check and see if
+# eagerly building the messages is the issue.  If so, you may need to change it
+# to accept a thunk instead.
+
 make_log_function <- function(log_fn) {
-  function(...) {
+  function(msg, extra) {
     logfile_lock <- get_logfile_lock()
 
     # The user has not specified a lockfile for the log.  So, just log and be
     # done with it.
     if (is.null(logfile_lock)) {
-      log_fn(...)
+      log_fn(msg, extra)
       return(invisible(NULL))
     }
 
@@ -40,7 +48,7 @@ make_log_function <- function(log_fn) {
 
     # Then, log while holding the lock.
     # logger::log_level(FYI, ...)
-    log_fn(...)
+    log_fn(msg, extra)
 
     # `lock` will be NULL if a timeout occured and it was unable to aquire the
     # lock.
@@ -63,23 +71,53 @@ make_log_function <- function(log_fn) {
 # directly from a script not in a function, it gives NA.  It's good enough for
 # now.
 
-rcrux_log_fatal <- make_log_function(function(...) {
-  logger::log_fatal(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_fatal <- make_log_function(function(msg, details = NA) {
+  logger::log_fatal(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
-rcrux_log_error <- make_log_function(function(...) {
-  logger::log_error(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_error <- make_log_function(function(msg, details = NA) {
+  logger::log_error(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
-rcrux_log_warn <- make_log_function(function(...) {
-  logger::log_warn(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_warn <- make_log_function(function(msg, details = NA) {
+  logger::log_warn(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
-rcrux_log_info <- make_log_function(function(...) {
-  logger::log_info(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_info <- make_log_function(function(msg, details = NA) {
+  logger::log_info(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
-rcrux_log_debug <- make_log_function(function(...) {
-  logger::log_debug(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_debug <- make_log_function(function(msg, details = NA) {
+  logger::log_debug(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
-rcrux_log_trace <- make_log_function(function(...) {
-  logger::log_trace(..., .topcall = sys.call(-2), namespace = rcrux_logger_namespace)
+rcrux_log_trace <- make_log_function(function(msg, details = NA) {
+  logger::log_trace(
+    msg = msg,
+    details = details,
+    .topcall = sys.call(-2),
+    namespace = rcrux_logger_namespace
+  )
 })
 
 set_up_logger <- function() {
