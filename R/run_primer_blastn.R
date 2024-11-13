@@ -1,7 +1,3 @@
-build_blastn_args <- function() {
-
-}
-
 #' Run blastn with a fasta file
 #'
 #' @details
