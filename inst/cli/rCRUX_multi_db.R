@@ -35,6 +35,8 @@ if (!dir.exists(config$output_directory_path)) {
 
 
 set_up_logger()
+shadow_logger_bindings("rCRUX_multi_db")
+
 # Locking must be set up in the multi DB pipeline as it will be logging to a
 # single logfile from multiple processes.
 logfile_lock <- assign_logfile_lock()

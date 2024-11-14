@@ -100,6 +100,8 @@
 blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa_sql_path,
                             ncbi_bin = NULL, force_db = FALSE,
                             sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = "genus", max_to_blast = 1000, random_seed = NULL, ...) {
+  shadow_logger_bindings("blast_datatable")
+
   rcrux_log_debug("blast_datatable starting")
 
   check_blast_plus_installation(ncbi_bin = if ("ncbi_bin" %in% names(list(...))) ncbi_bin else NULL)

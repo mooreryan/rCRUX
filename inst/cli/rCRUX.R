@@ -42,6 +42,7 @@ if (!dir.exists(config$output_directory_path)) {
 }
 
 set_up_logger()
+shadow_logger_bindings("rCRUX")
 
 # This check is repeated here because we want the note about local rCRUX to be
 # included in the specified logfile.

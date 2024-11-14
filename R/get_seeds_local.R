@@ -224,6 +224,8 @@ get_seeds_local <-
            random_seed = NULL,
            # run_primer_blastn parameters
            ...) {
+    shadow_logger_bindings("get_seeds_local")
+
     rcrux_log_debug("get_seeds_local starting")
 
     dots <- list(...)

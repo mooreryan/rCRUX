@@ -75,6 +75,8 @@ run_primer_blastn <-
            reward = 2,
            num_threads = 1,
            ncbi_bin = NULL) {
+    shadow_logger_bindings("run_primer_blastn")
+
     rcrux_log_debug("run_primer_blastn starting")
 
     # Not sure this is the best default

@@ -52,6 +52,8 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
            wildcards,
            num_rounds,
            ...) {
+    shadow_logger_bindings("run_blastdbcmd_blastn_and_aggregate_resuts")
+
     rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts starting")
 
     # Run blastdbcmd on each sample index

@@ -38,6 +38,8 @@
 
 run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
                        evalue = 1e-6, align = 50000, coverage = 50, perID = 70, num_threads = 1) {
+  shadow_logger_bindings("run_blastn")
+
   rcrux_log_debug("run_blastn starting")
 
 

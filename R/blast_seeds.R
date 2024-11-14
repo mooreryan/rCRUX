@@ -155,6 +155,8 @@ blast_seeds <-
            minimum_length = 5,
            maximum_length = 500,
            ...) {
+    shadow_logger_bindings("blast_seeds")
+
     rcrux_log_debug("blast_seeds starting")
 
     dots <- list(...)

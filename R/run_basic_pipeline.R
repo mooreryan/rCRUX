@@ -18,6 +18,8 @@ run_basic_pipeline <- function(
     args_get_seeds_local,
     # A list of arguments that is passed only to blast_seeds
     args_blast_seeds) {
+  shadow_logger_bindings("run_basic_pipeline")
+
   rcrux_log_debug("run_basic_pipeline starting")
 
   # These paths are "known" values given the get_seeds_local and blast_seeds
