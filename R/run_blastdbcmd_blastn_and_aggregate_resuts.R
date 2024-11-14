@@ -170,7 +170,10 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     # report number of total unique blast hits
     rcrux_log_debug(
       stringr::str_glue(
-        "{nrow(output_table)} unique blast hits after this round."
+        "{nrow(output_table)} unique blast hits after this round.",
+        # Note that output_table can be NULL here, which causes `nrow` to return
+        # NULL, so it needs to be handled here.
+        .null = 0
       )
     )
 
