@@ -142,6 +142,10 @@ shadow_logger_bindings <- function(fn) {
     rcrux_log_info = purrr::partial(rcrux_log_info, fn = fn),
     rcrux_log_debug = purrr::partial(rcrux_log_debug, fn = fn),
     rcrux_log_trace = purrr::partial(rcrux_log_trace, fn = fn),
+    # This is subtle, but because we are interacting with the environment, the
+    # frame must be explicitly set here even though this is what the default for
+    # the argument would be.
+    .frame = rlang::caller_env()
   )
 }
 
