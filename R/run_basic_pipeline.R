@@ -20,7 +20,7 @@ run_basic_pipeline <- function(
     args_blast_seeds) {
   shadow_logger_bindings("run_basic_pipeline")
 
-  rcrux_log_debug("run_basic_pipeline starting")
+  rcrux_log_trace("run_basic_pipeline starting")
 
   # These paths are "known" values given the get_seeds_local and blast_seeds
   # functions.  If those change, this will also need to be changed.
@@ -77,7 +77,7 @@ run_basic_pipeline <- function(
     metabarcode_name = metabarcode_name
   )
 
-  rcrux_log_debug("run_basic_pipeline done")
+  rcrux_log_trace("run_basic_pipeline done")
 
   NULL
 }

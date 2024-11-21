@@ -102,7 +102,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
                             sample_size = 1, wildcards = "NNNNNNNNNNNN", rank = "genus", max_to_blast = 1000, random_seed = NULL, ...) {
   shadow_logger_bindings("blast_datatable")
 
-  rcrux_log_debug("blast_datatable starting")
+  rcrux_log_trace("blast_datatable starting")
 
   check_blast_plus_installation(ncbi_bin = if ("ncbi_bin" %in% names(list(...))) ncbi_bin else NULL)
   check_blast_db(blast_db_path)
@@ -430,7 +430,7 @@ blast_datatable <- function(blast_seeds, save_dir, blast_db_path, accession_taxa
       get_taxonomy_from_accession(output_table, accession_taxa_sql_path)
     )
 
-  rcrux_log_debug("blast_datatable done")
+  rcrux_log_trace("blast_datatable done")
 
   return(output_table_taxonomy)
 }

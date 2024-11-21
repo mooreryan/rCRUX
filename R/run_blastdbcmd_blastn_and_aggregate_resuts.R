@@ -54,7 +54,7 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
            ...) {
     shadow_logger_bindings("run_blastdbcmd_blastn_and_aggregate_resuts")
 
-    rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts starting")
+    rcrux_log_trace("run_blastdbcmd_blastn_and_aggregate_resuts starting")
 
     # Run blastdbcmd on each sample index
     # sort results into appropriate buckets
@@ -182,10 +182,9 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
     # add new blast round
     num_rounds <- num_rounds + 1
 
-    rcrux_log_debug("run_blastdbcmd_blastn_and_aggregate_resuts done")
 
     # update files
-    save_state(
+    result <- save_state(
       save_dir = save_dir,
       output_table = output_table,
       unsampled_indices = unsampled_indices,
@@ -194,4 +193,8 @@ run_blastdbcmd_blastn_and_aggregate_resuts <-
       num_rounds = num_rounds,
       blast_seeds_m = blast_seeds_m
     )
+
+    rcrux_log_trace("run_blastdbcmd_blastn_and_aggregate_resuts done")
+
+    result
   }

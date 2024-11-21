@@ -58,7 +58,7 @@ blast_seeds_multi_db <- function(
     ...) {
   shadow_logger_bindings("blast_seeds_multi_db")
 
-  rcrux_log_debug("blast_seeds_multi_db starting")
+  rcrux_log_trace("blast_seeds_multi_db starting")
 
   check_forbidden_args(
     additional_args = list(...),
@@ -136,7 +136,7 @@ blast_seeds_multi_db <- function(
     fasta_outfile = collated_outfiles$recovered_seqs
   )
 
-  rcrux_log_debug("blast_seeds_multi_db done")
+  rcrux_log_trace("blast_seeds_multi_db done")
 
   # Returns the collated output directory path.
   collated_output_path

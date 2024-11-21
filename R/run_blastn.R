@@ -40,7 +40,7 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
                        evalue = 1e-6, align = 50000, coverage = 50, perID = 70, num_threads = 1) {
   shadow_logger_bindings("run_blastn")
 
-  rcrux_log_debug("run_blastn starting")
+  rcrux_log_trace("run_blastn starting")
 
 
   if (!is.null(ncbi_bin)) {
@@ -118,14 +118,17 @@ run_blastn <- function(fasta, db, temp_fasta_path = NULL, ncbi_bin = NULL,
       "BLAST_db_taxids"
     )
 
-  rcrux_log_debug("run_blastn done")
 
   # blastn_output is a tab-delimited string, we need split it into columns
   # as_tibble creates a one-column tibble with "value" as its col name
-  blastn_output %>%
+  result <- blastn_output %>%
     tibble::as_tibble() %>%
     tidyr::separate(
       col = .data$value, into = column_names,
       sep = "\t"
     )
+
+  rcrux_log_trace("run_blastn done")
+
+  result
 }

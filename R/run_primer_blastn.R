@@ -77,7 +77,7 @@ run_primer_blastn <-
            ncbi_bin = NULL) {
     shadow_logger_bindings("run_primer_blastn")
 
-    rcrux_log_debug("run_primer_blastn starting")
+    rcrux_log_trace("run_primer_blastn starting")
 
     # Not sure this is the best default
     if (num_threads == "max") {
@@ -140,13 +140,16 @@ run_primer_blastn <-
         "staxids"
       )
 
-    rcrux_log_debug("run_primer_blastn done")
 
-    blastn_output %>%
+    result <- blastn_output %>%
       tibble::as_tibble() %>%
       tidyr::separate(
         col = .data$value,
         into = column_names,
         sep = "\t"
       )
+
+    rcrux_log_trace("run_primer_blastn done")
+
+    result
   }

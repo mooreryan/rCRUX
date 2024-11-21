@@ -157,7 +157,7 @@ blast_seeds <-
            ...) {
     shadow_logger_bindings("blast_seeds")
 
-    rcrux_log_debug("blast_seeds starting")
+    rcrux_log_trace("blast_seeds starting")
 
     dots <- list(...)
     # Setup ----
@@ -267,7 +267,7 @@ blast_seeds <-
     # Clear temporary directory
     unlink(save_dir, recursive = TRUE)
 
-    rcrux_log_info("blast_seeds done")
+    rcrux_log_trace("blast_seeds done")
 
     # return nothing
     invisible(NULL)

@@ -226,7 +226,7 @@ get_seeds_local <-
            ...) {
     shadow_logger_bindings("get_seeds_local")
 
-    rcrux_log_debug("get_seeds_local starting")
+    rcrux_log_trace("get_seeds_local starting")
 
     dots <- list(...)
 
@@ -607,7 +607,7 @@ get_seeds_local <-
 
     unlink(append_table_path)
 
-    rcrux_log_info("get_seeds_local done")
+    rcrux_log_trace("get_seeds_local done")
 
     # return if you're supposed to
     if (return_table) {
