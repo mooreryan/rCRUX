@@ -14,6 +14,9 @@
 #' @return a fasta-formatted character vector
 #' @export
 run_blastdbcmd <- function(query_row, db, ncbi_bin = NULL) {
+  shadow_logger_bindings("run_blastdbcmd")
+  rcrux_log_trace("run_blastdbcmd starting")
+
   # Extract arguments
   accession <- query_row$accession
   forward <- as.numeric(query_row$forward_stop)
@@ -38,18 +41,29 @@ run_blastdbcmd <- function(query_row, db, ncbi_bin = NULL) {
     blastdbcmd <- "blastdbcmd"
   }
 
+  args <- c(
+    "-db", db,
+    "-dbtype", "nucl",
+    "-entry", accession,
+    "-range", seq_range
+  )
+
+  rcrux_log_debug(
+    "Running blastdbcmd",
+    details = list(blastdbcmd = blastdbcmd, args = args)
+  )
+
   # run blastdbcmd, suppress status warning and use them outside of function
   # if the function returns a status other than 0 (successful), the value
   # with have an attribute 'status' .. attr(result, 'status')
-  suppressWarnings(
+  result <- suppressWarnings(
     system2(blastdbcmd,
-      args = c(
-        "-db", db,
-        "-dbtype", "nucl",
-        "-entry", accession,
-        "-range", seq_range
-      ),
+      args = args,
       stdout = TRUE, stderr = FALSE
     )
   )
+
+  rcrux_log_trace("run_blastdbcmd done")
+
+  result
 }
