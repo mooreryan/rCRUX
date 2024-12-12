@@ -14,19 +14,19 @@ check_files_exist <- function(files) {
 # Read all the summaries and dereplicate them.
 collate_summaries <- function(blast_seeds_outfiles, summary_outfile) {
   purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
-    readr::read_csv(filenames$summary)
+    readr::read_csv(filenames$summary, col_names = TRUE)
   }) %>%
     dplyr::distinct() %>%
-    readr::write_csv(summary_outfile)
+    readr::write_csv(summary_outfile, col_names = TRUE)
 }
 
 # Read all the taxonomy files and dereplicate them.
 collate_taxonomies <- function(blast_seeds_outfiles, taxonomy_outfile) {
   purrr::map_dfr(blast_seeds_outfiles, function(filenames) {
-    readr::read_tsv(filenames$taxonomy)
+    readr::read_tsv(filenames$taxonomy, col_names = FALSE)
   }) %>%
     dplyr::distinct() %>%
-    readr::write_tsv(taxonomy_outfile)
+    readr::write_tsv(taxonomy_outfile, col_names = FALSE)
 }
 
 # Read all the fasta files and dereplicate them.
